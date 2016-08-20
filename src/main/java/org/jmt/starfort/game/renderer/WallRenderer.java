@@ -33,7 +33,7 @@ public class WallRenderer implements IRendererRule {
 	}
 
 	@Override
-	public void Draw(long nvgCtx, Renderer r, Coord offset, IComponent comp, Coord compLoc) {
+	public void draw(long nvgCtx, Renderer r, Coord offset, IComponent comp, Coord compLoc) {
 		Vector2f drawSrc = r.worldToRenderSpatialConvert(compLoc, offset);
 		glTranslatef(drawSrc.x, drawSrc.y, 0);
 		glEnable(GL_TEXTURE_2D);

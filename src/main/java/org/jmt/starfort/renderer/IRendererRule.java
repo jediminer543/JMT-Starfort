@@ -24,6 +24,6 @@ public interface IRendererRule {
 	 * @param comp
 	 * @param compLoc
 	 */
-	public void Draw(long nvgCtx, Renderer r, Coord offset, IComponent comp, Coord compLoc);
+	public void draw(long nvgCtx, Renderer r, Coord offset, IComponent comp, Coord compLoc);
 
 }

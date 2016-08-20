@@ -111,7 +111,7 @@ public class Starfort {
 			
 			NanoVG.nvgBeginFrame(worldNvgCtx, 1600, 900, 1);
 			NanoVG.nvgStrokeWidth(worldNvgCtx, 1f);
-			r.Draw(worldNvgCtx, w, new Coord(5, 0, 5));
+			r.draw(worldNvgCtx, w, new Coord(5, 0, 5));
 			NanoVG.nvgEndFrame(worldNvgCtx);
 		}
 	}
@@ -146,7 +146,7 @@ public class Starfort {
 	
 	public static void init() {
 		Processor.init();
-		r.Init(worldNvgCtx, renderRules);
+		r.init(worldNvgCtx, renderRules);
 	}
 	
 }
