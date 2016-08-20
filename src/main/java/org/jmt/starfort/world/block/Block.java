@@ -3,32 +3,20 @@ package org.jmt.starfort.world.block;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import org.jmt.starfort.processor.ComplexRunnable;
 import org.jmt.starfort.util.Direction;
 import org.jmt.starfort.util.NavContext;
-import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.component.IComponent;
 import org.jmt.starfort.world.component.IComponentBlocking;
 import org.jmt.starfort.world.component.IComponentTickable;
 
 public class Block {
 	
-	World parent;
-	
-	public Block (World parent) {
-		this.parent = parent;
-	}
-	
-	public World getParent() {
-		return parent;
-	}
-	
-	public void setParent(World newParent) {
-		parent = newParent;
-	}
+	UUID id = UUID.randomUUID();
 	
 	ArrayList<IComponent> components = new ArrayList<>();
 	float damageTaken;
@@ -109,5 +97,10 @@ public class Block {
 			}
 		}
 		return found;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return (obj instanceof Block) && (((Block) obj).id == this.id);
 	}
 }

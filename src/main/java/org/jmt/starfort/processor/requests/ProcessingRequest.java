@@ -20,4 +20,10 @@ public interface ProcessingRequest {
 	 */
 	public boolean complete();
 	
+	/**
+	 * How many subsections of this request remain until the request is finished
+	 * 
+	 * @return How many more processNext() executions remain until this request is complete
+	 */
+	public int remaining();
 }

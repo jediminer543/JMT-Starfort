@@ -78,6 +78,11 @@ public class ComplexMassProccessRequest implements Runnable, ReusableProcessingR
 	public void remove(ComplexRunnable item) {
 		toRemove.add(item);
 	}
+
+	@Override
+	public int remaining() {
+		return runnablesCurr.size();
+	}
 	
 	
 	

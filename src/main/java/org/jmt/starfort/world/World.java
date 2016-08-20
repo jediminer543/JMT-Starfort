@@ -1,12 +1,15 @@
 package org.jmt.starfort.world;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 
+import org.jmt.starfort.processor.ComplexRunnable;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.world.block.Block;
-//import org.jmt.starfort.world.controller.IController;
+import org.jmt.starfort.world.controller.IController;
 
 /**
  * A world in which blocks exist
@@ -19,7 +22,14 @@ public class World {
 	UUID id = UUID.randomUUID();
 	
 	HashMap<Coord, Block> blocks = new HashMap<>();
-	//ArrayList<IController> controllers = new ArrayList<>();
+	ArrayList<IController> controllers = new ArrayList<>();
+	
+	/**
+	 * Bounds of world
+	 * 
+	 * xmin, ymin, zmin, xmax, ymax, zmax
+	 */
+	int[] bounds = new int[6];
 	
 	/**
 	 * Gets the block at a specific coordinate; if none exists it creates a blank one
@@ -28,10 +38,45 @@ public class World {
 	 * @return The block at that coord
 	 */
 	public synchronized Block getBlock(Coord c) {
-		if (!blocks.containsKey(c)) {
-			blocks.put(c, new Block(this));
+		synchronized (blocks) {
+			if (!blocks.containsKey(c)) {
+				blocks.put(c, new Block());
+				//updateBounds();
+			}
+			return blocks.get(c);
 		}
-		return blocks.get(c);
+	}
+	
+	/**
+	 * Gets the block at a specific coordinate
+	 * 
+	 * @param c The coord to search for a block 
+	 * @return The block at that coord
+	 */
+	public synchronized Block getBlockNoAdd(Coord c) {
+		synchronized (blocks) {
+			if (!blocks.containsKey(c)) {
+				return null;
+			}
+			return blocks.get(c);
+		}
+	}
+	
+	/**
+	 * Get the location of a block in the world space
+	 * 
+	 * @param b The block to locate
+	 * @return
+	 */
+	public Coord getBlockLocation(Block b) {
+		synchronized (blocks) {
+			for (Entry<Coord, Block> e: blocks.entrySet()) {
+				if (e.getValue() == b) {
+					return e.getKey();
+				}
+			}
+		}
+		return null;
 	}
 	
 	/**
@@ -39,24 +84,34 @@ public class World {
 	 * 
 	 * @return An array of all the ticks for this world
 	 */
-	//public synchronized ArrayList<Runnable> getTicks() {
-	//	ArrayList<Runnable> ticks = new ArrayList<>();
-	//	for (Entry<Coord, Block> b: blocks.entrySet()) {
-	//		ticks.addAll(b.getValue().getTicks(this, b.getKey()));
-	//	}
-	//	//for (IController c: controllers) {
-	//	//	ticks.add(c.getTick(this));
-	//	//}
-	//	return ticks;
-	//}
+	public Map<Coord, ArrayList<ComplexRunnable>> getTicks() {
+		HashMap<Coord, ArrayList<ComplexRunnable>> ticks = new HashMap<Coord, ArrayList<ComplexRunnable>>();
+		synchronized (blocks) {
+			for (Entry<Coord, Block> b: blocks.entrySet()) {
+				ticks.put(b.getKey(), b.getValue().getTicks());
+			}
+		}
+		synchronized (controllers) {
+			ArrayList<ComplexRunnable> controllerTicks = new ArrayList<>();
+			for (IController c: controllers) {
+				controllerTicks.add(c.getTick());
+			}
+			ticks.put(null, controllerTicks);
+		}
+		return ticks;
+	}
 	
 	/**
 	 * Sets the block at a specific coord
 	 * @param c The coord to be changed
 	 * @param b The block to change to
 	 */
-	public synchronized void setBlock(Coord c, Block b) {
-		blocks.put(c, b);
+	public void setBlock(Coord c, Block b) {
+		//boolean isnew = blocks.containsKey(c);
+		synchronized (blocks) {
+			blocks.put(c, b);
+		}
+		//if (isnew) { updateBounds(); }
 	}
 	
 	/**
@@ -73,7 +128,6 @@ public class World {
 	 * @param controllerClass The class of controller to find/add
 	 * @return The controller, or null if it cannot be instantated
 	 */
-	/* TODO:
 	public synchronized IController getController(Class<? extends IController> controllerClass) {
 		for (IController c : controllers) {
 			if (controllerClass.isInstance(c)) {
@@ -89,7 +143,8 @@ public class World {
 		}
 		return i;
 	}
-	*/
+	
+	
 	
 //	/**
 //	 * <b>NYI:</b>
@@ -116,6 +171,35 @@ public class World {
 //		Collection<Block> clone = Cloner.standard().deepClone(blocks.values());
 //		return clone;
 //	}
+	
+	public void updateBounds() {
+		int xmin, xmax, ymin, ymax, zmin, zmax;
+		xmax = ymax = zmax = Integer.MIN_VALUE;
+		xmin = ymin = zmin = Integer.MAX_VALUE;
+		for (Entry<Coord, Block> e : blocks.entrySet()) {
+			if (e.getKey().x > xmax)
+				xmax = e.getKey().x;
+			else if (e.getKey().x < xmin)
+				xmin = e.getKey().x;
+			
+			if (e.getKey().y > ymax)
+				ymax = e.getKey().y;
+			else if (e.getKey().y < ymin)
+				ymin = e.getKey().y;
+			
+			if (e.getKey().z > zmax)
+				zmax = e.getKey().z;
+			else if (e.getKey().z < zmin)
+				zmin = e.getKey().z;
+		}
+		bounds = new int[]{xmin, ymin, zmin, xmax, ymax, zmax};
+	}
+	
+	public int[] getBounds(boolean update) {
+		if (update)
+			updateBounds();
+		return bounds;
+	}
 	
 	@Override
 	public boolean equals(Object o) {

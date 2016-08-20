@@ -12,6 +12,8 @@ public interface IComponentTickable extends IComponent {
 
 	/**
 	 * This is the tick function passed to the processing thread pool
+	 * <br><br>
+	 * The values passed are World, Coord
 	 * 
 	 * @return An operation to pass to the processing pool
 	 */

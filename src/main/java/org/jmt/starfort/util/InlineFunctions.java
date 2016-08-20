@@ -1,6 +1,8 @@
 package org.jmt.starfort.util;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -17,6 +19,11 @@ public class InlineFunctions {
 	@SafeVarargs
 	public static <T> T[] inlineArray(T... args) {
 		return args;
+	}
+	
+	@SafeVarargs
+	public static <T> List<T> inlineArrayList(T... args) {
+		return Arrays.asList(args);
 	}
 	
 	/**

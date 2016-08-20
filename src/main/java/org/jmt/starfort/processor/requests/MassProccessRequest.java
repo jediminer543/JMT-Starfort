@@ -74,6 +74,10 @@ public class MassProccessRequest implements Runnable, ReusableProcessingRequest<
 		toRemove.add(item);
 	}
 	
+	@Override
+	public int remaining() {
+		return runnablesCurr.size();
+	}
 	
 	
 	

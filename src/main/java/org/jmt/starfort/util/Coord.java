@@ -51,7 +51,7 @@ public class Coord implements Cloneable {
 	
 	/**
 	 * Adds the passed coord to this coord
-	 * 
+	 * <br><br>
 	 * Method Naming Convension <br>
 	 * R = Return<br>
 	 * M = Modify
@@ -68,7 +68,7 @@ public class Coord implements Cloneable {
 	
 	/**
 	 * Adds the passed coord to this coord. Doesn't modify this
-	 * 
+	 * <br><br>
 	 * Method Naming Convension <br>
 	 * R = Return<br>
 	 * 
@@ -81,7 +81,7 @@ public class Coord implements Cloneable {
 	
 	/**
 	 * Adds the passed coord to this coord
-	 * 
+	 * <br><br>
 	 * Method Naming Convension <br>
 	 * R = Return<br>
 	 * M = Modify
@@ -98,7 +98,7 @@ public class Coord implements Cloneable {
 	
 	/**
 	 * Adds the passed coord to this coord. Doesn't modify this
-	 * 
+	 * <br><br>
 	 * Method Naming Convension <br>
 	 * R = Return<br>
 	 * 
@@ -111,7 +111,7 @@ public class Coord implements Cloneable {
 	
 	/**
 	 * Multiplies the coord by the value passed
-	 * 
+	 * <br><br>
 	 * Method Naming Convension <br>
 	 * R = Return<br>
 	 * M = Modify
@@ -128,7 +128,7 @@ public class Coord implements Cloneable {
 	
 	/**
 	 * Multiplies the coord by the value passed. Doesn't modify this
-	 * 
+	 * <br><br>
 	 * Method Naming Convension <br>
 	 * R = Return
 	 * 
@@ -137,6 +137,36 @@ public class Coord implements Cloneable {
 	 */
 	public Coord multR(int i) {
 		return new Coord(x * i, y * i, z * i);
+	}
+	
+	/**
+	 * Gets the abs value of this coord. Doesn't modify this
+	 * <br><br>
+	 * Method Naming Convension <br>
+	 * R = Return
+	 * 
+	 * @param i Value to multiply by
+	 * @return New coord
+	 */
+	public Coord absR() {
+		return new Coord(Math.abs(x), Math.abs(y), Math.abs(z));
+	}
+	
+	/**
+	 * Gets the abs value of this coord.
+	 * <br><br>
+	 * Method Naming Convension <br>
+	 * R = Return<br>
+	 * M = Modify
+	 * 
+	 * @param i Value to multiply by
+	 * @return this
+	 */
+	public Coord absRM() {
+		x = Math.abs(x);
+		x = Math.abs(x);
+		x = Math.abs(x);
+		return this;
 	}
 	
 	

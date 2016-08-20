@@ -14,6 +14,8 @@ import org.jmt.starfort.processor.requests.ProcessingRequest;
  */
 public class Processor {
 
+	static long totalTicks, idleTicks;
+	
 	static boolean online = false;
 	
 	static ArrayList<ProcessingRequest> proccessingJobs = new ArrayList<ProcessingRequest>();
@@ -29,6 +31,8 @@ public class Processor {
 	public static void init() {
 		// Tells threads that they should run
 		if (!online) {
+			totalTicks = idleTicks = 0;
+			cores.clear();
 			online = true;
 
 			for (int i = size; i > 0; i--) {
@@ -37,6 +41,7 @@ public class Processor {
 					@Override
 					public void run() {
 						while (online) {
+							totalTicks++;
 							if (simpleJobs.size() > 0) {
 								simpleJobs.remove(0).run();
 							}
@@ -46,6 +51,8 @@ public class Processor {
 								} else {
 									proccessingJobs.get(0).processNext();
 								}
+							} else {
+								idleTicks++;
 							}
 						}
 					}
