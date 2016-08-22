@@ -1,8 +1,18 @@
 package org.jmt.starfort.renderer;
 
+import org.lwjgl.opengl.GL11;
+
 public class Colour {
 	
-	float r, g, b, a;
+	public float r, g, b, a;
+	
+	public Colour(byte r, byte g, byte b, byte a) {
+		set(r, g, b, a);
+	}
+	
+	public Colour(float r, float g, float b, float a) {
+		set(r, g, b, a);
+	}
 	
 	public void set(byte r, byte g, byte b) {
 		set(r, g, b, (byte) 255);
@@ -24,5 +34,9 @@ public class Colour {
  		this.g = g;
  		this.b = b;
  		this.a = a;
+	}
+	
+	public void apply() {
+		GL11.glColor4f(r, g, b, a);
 	}
 }

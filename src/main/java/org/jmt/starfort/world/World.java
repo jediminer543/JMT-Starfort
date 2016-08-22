@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.jmt.starfort.processor.ComplexRunnable;
 import org.jmt.starfort.util.Coord;
@@ -21,7 +22,7 @@ public class World {
 
 	UUID id = UUID.randomUUID();
 	
-	HashMap<Coord, Block> blocks = new HashMap<>();
+	ConcurrentHashMap<Coord, Block> blocks = new ConcurrentHashMap<>();
 	ArrayList<IController> controllers = new ArrayList<>();
 	
 	/**
@@ -37,14 +38,12 @@ public class World {
 	 * @param c The coord to search for a block 
 	 * @return The block at that coord
 	 */
-	public synchronized Block getBlock(Coord c) {
-		synchronized (blocks) {
+	public Block getBlock(Coord c) {
 			if (!blocks.containsKey(c)) {
 				blocks.put(c, new Block());
 				//updateBounds();
 			}
 			return blocks.get(c);
-		}
 	}
 	
 	/**
@@ -53,13 +52,11 @@ public class World {
 	 * @param c The coord to search for a block 
 	 * @return The block at that coord
 	 */
-	public synchronized Block getBlockNoAdd(Coord c) {
-		synchronized (blocks) {
+	public Block getBlockNoAdd(Coord c) {
 			if (!blocks.containsKey(c)) {
 				return null;
 			}
 			return blocks.get(c);
-		}
 	}
 	
 	/**
@@ -69,13 +66,11 @@ public class World {
 	 * @return
 	 */
 	public Coord getBlockLocation(Block b) {
-		synchronized (blocks) {
 			for (Entry<Coord, Block> e: blocks.entrySet()) {
 				if (e.getValue() == b) {
 					return e.getKey();
 				}
 			}
-		}
 		return null;
 	}
 	
@@ -86,11 +81,9 @@ public class World {
 	 */
 	public Map<Coord, ArrayList<ComplexRunnable>> getTicks() {
 		HashMap<Coord, ArrayList<ComplexRunnable>> ticks = new HashMap<Coord, ArrayList<ComplexRunnable>>();
-		synchronized (blocks) {
 			for (Entry<Coord, Block> b: blocks.entrySet()) {
 				ticks.put(b.getKey(), b.getValue().getTicks());
 			}
-		}
 		synchronized (controllers) {
 			ArrayList<ComplexRunnable> controllerTicks = new ArrayList<>();
 			for (IController c: controllers) {

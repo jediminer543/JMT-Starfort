@@ -1,5 +1,7 @@
 package org.jmt.starfort.world.component;
 
+import org.jmt.starfort.world.material.IMaterial;
+
 /**
  * These make up blocks
  * 
@@ -20,6 +22,13 @@ public interface IComponent {
 	 * @return name of the component
 	 */
 	public String getComponentName();
+	
+	/**
+	 * Get's the materials primary material.
+	 * 
+	 * Will be added to name lookup
+	 */
+	public IMaterial getComponentMaterial();
 	
 	/**
 	 * Get the component data in a string format <br>

@@ -12,7 +12,7 @@ public class MaterialRegistry {
 	static ArrayList<IMaterialType> matTypes = new ArrayList<>();
 	static Map<String, Integer> matTypeIndex = new HashMap<>();
 	
-	public int registerMaterial(IMaterial mat) {
+	public static int registerMaterial(IMaterial mat) {
 		if (matIndex.containsKey(mat.getMaterialName())) {
 			return -1;
 		} else {
@@ -22,7 +22,7 @@ public class MaterialRegistry {
 		}
 	}
 	
-	public int registerMaterialType(IMaterialType mat) {
+	public static int registerMaterialType(IMaterialType mat) {
 		if (matTypeIndex.containsKey(mat.getMaterialTypeName())) {
 			return -1;
 		} else {
@@ -32,20 +32,35 @@ public class MaterialRegistry {
 		}
 	}
 	
-	public IMaterial getMaterial(String name) {
+	public static IMaterial getMaterial(String name) {
 		return getMaterial(matIndex.get(name));
 	}
 	
-	public IMaterial getMaterial(int id) {
+	public static IMaterial getMaterial(int id) {
 		return mats.get(id);
 	}
 	
-	public IMaterialType getMaterialType(String name) {
+	public static IMaterialType getMaterialType(String name) {
 		return getMaterialType(matTypeIndex.get(name));
 	}
 	
-	public IMaterialType getMaterialType(int id) {
+	public static IMaterialType getMaterialType(int id) {
 		return matTypes.get(id);
 	}
 	
+	public static int getMaterialID(String matName) {
+		return matIndex.get(matName);
+	}
+	
+	public static int getMaterialTypeID(String matName) {
+		return matTypeIndex.get(matName);
+	}
+	
+	public static int getMaterialID(IMaterial matName) {
+		return matIndex.get(matName.getMaterialName());
+	}
+	
+	public static int getMaterialTypeID(IMaterialType matName) {
+		return matTypeIndex.get(matName.getMaterialTypeName());
+	}
 }

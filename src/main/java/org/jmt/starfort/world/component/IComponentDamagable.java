@@ -33,6 +33,6 @@ public interface IComponentDamagable {
 	 * Literally health += value
 	 * 
 	 */
-	public void modComponentHealth();
+	public void modComponentHealth(int delta);
 	
 }

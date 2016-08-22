@@ -1,3 +1,4 @@
+
 package org.jmt.starfort.game.components;
 
 import java.util.Map;
@@ -8,31 +9,34 @@ import org.jmt.starfort.util.NavContext;
 import org.jmt.starfort.world.component.IComponent;
 import org.jmt.starfort.world.component.IComponentBlocking;
 import org.jmt.starfort.world.component.IComponentDamagable;
+import org.jmt.starfort.world.component.IComponentMaterials;
+import org.jmt.starfort.world.material.IMaterial;
 
 public class ComponentWall implements IComponent, IComponentBlocking, IComponentDamagable {
 
 	Direction[] blockedDirs;
-	int wallHealth;
-	//TODO REMOVE COLOUR
-	float[] colour;
-	public ComponentWall(Direction[] blockedDirs, float[] colour) {
+	int wallHealth, wallMaxHealth;
+	IMaterial mat;
+	
+	public ComponentWall(Direction[] blockedDirs, IMaterial mat) {
 		this.blockedDirs = blockedDirs;
-		this.colour = colour;
+		this.mat = mat;
+		wallMaxHealth = wallHealth = Math.round(mat.getMaterialHardness() * 25);
 	}
 	
 	@Override
 	public int getComponentHealth() {
-		return 0;
+		return wallHealth;
 	}
 
 	@Override
 	public int getComponentMaxHealth() {
-		return 0;
+		return wallMaxHealth;
 	}
 
 	@Override
-	public void modComponentHealth() {
-		
+	public void modComponentHealth(int delta) {
+		wallHealth += delta;
 	}
 
 	@Override
@@ -42,13 +46,12 @@ public class ComponentWall implements IComponent, IComponentBlocking, IComponent
 
 	@Override
 	public String getComponentName() {
-		return null;
+		return "jmt.starfort.wall";
 	}
-	
-	//TODO DELETE
-	public float[] getColor() {
-		return colour;
+
+	@Override
+	public IMaterial getComponentMaterial() {
+		return mat;
 	}
-	
 	
 }

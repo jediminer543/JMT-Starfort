@@ -9,6 +9,8 @@ import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.block.Block;
 import org.jmt.starfort.world.component.IComponent;
+import org.jmt.starfort.world.material.IMaterial;
+import org.jmt.starfort.world.material.MaterialRegistry;
 import org.joml.Vector2f;
 
 public class Renderer {
@@ -16,7 +18,7 @@ public class Renderer {
 	//
 	//
 	//
-	float zoom = 1f;
+	float zoom = 0.25f;
 	// 1 world space = 16 render spaces
 	int renderSpacePerWorldSpace = 16;
 	
@@ -47,6 +49,31 @@ public class Renderer {
 		return (frac) * 1/zoom * renderSpacePerWorldSpace ;
 	}
 	
+	/**
+	 * Register a material's render colour
+	 * 
+	 * @param mat Material to map
+	 * @param color Colour to map to material
+	 */
+	public void registerMaterial(IMaterial mat, Colour color) {
+		materialRenderReg.put(MaterialRegistry.getMaterialID(mat), color);
+	}
+	
+	/**
+	 * Register a material's render colour
+	 * 
+	 * @param mat Material to map
+	 * @return Colour mapped to material
+	 */
+	public Colour getMaterialColor(IMaterial mat) {
+		return materialRenderReg.get(MaterialRegistry.getMaterialID(mat));
+	}
+	
+	/**
+	 * Initialize the renderer
+	 * @param nvgCtx
+	 * @param renderRules
+	 */
 	public void init(long nvgCtx, ArrayList<IRendererRule> renderRules) {
 		for (IRendererRule rr : renderRules) {
 			for (Class<? extends IComponent> comp : rr.getRenderableComponents())

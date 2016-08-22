@@ -2,6 +2,7 @@ package org.jmt.starfort.game.entity;
 
 import org.jmt.starfort.processor.ComplexRunnable;
 import org.jmt.starfort.world.entity.organs.IOrgan;
+import org.jmt.starfort.world.material.IMaterial;
 
 public class EntityHuman extends EntityHumanoid {
 
@@ -80,6 +81,11 @@ public class EntityHuman extends EntityHumanoid {
 	@Override
 	public IOrgan getOrganBody() {
 		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public IMaterial getComponentMaterial() {
 		return null;
 	}
 

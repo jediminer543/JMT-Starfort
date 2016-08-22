@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.jmt.starfort.world.material.IMaterial;
 
-public interface IComponentMaterial extends IComponent {
+public interface IComponentMaterials extends IComponent {
 
 	public Map<IMaterial, Integer> getMaterials();
 }

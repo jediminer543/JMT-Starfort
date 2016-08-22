@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.jmt.starfort.game.components.ComponentWall;
+import org.jmt.starfort.renderer.Colour;
 import org.jmt.starfort.renderer.IRendererRule;
 import org.jmt.starfort.renderer.Renderer;
 import org.jmt.starfort.renderer.Texture;
@@ -38,8 +39,7 @@ public class WallRenderer implements IRendererRule {
 		glTranslatef(drawSrc.x, drawSrc.y, 0);
 		glEnable(GL_TEXTURE_2D);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		float[] color = ((ComponentWall) comp).getColor();
-		glColor4f(color[0], color[1], color[2], color[2]);
+		r.getMaterialColor(((ComponentWall) comp).getComponentMaterial()).apply();;
 		if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).contains(Direction.YDEC)) {
 			floored.bind();
 			
