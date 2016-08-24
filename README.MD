@@ -4,3 +4,11 @@ JMT-StarFort
 This is a student project, aiming to create an open source game similar to dwarf fortress. It is written in java using LWJGL.
 
 As yet incomplete.
+
+##Plans
+* Modularised (and modding capacity)
+* Multi-threaded
+* 3D
+* Multiple smaller worlds instead of a single larger one
+* Expandable worlds
+* Atmosphere (and depressurization)

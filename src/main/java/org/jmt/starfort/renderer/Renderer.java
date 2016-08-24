@@ -1,6 +1,10 @@
 
 package org.jmt.starfort.renderer;
 
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +16,7 @@ import org.jmt.starfort.world.component.IComponent;
 import org.jmt.starfort.world.material.IMaterial;
 import org.jmt.starfort.world.material.MaterialRegistry;
 import org.joml.Vector2f;
+import org.lwjgl.BufferUtils;
 
 public class Renderer {
 	
@@ -27,6 +32,32 @@ public class Renderer {
 	//TODO ArrayList<Float> glBuffer = new ArrayList<Float>();
 	
 	public HashMap<Integer, Colour> materialRenderReg = new HashMap<>();
+	
+	public FloatBuffer arrayToBuffer(float[] arr) {
+		ByteBuffer byteBuf = ByteBuffer.allocateDirect(arr.length * Float.BYTES); //4 bytes per float
+		byteBuf.order(ByteOrder.nativeOrder());
+		FloatBuffer buffer = byteBuf.asFloatBuffer();
+		buffer.put(arr);
+		buffer.position(0);
+		return buffer;
+	}
+	
+	//TODO INCOMPLETE
+	public FloatBuffer getAtlasCoord(int xSize, int ySize, int xPos, int yPos) {
+		float width = 1/xSize;
+		float height = 1/ySize;
+		float[] out = new float[] {
+			width * xPos    , height * yPos  ,
+			width * (xPos+1), height * yPos  ,
+			width * xPos    , height * yPos  ,
+			
+			width * xPos    , height * yPos  ,
+			width * xPos    , height * yPos  ,
+			width * (xPos+1), height * (yPos+1),
+		};
+		return arrayToBuffer(out);
+	}
+	
 	
 	/**
 	 * Returns a render coord space of the world coord; only do on a 

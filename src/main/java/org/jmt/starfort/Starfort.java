@@ -1,6 +1,5 @@
 package org.jmt.starfort;
 
-import static org.lwjgl.nuklear.Nuklear.*;
 import static org.lwjgl.opengl.GL11.*;
 /*
 import static org.lwjgl.opengl.GL12.*;
@@ -19,9 +18,6 @@ import java.util.ArrayList;
 
 import org.jmt.starfort.game.components.ComponentWall;
 import org.jmt.starfort.game.renderer.WallRenderer;
-import org.jmt.starfort.pathing.bruteforce.BruteforcePather;
-import org.jmt.starfort.pathing.bruteforce.IPassageCallback;
-import org.jmt.starfort.pathing.bruteforce.Path;
 import org.jmt.starfort.processor.Processor;
 import org.jmt.starfort.renderer.Colour;
 import org.jmt.starfort.renderer.IRendererRule;
@@ -30,7 +26,6 @@ import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.util.Direction;
 import org.jmt.starfort.util.InlineFunctions;
 import org.jmt.starfort.util.NativePathModifier;
-import org.jmt.starfort.util.NavContext;
 import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.material.IMaterial;
 import org.jmt.starfort.world.material.IMaterialType;
