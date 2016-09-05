@@ -78,19 +78,20 @@ public class BruteforcePather {
 		Coord newCurr;
 		while (cameFrom.containsKey(current)) {
 			newCurr = cameFrom.get(current);
-			Direction d = Direction.getValueOf(newCurr.subR(current));
+			Direction d = Direction.getValueOf(newCurr.subR(current)).inverse();
 			if (d != null) 
 				path.push(d);
 			else
 				throw new Exception("SOMETHING BORKED");
+			current = newCurr;
 		}
-		path.flip();
+		//path.flip();
 		return path;
 	}
 
 	private static int heuristic_cost_estimate(Coord src, Coord dst) {
 		Coord delta = src.subR(dst).absRM();
-		return delta.x + (delta.y * 2) + delta.z; 
+		return delta.x + (delta.y * 5) + delta.z; 
 		
 	}
 }

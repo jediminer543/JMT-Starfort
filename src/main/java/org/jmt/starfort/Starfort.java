@@ -18,6 +18,9 @@ import java.util.ArrayList;
 
 import org.jmt.starfort.game.components.ComponentWall;
 import org.jmt.starfort.game.renderer.WallRenderer;
+import org.jmt.starfort.pathing.bruteforce.BruteforcePather;
+import org.jmt.starfort.pathing.bruteforce.IPassageCallback;
+import org.jmt.starfort.pathing.bruteforce.Path;
 import org.jmt.starfort.processor.Processor;
 import org.jmt.starfort.renderer.Colour;
 import org.jmt.starfort.renderer.IRendererRule;
@@ -26,7 +29,9 @@ import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.util.Direction;
 import org.jmt.starfort.util.InlineFunctions;
 import org.jmt.starfort.util.NativePathModifier;
+import org.jmt.starfort.util.NavContext;
 import org.jmt.starfort.world.World;
+import org.jmt.starfort.world.component.IComponent;
 import org.jmt.starfort.world.material.IMaterial;
 import org.jmt.starfort.world.material.IMaterialType;
 import org.jmt.starfort.world.material.MaterialRegistry;
@@ -46,7 +51,7 @@ public class Starfort {
 	public static ArrayList<IRendererRule> renderRules = new ArrayList<>();
 	static Renderer r;
 	
-	static World w;
+	static World w1;
 	
 	public static void main(String[] args) throws Exception {
 		
@@ -77,8 +82,12 @@ public class Starfort {
 			}
 		};
 		
+		World w = w1;
+		
 		int matID = MaterialRegistry.registerMaterial(mat);	
 		r.materialRenderReg.put(matID, new Colour(0.5f, 0.2f, 0.5f, 1f));
+		w.getBlock(new Coord(9, 0, 2)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XINC, Direction.XDEC, Direction.ZINC, Direction.ZDEC), mat));
+		
 		w.getBlock(new Coord(0, 0, -1)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XINC, Direction.XDEC, Direction.ZDEC), mat));
 		w.getBlock(new Coord(0, 0, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC), mat));
 		w.getBlock(new Coord(1, 0, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XINC, Direction.ZDEC, Direction.ZINC), mat));
@@ -99,12 +108,32 @@ public class Starfort {
 		
 		w.getBlock(new Coord(-1, 0, -1)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.SELFFULL), mat));
 		
-		/*
-		colour = new float[] {0.5f, 0.7f, 0.5f, 0.5f};
+		
+		IMaterial mat2 = new IMaterial() {
+			
+			@Override
+			public IMaterialType getMaterialType() {
+				return null;
+			}
+			
+			@Override
+			public String getMaterialName() {
+				return "jmt.starfort.mattmp.2";
+			}
+			
+			@Override
+			public float getMaterialHardness() {
+				return 1;
+			}
+		};
+		
+		int mat2ID = MaterialRegistry.registerMaterial(mat2);	
+		System.out.println("Drawing wall with matId:" + mat2ID);
+		r.materialRenderReg.put(mat2ID, new Colour(0.5f, 0.7f, 0.5f, 0.5f));
 		
 		Coord src = new Coord(10, 0, 10);
 		
-		Path p = BruteforcePather.pathBetween(src,  src.addR(new Coord(5, 0, 5)), w, new IPassageCallback() {
+		Path p = BruteforcePather.pathBetween(src, new Coord(0, 0, 0), w, new IPassageCallback() {
 			
 			@Override
 			public boolean canPass(World w, Coord src, Direction dir) {
@@ -120,10 +149,10 @@ public class Starfort {
 		});
 		
 		while (p.remaining() > 0) {
-			w.getBlock(src).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.SELFFULL), colour));
-			src.addR(p.pop().getDir());
+			w.getBlock(src).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.SELFFULL), mat2));
+			System.out.println("Path to " + src + "");
+			src.addRM(p.pop().getDir());
 		}
-		*/
 		
 		while (!GLFW.glfwWindowShouldClose(window)) {
 			GLFW.glfwPollEvents();
@@ -161,7 +190,7 @@ public class Starfort {
 		//guiNukCtx = nk_gl
 		r = new Renderer();
 		renderRules.add(new WallRenderer());
-		w = new World(); 
+		w1 = new World(); 
 	}
 	
 	public static void init() {

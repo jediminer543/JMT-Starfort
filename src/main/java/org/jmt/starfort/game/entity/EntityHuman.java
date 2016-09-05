@@ -19,54 +19,6 @@ public class EntityHuman extends EntityHumanoid {
 	}
 
 	@Override
-	public int getBody() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getStrength() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getAgility() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getReaction() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getWillpower() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getCharisma() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getLogic() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getIntuition() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
 	public String getComponentName() {
 		// TODO Auto-generated method stub
 		return null;

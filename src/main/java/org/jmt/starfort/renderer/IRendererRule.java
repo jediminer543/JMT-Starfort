@@ -16,7 +16,7 @@ public interface IRendererRule {
 	 * Time to load images etc.
 	 * @param nvgCtx
 	 */
-	public void init(long nvgCtx);
+	public void init(long nvgCtx, Renderer r);
 	
 	/**
 	 * Time to draw; assume this is called between nvgBeginFrame operations;

@@ -9,7 +9,6 @@ import org.jmt.starfort.util.NavContext;
 import org.jmt.starfort.world.component.IComponent;
 import org.jmt.starfort.world.component.IComponentBlocking;
 import org.jmt.starfort.world.component.IComponentDamagable;
-import org.jmt.starfort.world.component.IComponentMaterials;
 import org.jmt.starfort.world.material.IMaterial;
 
 public class ComponentWall implements IComponent, IComponentBlocking, IComponentDamagable {
@@ -46,7 +45,7 @@ public class ComponentWall implements IComponent, IComponentBlocking, IComponent
 
 	@Override
 	public String getComponentName() {
-		return "jmt.starfort.wall";
+		return "Wall";
 	}
 
 	@Override

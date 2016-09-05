@@ -1,9 +1,6 @@
 
 package org.jmt.starfort.renderer;
 
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,34 +26,7 @@ public class Renderer {
 	
 	Map<Class<? extends IComponent>, IRendererRule> renderSet = new HashMap<>();
 	
-	//TODO ArrayList<Float> glBuffer = new ArrayList<Float>();
-	
 	public HashMap<Integer, Colour> materialRenderReg = new HashMap<>();
-	
-	public FloatBuffer arrayToBuffer(float[] arr) {
-		ByteBuffer byteBuf = ByteBuffer.allocateDirect(arr.length * Float.BYTES); //4 bytes per float
-		byteBuf.order(ByteOrder.nativeOrder());
-		FloatBuffer buffer = byteBuf.asFloatBuffer();
-		buffer.put(arr);
-		buffer.position(0);
-		return buffer;
-	}
-	
-	//TODO INCOMPLETE
-	public FloatBuffer getAtlasCoord(int xSize, int ySize, int xPos, int yPos) {
-		float width = 1/xSize;
-		float height = 1/ySize;
-		float[] out = new float[] {
-			width * xPos    , height * yPos  ,
-			width * (xPos+1), height * yPos  ,
-			width * xPos    , height * yPos  ,
-			
-			width * xPos    , height * yPos  ,
-			width * xPos    , height * yPos  ,
-			width * (xPos+1), height * (yPos+1),
-		};
-		return arrayToBuffer(out);
-	}
 	
 	
 	/**
@@ -110,7 +80,7 @@ public class Renderer {
 			for (Class<? extends IComponent> comp : rr.getRenderableComponents())
 				renderSet.put(comp, rr);
 				System.out.println("Renderer added component");
-			rr.init(nvgCtx);
+			rr.init(nvgCtx, this);
 		}
 		System.out.println("Renderer loaded");
 	}
@@ -123,8 +93,10 @@ public class Renderer {
 				int y = offset.y;
 				Coord curLoc = new Coord(x, y, z);
 				Block b = w.getBlockNoAdd(curLoc);
-				if (b == null) 
+				if (b == null) {
+					
 					continue;
+				}
 				for (IComponent comp : b.getComponents()) {
 					IRendererRule rr = renderSet.get(comp.getClass());
 					rr.draw(nvgCtx, this, offset, comp, curLoc);
@@ -136,7 +108,7 @@ public class Renderer {
 		long endTime = System.nanoTime();
 		long frameTime = endTime - startTime;
 		float FPS = (1000000000/frameTime);
-		System.out.println("FPS: " + FPS);
+		//System.out.println("FPS: " + FPS);
 	}
 	
 }
