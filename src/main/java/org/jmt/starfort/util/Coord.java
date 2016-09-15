@@ -164,11 +164,14 @@ public class Coord implements Cloneable {
 	 */
 	public Coord absRM() {
 		x = Math.abs(x);
-		x = Math.abs(x);
-		x = Math.abs(x);
+		y = Math.abs(y);
+		z = Math.abs(z);
 		return this;
 	}
 	
+	public Coord get() {
+		return new Coord(x, y, z);
+	}
 	
     @Override
     public boolean equals(Object o)
@@ -188,11 +191,7 @@ public class Coord implements Cloneable {
     @Override
     public int hashCode()
     {
-    	int hash = 17;
-        hash = hash * 31 + x;
-        hash = hash * 31 + z;
-        hash = hash * 31 + y;
-        return hash;
+    	return x ^ y ^ z;
     }
     
     @Override

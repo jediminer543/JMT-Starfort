@@ -2,6 +2,7 @@ package org.jmt.starfort.world.entity;
 
 import org.jmt.starfort.world.component.IComponent;
 import org.jmt.starfort.world.component.IComponentTickable;
+import org.jmt.starfort.world.entity.ai.ITask;
 import org.jmt.starfort.world.entity.organs.IOrgan;
 
 /**
@@ -30,8 +31,19 @@ public interface IEntity extends IComponent, IComponentTickable {
 	
 	/**
 	 * Returns the body's structured 
+	 * 
 	 * @return
 	 */
-	public IOrgan getOrganBody();
+	public IOrgan getEntityOrganBody();
+	
+	/**
+	 * Gets the override tasklist for the entity,
+	 * 
+	 * should include stuff like drinking, eating,
+	 * sleeping, etc.
+	 * 
+	 * @return Override task list
+	 */
+	public ITask[] getEntityTaskList();
 	
 }

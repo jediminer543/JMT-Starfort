@@ -40,7 +40,7 @@ public class World {
 	 */
 	public Block getBlock(Coord c) {
 			if (!blocks.containsKey(c)) {
-				blocks.put(c, new Block());
+				blocks.put(c.get(), new Block());
 				//updateBounds();
 			}
 			return blocks.get(c);

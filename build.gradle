@@ -21,9 +21,18 @@ repositories {
 dependencies {
   compile fileTree(dir: 'lib', include: '*.jar')
   compile "org.lwjgl:lwjgl:+"
+  compile "org.lwjgl:lwjgl-glfw:+"
+  compile "org.lwjgl:lwjgl-opengl:+"
+  compile "org.lwjgl:lwjgl-nanovg:+"
+  compile "org.lwjgl:lwjgl-nanovg:+:natives-windows"
+  compile "org.lwjgl:lwjgl-nanovg:+:natives-linux"
+  compile "org.lwjgl:lwjgl-nanovg:+:natives-macos"
+  compile "org.lwjgl:lwjgl-nuklear:+"
+  compile "org.lwjgl:lwjgl-vulkan:+"
+  compile "org.lwjgl:lwjgl-platform:+"
   compile "org.lwjgl:lwjgl-platform:+:natives-windows"
   compile "org.lwjgl:lwjgl-platform:+:natives-linux"
-  compile "org.lwjgl:lwjgl-platform:+:natives-osx"
+  compile "org.lwjgl:lwjgl-platform:+:natives-macosx"
   compile 'uk.com.robust-it:cloning:1.9.2'
   compile group: 'org.joml', name: 'joml', version: '1.6.6'
   compile group: 'org.reflections', name: 'reflections', version: '0.9.10'

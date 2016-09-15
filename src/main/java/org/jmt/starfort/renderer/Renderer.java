@@ -94,7 +94,6 @@ public class Renderer {
 				Coord curLoc = new Coord(x, y, z);
 				Block b = w.getBlockNoAdd(curLoc);
 				if (b == null) {
-					
 					continue;
 				}
 				for (IComponent comp : b.getComponents()) {
@@ -108,7 +107,7 @@ public class Renderer {
 		long endTime = System.nanoTime();
 		long frameTime = endTime - startTime;
 		float FPS = (1000000000/frameTime);
-		//System.out.println("FPS: " + FPS);
+		System.out.println("FPS: " + FPS);
 	}
 	
 }

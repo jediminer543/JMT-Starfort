@@ -37,6 +37,7 @@ import org.jmt.starfort.world.material.IMaterialType;
 import org.jmt.starfort.world.material.MaterialRegistry;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWKeyCallbackI;
 import org.lwjgl.nanovg.NanoVG;
 import org.lwjgl.nanovg.NanoVGGL3;
 import org.lwjgl.nuklear.NkContext;
@@ -58,7 +59,7 @@ public class Starfort {
 		//TODO do stuff
 		
 		NativePathModifier.modLibraryPath("lib/native");
-	
+		
 		preInit();
 		
 		init();
@@ -133,13 +134,15 @@ public class Starfort {
 		
 		Coord src = new Coord(10, 0, 10);
 		
-		Path p = BruteforcePather.pathBetween(src, new Coord(0, 0, 0), w, new IPassageCallback() {
+		Path p = BruteforcePather.pathBetween(src, new Coord(1, 0, 1), w, new IPassageCallback() {
 			
 			@Override
 			public boolean canPass(World w, Coord src, Direction dir) {
-				if (dir != Direction.YINC) {
+				if (dir != Direction.YINC && dir != Direction.YDEC) {
+					System.out.println(w.getBlock(src.addR(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(dir)  + " " + w.getBlock(src.addR(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(Direction.SELFFULL) 
+					+ " " + w.getBlock(src).getBlockedDirs(NavContext.Physical).contains(dir.inverse()));
 					if (w.getBlock(src.addR(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(dir) || w.getBlock(src.addR(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(Direction.SELFFULL) 
-							|| w.getBlock(src).getBlockedDirs(NavContext.Physical).contains(dir.inverse())) {
+							|| w.getBlock(src.get()).getBlockedDirs(NavContext.Physical).contains(dir.inverse())) {
 							return false;
 					}
 					return true;
@@ -149,19 +152,46 @@ public class Starfort {
 		});
 		
 		while (p.remaining() > 0) {
-			w.getBlock(src).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.SELFFULL), mat2));
-			System.out.println("Path to " + src + "");
 			src.addRM(p.pop().getDir());
+			//w.getBlock(new Coord(src.x, src.y, src.z)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XINC, Direction.XDEC, Direction.ZINC, Direction.ZDEC), mat2));
+			w.getBlock(src).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XINC, Direction.XDEC, Direction.ZINC, Direction.ZDEC), mat2));
+			System.out.println("Path to " + src + "");
 		}
+		
+		final Coord displayOffset = new Coord(5, 0, 5);
+		
+		GLFW.glfwSetKeyCallback(window, new GLFWKeyCallbackI() {
+			
+			@Override
+			public void invoke(long window, int key, int scancode, int action, int mods) {
+				switch (key) {
+				case (GLFW.GLFW_KEY_UP):
+					displayOffset.z += 1;
+					break;
+				case (GLFW.GLFW_KEY_DOWN):
+					displayOffset.z -= 1;
+					break;
+				case (GLFW.GLFW_KEY_LEFT):
+					displayOffset.x += 1;
+					break;
+				case (GLFW.GLFW_KEY_RIGHT):
+					displayOffset.x -= 1;
+					break;
+				}
+				
+			}
+		});
 		
 		while (!GLFW.glfwWindowShouldClose(window)) {
 			GLFW.glfwPollEvents();
 			GLFW.glfwSwapBuffers(window);
 			
-			NanoVG.nvgBeginFrame(worldNvgCtx, 1600, 900, 1);
-			NanoVG.nvgStrokeWidth(worldNvgCtx, 1f);
-			r.draw(worldNvgCtx, w, new Coord(5, 0, 5));
-			NanoVG.nvgEndFrame(worldNvgCtx);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			
+			//NanoVG.nvgBeginFrame(worldNvgCtx, 1600, 900, 1);
+			//NanoVG.nvgStrokeWidth(worldNvgCtx, 1f);
+			r.draw(worldNvgCtx, w, displayOffset);
+			//NanoVG.nvgEndFrame(worldNvgCtx);
 		}
 	}
 	
@@ -171,10 +201,26 @@ public class Starfort {
 		if (!glfwInit())
 			throw new IllegalStateException("Unable to initialize GLFW");
 		
+		//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+		//glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+		//glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
+		//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+	    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+	    
+	    //glfwWindowHint(GLFW_SAMPLES, 8);
+	    //glfwWindowHint(GLFW_RED_BITS, 8);
+	    //glfwWindowHint(GLFW_GREEN_BITS, 8);
+	    //glfwWindowHint(GLFW_BLUE_BITS, 8);
+	    //glfwWindowHint(GLFW_ALPHA_BITS, 8);
+		//glfwWindowHint(GLFW_DEPTH_BITS, 0);
+	    //glfwWindowHint(GLFW_STENCIL_BITS, 8);
+		
 		window = GLFW.glfwCreateWindow(1600, 900, "STARFORT - TEST", 0, 0);
 		GLFW.glfwMakeContextCurrent(window);
 		
 		GL.createCapabilities();
+		
+		System.out.println("OpenGL version: " + glGetString(GL_VERSION));
 		
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
@@ -186,7 +232,7 @@ public class Starfort {
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		//glTexEnvf(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE);
 		
-		worldNvgCtx = NanoVGGL3.nvgCreateGL3(NanoVGGL3.NVG_ANTIALIAS | NanoVGGL3.NVG_STENCIL_STROKES | NanoVGGL3.NVG_DEBUG);
+		worldNvgCtx = 0;//NanoVGGL3.nvgCreateGL3(NanoVGGL3.NVG_ANTIALIAS | NanoVGGL3.NVG_STENCIL_STROKES | NanoVGGL3.NVG_DEBUG);
 		//guiNukCtx = nk_gl
 		r = new Renderer();
 		renderRules.add(new WallRenderer());
