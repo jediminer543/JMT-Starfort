@@ -60,7 +60,7 @@ public class Block {
 		for (IComponent c:components) {
 			if (c instanceof IComponentBlocking) {
 				IComponentBlocking comp = (IComponentBlocking) c;
-				for (Entry<NavContext, Direction[]> b: comp.getBlockedDirs().entrySet()) {
+				for (Entry<NavContext, Direction[]> b: comp.getComponentBlockedDirs().entrySet()) {
 					if (b.getKey() == context) {
 						blocked.addAll(Arrays.asList(b.getValue()));
 					}

@@ -14,9 +14,15 @@ import static org.lwjgl.opengl.GL32.*;
 */
 import static org.lwjgl.glfw.GLFW.*;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.jmt.starfort.game.components.ComponentWall;
+import org.jmt.starfort.game.components.fluid.ComponentPipe;
+import org.jmt.starfort.game.renderer.DirectionBasedRenderer;
+import org.jmt.starfort.game.renderer.GenericRenderer;
 import org.jmt.starfort.game.renderer.WallRenderer;
 import org.jmt.starfort.pathing.bruteforce.BruteforcePather;
 import org.jmt.starfort.pathing.bruteforce.IPassageCallback;
@@ -42,6 +48,7 @@ import org.lwjgl.nanovg.NanoVG;
 import org.lwjgl.nanovg.NanoVGGL3;
 import org.lwjgl.nuklear.NkContext;
 import org.lwjgl.opengl.GL;
+import org.reflections.vfs.CommonsVfs2UrlType.Dir;
 
 public class Starfort {
 
@@ -108,6 +115,18 @@ public class Starfort {
 		w.getBlock(new Coord(6, 0, 7)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.ZINC), mat));
 		
 		w.getBlock(new Coord(-1, 0, -1)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.SELFFULL), mat));
+		
+		w.getBlock(new Coord(-2, 0, -2)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XDEC, Direction.ZDEC), mat));
+		w.getBlock(new Coord(-1, 0, -2)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XINC, Direction.XDEC, Direction.ZDEC), mat));
+		w.getBlock(new Coord(0, 0, -2)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XINC, Direction.ZDEC), mat));
+		
+		w.getBlock(new Coord(-2, 0, -3)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.ZDEC, Direction.ZINC, Direction.XINC), mat));
+		w.getBlock(new Coord(-1, 0, -3)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XINC, Direction.XDEC, Direction.ZINC, Direction.ZDEC), mat));
+		w.getBlock(new Coord(0, 0, -3)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.ZINC, Direction.ZDEC, Direction.XDEC), mat));
+		
+		w.getBlock(new Coord(-2, 0, -4)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XDEC, Direction.ZINC), mat));
+		w.getBlock(new Coord(-1, 0, -4)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XINC, Direction.XDEC, Direction.ZINC), mat));
+		w.getBlock(new Coord(0, 0, -4)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XINC, Direction.ZINC), mat));
 		
 		
 		IMaterial mat2 = new IMaterial() {
@@ -190,7 +209,7 @@ public class Starfort {
 			
 			//NanoVG.nvgBeginFrame(worldNvgCtx, 1600, 900, 1);
 			//NanoVG.nvgStrokeWidth(worldNvgCtx, 1f);
-			r.draw(worldNvgCtx, w, displayOffset);
+			r.draw(w, displayOffset);
 			//NanoVG.nvgEndFrame(worldNvgCtx);
 		}
 	}
@@ -229,19 +248,51 @@ public class Starfort {
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 		
+		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		//glTexEnvf(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE);
 		
 		worldNvgCtx = 0;//NanoVGGL3.nvgCreateGL3(NanoVGGL3.NVG_ANTIALIAS | NanoVGGL3.NVG_STENCIL_STROKES | NanoVGGL3.NVG_DEBUG);
 		//guiNukCtx = nk_gl
 		r = new Renderer();
-		renderRules.add(new WallRenderer());
+		preInitGenRenderRules();
 		w1 = new World(); 
+	}
+	
+	public static void preInitGenRenderRules() {
+		renderRules.add(new WallRenderer());
+		Map<Direction[], int[]> mapping = new HashMap<>();
+		mapping.put(new Direction[] {Direction.XINC}, new int[] {1, 3});
+		mapping.put(new Direction[] {Direction.XDEC}, new int[] {3, 3});
+		mapping.put(new Direction[] {Direction.ZINC}, new int[] {3, 2});
+		mapping.put(new Direction[] {Direction.ZDEC}, new int[] {2, 3});
+		
+		mapping.put(new Direction[] {Direction.XINC, Direction.XDEC}, new int[] {1, 0});
+		mapping.put(new Direction[] {Direction.ZINC, Direction.ZDEC}, new int[] {0, 0});
+		
+		mapping.put(new Direction[] {Direction.XINC, Direction.ZINC}, new int[] {2, 1});
+		mapping.put(new Direction[] {Direction.XINC, Direction.ZDEC}, new int[] {2, 0});
+		mapping.put(new Direction[] {Direction.XDEC, Direction.ZINC}, new int[] {3, 1});
+		mapping.put(new Direction[] {Direction.XDEC, Direction.ZDEC}, new int[] {3, 0});
+		
+		mapping.put(new Direction[] {Direction.XINC, Direction.ZINC, Direction.XDEC}, new int[] {1, 2});
+		mapping.put(new Direction[] {Direction.XINC, Direction.ZDEC, Direction.XDEC}, new int[] {1, 1});
+		mapping.put(new Direction[] {Direction.ZINC, Direction.XINC, Direction.ZDEC}, new int[] {0, 1});
+		mapping.put(new Direction[] {Direction.ZDEC, Direction.XDEC, Direction.ZINC}, new int[] {0, 2});
+		
+		mapping.put(new Direction[] {Direction.ZDEC, Direction.XDEC, Direction.ZINC , Direction.XINC}, new int[] {2, 2});
+		
+		//mapping.put(new Direction[] {Direction.XDEC}, new int[] {3, 3});
+		renderRules.add(new DirectionBasedRenderer(InlineFunctions.inlineArray(ComponentPipe.class), 
+				"".getClass().getResourceAsStream("/org/jmt/starfort/texture/component/fluid/pipe/Pipe.png"), 
+				4, 4, 
+				mapping, 
+				false));
 	}
 	
 	public static void init() {
 		Processor.init();
-		r.init(worldNvgCtx, renderRules);
+		r.init(renderRules);
 	}
 	
 }

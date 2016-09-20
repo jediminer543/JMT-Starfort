@@ -11,9 +11,9 @@ import org.jmt.starfort.util.NavContext;
  * @author Jediminer543
  *
  */
-public interface IComponentBlocking extends IComponent {
+public interface IComponentBlocking extends IComponent, IComponentDirectioned {
 
-	public Map<NavContext, Direction[]> getBlockedDirs();
+	public Map<NavContext, Direction[]> getComponentBlockedDirs();
 	
 	
 	

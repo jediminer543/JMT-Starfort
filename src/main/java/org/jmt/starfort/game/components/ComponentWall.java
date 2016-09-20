@@ -39,7 +39,7 @@ public class ComponentWall implements IComponent, IComponentBlocking, IComponent
 	}
 
 	@Override
-	public Map<NavContext, Direction[]> getBlockedDirs() {
+	public Map<NavContext, Direction[]> getComponentBlockedDirs() {
 		return InlineFunctions.inlineMap(InlineFunctions.inlineKey(NavContext.Physical, blockedDirs), InlineFunctions.inlineKey(NavContext.Fluidic, blockedDirs), InlineFunctions.inlineKey(NavContext.Gasseous, blockedDirs));
 	}
 
@@ -51,6 +51,11 @@ public class ComponentWall implements IComponent, IComponentBlocking, IComponent
 	@Override
 	public IMaterial getComponentMaterial() {
 		return mat;
+	}
+
+	@Override
+	public Direction[] getComponentDirections() {
+		return blockedDirs;
 	}
 	
 }

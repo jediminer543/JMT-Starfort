@@ -30,7 +30,7 @@ public class WallRenderer implements IRendererRule {
 	//float[] vertexArr;
 	
 	@Override
-	public void init(long nvgCtx, Renderer r) {
+	public void init(Renderer r) {
 		/* !!VAO ATTEMPT!! - BORKED 
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glEnableClientState(GL_VERTEX_ARRAY);
@@ -67,8 +67,8 @@ public class WallRenderer implements IRendererRule {
 		glBindVertexArray(0);
 		*/
 		try {
-			floored = new Texture(WallRenderer.class.getClassLoader().getResourceAsStream("org/jmt/starfort/texture/component/wall/WallFloor.png"));
-			nofloored = new Texture(WallRenderer.class.getClassLoader().getResourceAsStream("org/jmt/starfort/texture/component/wall/WallnoFloor.png"));
+			floored = new Texture(getClass().getClassLoader().getResourceAsStream("org/jmt/starfort/texture/component/wall/WallFloor.png"));
+			nofloored = new Texture(getClass().getClassLoader().getResourceAsStream("org/jmt/starfort/texture/component/wall/WallnoFloor.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -76,16 +76,16 @@ public class WallRenderer implements IRendererRule {
 	}
 
 	@Override
-	public void draw(long nvgCtx, Renderer r, Coord offset, IComponent comp, Coord compLoc) {
+	public void draw(Renderer r, Coord offset, IComponent comp, Coord compLoc) {
 		Vector2f drawSrc = r.worldToRenderSpatialConvert(compLoc, offset);
 		glTranslatef(drawSrc.x, drawSrc.y, 0);
 		glEnable(GL_TEXTURE_2D);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		r.getMaterialColor(((IComponent) comp).getComponentMaterial()).apply();
-		if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).contains(Direction.YDEC)) {
+		if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).contains(Direction.YDEC)) {
 			floored.bind();
 			
-			if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.XINC, Direction.XDEC, Direction.ZINC, Direction.ZDEC))) {
 				
 				/* !!VAO ATTEMPT!! - BORKED 
@@ -128,7 +128,7 @@ public class WallRenderer implements IRendererRule {
 				glVertex2f(r.worldToRenderLengthConvert(1), 0);
 				glEnd();
 				
-			} else if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			} else if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.XINC, Direction.XDEC, Direction.ZDEC))) {
 				glBegin(GL_TRIANGLES);
 				glTexCoord2f(0.75f, 0.75f);
@@ -145,7 +145,7 @@ public class WallRenderer implements IRendererRule {
 				glTexCoord2f(1f, 0.75f);
 				glVertex2f(r.worldToRenderLengthConvert(1), 0);
 				glEnd();
-			} else if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			} else if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.XINC, Direction.XDEC, Direction.ZINC))) {
 				glBegin(GL_TRIANGLES);
 				glTexCoord2f(0.5f, 0.75f);
@@ -162,7 +162,7 @@ public class WallRenderer implements IRendererRule {
 				glTexCoord2f(0.75f, 0.75f);
 				glVertex2f(r.worldToRenderLengthConvert(1), 0);
 				glEnd();
-			}else if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			}else if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.ZINC, Direction.ZDEC, Direction.XDEC))) {
 				glBegin(GL_TRIANGLES);
 				glTexCoord2f(0.5f, 0.5f);
@@ -179,7 +179,7 @@ public class WallRenderer implements IRendererRule {
 				glTexCoord2f(0.75f, 0.5f);
 				glVertex2f(r.worldToRenderLengthConvert(1), 0);
 				glEnd();
-			} else if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			} else if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.ZINC, Direction.ZDEC, Direction.XINC))) {
 				glBegin(GL_TRIANGLES);
 				glTexCoord2f(0.75f, 0.5f);
@@ -196,7 +196,7 @@ public class WallRenderer implements IRendererRule {
 				glTexCoord2f(1f, 0.5f);
 				glVertex2f(r.worldToRenderLengthConvert(1), 0);				
 				glEnd();
-			} else if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			} else if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.ZINC, Direction.ZDEC))) {
 				glBegin(GL_TRIANGLES);
 				glTexCoord2f(0.25f, 0.5f);
@@ -213,7 +213,7 @@ public class WallRenderer implements IRendererRule {
 				glTexCoord2f(0.5f, 0.5f);
 				glVertex2f(r.worldToRenderLengthConvert(1), 0);				
 				glEnd();
-			} else if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			} else if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.XINC, Direction.XDEC))) {
 				glBegin(GL_TRIANGLES);
 				glTexCoord2f(0f, 0.5f);
@@ -230,7 +230,7 @@ public class WallRenderer implements IRendererRule {
 				glTexCoord2f(0.25f, 0.5f);
 				glVertex2f(r.worldToRenderLengthConvert(1), 0);				
 				glEnd();
-			} else if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			} else if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.XDEC, Direction.ZDEC))) {
 				glBegin(GL_TRIANGLES);
 				glTexCoord2f(0.75f, 0f);
@@ -247,7 +247,7 @@ public class WallRenderer implements IRendererRule {
 				glTexCoord2f(1f, 0f);
 				glVertex2f(r.worldToRenderLengthConvert(1), 0);				
 				glEnd();
-			} else if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			} else if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.XINC, Direction.ZDEC))) {
 				glBegin(GL_TRIANGLES);
 				glTexCoord2f(0.5f, 0f);
@@ -264,7 +264,7 @@ public class WallRenderer implements IRendererRule {
 				glTexCoord2f(0.75f, 0f);
 				glVertex2f(r.worldToRenderLengthConvert(1), 0);				
 				glEnd();
-			} else if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			} else if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.XINC, Direction.ZINC))) {
 				glBegin(GL_TRIANGLES);
 				glTexCoord2f(0.75f, 0.25f);
@@ -281,7 +281,7 @@ public class WallRenderer implements IRendererRule {
 				glTexCoord2f(1f, 0.25f);
 				glVertex2f(r.worldToRenderLengthConvert(1), 0);				
 				glEnd();
-			} else if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			} else if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.XDEC, Direction.ZINC))) {
 				glBegin(GL_TRIANGLES);
 				glTexCoord2f(0.5f, 0.25f);
@@ -298,7 +298,7 @@ public class WallRenderer implements IRendererRule {
 				glTexCoord2f(0.75f, 0.25f);
 				glVertex2f(r.worldToRenderLengthConvert(1), 0);				
 				glEnd();
-			} else if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			} else if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.XDEC))) {
 				glBegin(GL_TRIANGLES);
 				glTexCoord2f(0f, 0.25f);
@@ -315,7 +315,7 @@ public class WallRenderer implements IRendererRule {
 				glTexCoord2f(0.25f, 0.25f);
 				glVertex2f(r.worldToRenderLengthConvert(1), 0);				
 				glEnd();
-			} else if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			} else if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.XINC))) {
 				glBegin(GL_TRIANGLES);
 				glTexCoord2f(0.25f, 0f);
@@ -332,7 +332,7 @@ public class WallRenderer implements IRendererRule {
 				glTexCoord2f(0.5f, 0f);
 				glVertex2f(r.worldToRenderLengthConvert(1), 0);				
 				glEnd();
-			} else if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			} else if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.ZINC))) {
 				glBegin(GL_TRIANGLES);
 				glTexCoord2f(0f, 0f);
@@ -349,7 +349,7 @@ public class WallRenderer implements IRendererRule {
 				glTexCoord2f(0.25f, 0f);
 				glVertex2f(r.worldToRenderLengthConvert(1), 0);				
 				glEnd();
-			} else if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			} else if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.ZDEC))) {
 				glBegin(GL_TRIANGLES);
 				glTexCoord2f(0.25f, 0.25f);
@@ -387,7 +387,7 @@ public class WallRenderer implements IRendererRule {
 			
 			nofloored.bind();
 			
-			if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.XINC, Direction.XDEC, Direction.ZINC, Direction.ZDEC))) {
 				glBegin(GL_TRIANGLES);
 				glTexCoord2f(0.25f, 0.75f);
@@ -404,7 +404,7 @@ public class WallRenderer implements IRendererRule {
 				glTexCoord2f(0.5f, 0.75f);
 				glVertex2f(r.worldToRenderLengthConvert(1), 0);
 				glEnd();
-			} else if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			} else if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.XINC, Direction.XDEC, Direction.ZDEC))) {
 				glBegin(GL_TRIANGLES);
 				glTexCoord2f(0.75f, 0.75f);
@@ -421,7 +421,7 @@ public class WallRenderer implements IRendererRule {
 				glTexCoord2f(1f, 0.75f);
 				glVertex2f(r.worldToRenderLengthConvert(1), 0);
 				glEnd();
-			} else if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			} else if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.XINC, Direction.XDEC, Direction.ZINC))) {
 				glBegin(GL_TRIANGLES);
 				glTexCoord2f(0.5f, 0.75f);
@@ -438,7 +438,7 @@ public class WallRenderer implements IRendererRule {
 				glTexCoord2f(0.75f, 0.75f);
 				glVertex2f(r.worldToRenderLengthConvert(1), 0);
 				glEnd();
-			}else if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			}else if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.ZINC, Direction.ZDEC, Direction.XDEC))) {
 				glBegin(GL_TRIANGLES);
 				glTexCoord2f(0.5f, 0.5f);
@@ -455,7 +455,7 @@ public class WallRenderer implements IRendererRule {
 				glTexCoord2f(0.75f, 0.5f);
 				glVertex2f(r.worldToRenderLengthConvert(1), 0);
 				glEnd();
-			} else if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			} else if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.ZINC, Direction.ZDEC, Direction.XINC))) {
 				glBegin(GL_TRIANGLES);
 				glTexCoord2f(0.75f, 0.5f);
@@ -472,7 +472,7 @@ public class WallRenderer implements IRendererRule {
 				glTexCoord2f(1f, 0.5f);
 				glVertex2f(r.worldToRenderLengthConvert(1), 0);				
 				glEnd();
-			} else if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			} else if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.ZINC, Direction.ZDEC))) {
 				glBegin(GL_TRIANGLES);
 				glTexCoord2f(0.25f, 0.5f);
@@ -489,7 +489,7 @@ public class WallRenderer implements IRendererRule {
 				glTexCoord2f(0.5f, 0.5f);
 				glVertex2f(r.worldToRenderLengthConvert(1), 0);				
 				glEnd();
-			} else if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			} else if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.XINC, Direction.XDEC))) {
 				glBegin(GL_TRIANGLES);
 				glTexCoord2f(0f, 0.5f);
@@ -506,7 +506,7 @@ public class WallRenderer implements IRendererRule {
 				glTexCoord2f(0.25f, 0.5f);
 				glVertex2f(r.worldToRenderLengthConvert(1), 0);				
 				glEnd();
-			} else if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			} else if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.XDEC, Direction.ZDEC))) {
 				glBegin(GL_TRIANGLES);
 				glTexCoord2f(0.75f, 0f);
@@ -523,7 +523,7 @@ public class WallRenderer implements IRendererRule {
 				glTexCoord2f(1f, 0f);
 				glVertex2f(r.worldToRenderLengthConvert(1), 0);				
 				glEnd();
-			} else if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			} else if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.XINC, Direction.ZDEC))) {
 				glBegin(GL_TRIANGLES);
 				glTexCoord2f(0.5f, 0f);
@@ -540,7 +540,7 @@ public class WallRenderer implements IRendererRule {
 				glTexCoord2f(0.75f, 0f);
 				glVertex2f(r.worldToRenderLengthConvert(1), 0);				
 				glEnd();
-			} else if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			} else if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.XINC, Direction.ZINC))) {
 				glBegin(GL_TRIANGLES);
 				glTexCoord2f(0.75f, 0.25f);
@@ -557,7 +557,7 @@ public class WallRenderer implements IRendererRule {
 				glTexCoord2f(1f, 0.25f);
 				glVertex2f(r.worldToRenderLengthConvert(1), 0);				
 				glEnd();
-			} else if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			} else if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.XDEC, Direction.ZINC))) {
 				glBegin(GL_TRIANGLES);
 				glTexCoord2f(0.5f, 0.25f);
@@ -574,7 +574,7 @@ public class WallRenderer implements IRendererRule {
 				glTexCoord2f(0.75f, 0.25f);
 				glVertex2f(r.worldToRenderLengthConvert(1), 0);				
 				glEnd();
-			} else if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			} else if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.XDEC))) {
 				glBegin(GL_TRIANGLES);
 				glTexCoord2f(0f, 0.25f);
@@ -591,7 +591,7 @@ public class WallRenderer implements IRendererRule {
 				glTexCoord2f(0.25f, 0.25f);
 				glVertex2f(r.worldToRenderLengthConvert(1), 0);				
 				glEnd();
-			} else if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			} else if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.XINC))) {
 				glBegin(GL_TRIANGLES);
 				glTexCoord2f(0.25f, 0f);
@@ -608,7 +608,7 @@ public class WallRenderer implements IRendererRule {
 				glTexCoord2f(0.5f, 0f);
 				glVertex2f(r.worldToRenderLengthConvert(1), 0);				
 				glEnd();
-			} else if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			} else if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.ZINC))) {
 				glBegin(GL_TRIANGLES);
 				glTexCoord2f(0f, 0f);
@@ -625,7 +625,7 @@ public class WallRenderer implements IRendererRule {
 				glTexCoord2f(0.25f, 0f);
 				glVertex2f(r.worldToRenderLengthConvert(1), 0);				
 				glEnd();
-			} else if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+			} else if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 					InlineFunctions.inlineArrayList(Direction.ZDEC))) {
 				glBegin(GL_TRIANGLES);
 				glTexCoord2f(0.25f, 0.25f);
@@ -644,7 +644,7 @@ public class WallRenderer implements IRendererRule {
 				glEnd();
 			} 
 		} 
-		if (Arrays.asList(((ComponentWall) comp).getBlockedDirs().get(NavContext.Physical)).containsAll(
+		if (Arrays.asList(((ComponentWall) comp).getComponentBlockedDirs().get(NavContext.Physical)).containsAll(
 				InlineFunctions.inlineArrayList(Direction.SELFFULL))){
 			nofloored.bind();
 			glBegin(GL_TRIANGLES);

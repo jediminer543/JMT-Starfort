@@ -1,7 +1,8 @@
 
 package org.jmt.starfort.renderer;
 
-import java.nio.FloatBuffer;
+import static org.lwjgl.opengl.GL11.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +14,6 @@ import org.jmt.starfort.world.component.IComponent;
 import org.jmt.starfort.world.material.IMaterial;
 import org.jmt.starfort.world.material.MaterialRegistry;
 import org.joml.Vector2f;
-import org.lwjgl.BufferUtils;
 
 public class Renderer {
 	
@@ -75,17 +75,26 @@ public class Renderer {
 	 * @param nvgCtx
 	 * @param renderRules
 	 */
-	public void init(long nvgCtx, ArrayList<IRendererRule> renderRules) {
+	public void init(ArrayList<IRendererRule> renderRules) {
 		for (IRendererRule rr : renderRules) {
 			for (Class<? extends IComponent> comp : rr.getRenderableComponents())
 				renderSet.put(comp, rr);
 				System.out.println("Renderer added component");
-			rr.init(nvgCtx, this);
+			rr.init(this);
 		}
 		System.out.println("Renderer loaded");
 	}
 	
-	public void draw(long nvgCtx, World w, Coord offset) {
+	/**
+	 * Draws a world
+	 * 
+	 * TODO: Optimise; Remove Off Screen Rendering
+	 * 
+	 * @param w World to draw
+	 * @param offset Offset to draw to
+	 */
+	public void draw(World w, Coord offset) {
+		//glRotatef(90, 0, 0, 1);
 		long startTime = System.nanoTime();
 		int[] bounds = w.getBounds(true);
 		for (int x = bounds[0]-1; x < bounds[3]+1; x++) {
@@ -98,7 +107,7 @@ public class Renderer {
 				}
 				for (IComponent comp : b.getComponents()) {
 					IRendererRule rr = renderSet.get(comp.getClass());
-					rr.draw(nvgCtx, this, offset, comp, curLoc);
+					rr.draw(this, offset, comp, curLoc);
 					
 				}
 				
@@ -108,6 +117,7 @@ public class Renderer {
 		long frameTime = endTime - startTime;
 		float FPS = (1000000000/frameTime);
 		System.out.println("FPS: " + FPS);
+		//glRotatef(-90, 0, 0, 1);
 	}
 	
 }
