@@ -101,7 +101,7 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	@Override
 	public void reset() {
 		loopCount++;
-		if (!(loopCount % reload > 0.00001)) {
+		if (!(loopCount % reload == 0)) {
 			ticksCurr = ticksNext;
 		} else {
 			ticksCurr = w.getTicks();

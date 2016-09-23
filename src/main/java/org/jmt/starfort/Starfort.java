@@ -36,6 +36,7 @@ import org.jmt.starfort.util.Direction;
 import org.jmt.starfort.util.InlineFunctions;
 import org.jmt.starfort.util.NativePathModifier;
 import org.jmt.starfort.util.NavContext;
+import org.jmt.starfort.world.TickRequest;
 import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.component.IComponent;
 import org.jmt.starfort.world.material.IMaterial;
@@ -201,6 +202,8 @@ public class Starfort {
 			}
 		});
 		
+		Processor.addRequest(new TickRequest(w));
+		
 		while (!GLFW.glfwWindowShouldClose(window)) {
 			GLFW.glfwPollEvents();
 			GLFW.glfwSwapBuffers(window);
@@ -288,6 +291,9 @@ public class Starfort {
 				4, 4, 
 				mapping, 
 				false));
+		
+		
+		
 	}
 	
 	public static void init() {

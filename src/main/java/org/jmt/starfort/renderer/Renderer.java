@@ -107,6 +107,7 @@ public class Renderer {
 				}
 				for (IComponent comp : b.getComponents()) {
 					IRendererRule rr = renderSet.get(comp.getClass());
+					if (rr != null)
 					rr.draw(this, offset, comp, curLoc);
 					
 				}
