@@ -19,8 +19,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jmt.starfort.game.components.ComponentStairs;
 import org.jmt.starfort.game.components.ComponentWall;
 import org.jmt.starfort.game.components.fluid.ComponentPipe;
+import org.jmt.starfort.game.registra.RenderRegistra;
 import org.jmt.starfort.game.renderer.DirectionBasedRenderer;
 import org.jmt.starfort.game.renderer.GenericRenderer;
 import org.jmt.starfort.game.renderer.WallRenderer;
@@ -129,6 +131,15 @@ public class Starfort {
 		w.getBlock(new Coord(-1, 0, -4)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XINC, Direction.XDEC, Direction.ZINC), mat));
 		w.getBlock(new Coord(0, 0, -4)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XINC, Direction.ZINC), mat));
 		
+		w.getBlock(new Coord(0, 1, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XDEC, Direction.ZDEC, Direction.ZINC), mat));
+		w.getBlock(new Coord(1, 1, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.ZDEC, Direction.ZINC), mat));
+		w.getBlock(new Coord(2, 1, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.ZDEC, Direction.ZINC), mat));
+		w.getBlock(new Coord(3, 1, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.ZDEC, Direction.ZINC), mat));
+		w.getBlock(new Coord(4, 1, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.ZDEC, Direction.ZINC), mat));
+		w.getBlock(new Coord(5, 1, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.ZDEC, Direction.XINC), mat));
+		
+		w.getBlock(new Coord(0, 0, 0)).addComponent(new ComponentStairs(mat, true, false));
+		w.getBlock(new Coord(0, 1, 0)).addComponent(new ComponentStairs(mat, false, true));
 		
 		IMaterial mat2 = new IMaterial() {
 			
@@ -184,6 +195,7 @@ public class Starfort {
 			
 			@Override
 			public void invoke(long window, int key, int scancode, int action, int mods) {
+				if (action == GLFW.GLFW_PRESS) {
 				switch (key) {
 				case (GLFW.GLFW_KEY_UP):
 					displayOffset.z += 1;
@@ -197,8 +209,14 @@ public class Starfort {
 				case (GLFW.GLFW_KEY_RIGHT):
 					displayOffset.x -= 1;
 					break;
+				case (GLFW.GLFW_KEY_LEFT_BRACKET):
+					displayOffset.y += 1;
+					break;
+				case (GLFW.GLFW_KEY_RIGHT_BRACKET):
+					displayOffset.y -= 1;
+					break;
 				}
-				
+				}
 			}
 		});
 		
@@ -263,35 +281,9 @@ public class Starfort {
 	}
 	
 	public static void preInitGenRenderRules() {
-		renderRules.add(new WallRenderer());
-		Map<Direction[], int[]> mapping = new HashMap<>();
-		mapping.put(new Direction[] {Direction.XINC}, new int[] {1, 3});
-		mapping.put(new Direction[] {Direction.XDEC}, new int[] {3, 3});
-		mapping.put(new Direction[] {Direction.ZINC}, new int[] {3, 2});
-		mapping.put(new Direction[] {Direction.ZDEC}, new int[] {2, 3});
-		
-		mapping.put(new Direction[] {Direction.XINC, Direction.XDEC}, new int[] {1, 0});
-		mapping.put(new Direction[] {Direction.ZINC, Direction.ZDEC}, new int[] {0, 0});
-		
-		mapping.put(new Direction[] {Direction.XINC, Direction.ZINC}, new int[] {2, 1});
-		mapping.put(new Direction[] {Direction.XINC, Direction.ZDEC}, new int[] {2, 0});
-		mapping.put(new Direction[] {Direction.XDEC, Direction.ZINC}, new int[] {3, 1});
-		mapping.put(new Direction[] {Direction.XDEC, Direction.ZDEC}, new int[] {3, 0});
-		
-		mapping.put(new Direction[] {Direction.XINC, Direction.ZINC, Direction.XDEC}, new int[] {1, 2});
-		mapping.put(new Direction[] {Direction.XINC, Direction.ZDEC, Direction.XDEC}, new int[] {1, 1});
-		mapping.put(new Direction[] {Direction.ZINC, Direction.XINC, Direction.ZDEC}, new int[] {0, 1});
-		mapping.put(new Direction[] {Direction.ZDEC, Direction.XDEC, Direction.ZINC}, new int[] {0, 2});
-		
-		mapping.put(new Direction[] {Direction.ZDEC, Direction.XDEC, Direction.ZINC , Direction.XINC}, new int[] {2, 2});
-		
-		//mapping.put(new Direction[] {Direction.XDEC}, new int[] {3, 3});
-		renderRules.add(new DirectionBasedRenderer(InlineFunctions.inlineArray(ComponentPipe.class), 
-				"".getClass().getResourceAsStream("/org/jmt/starfort/texture/component/fluid/pipe/Pipe.png"), 
-				4, 4, 
-				mapping, 
-				false));
-		
+		//renderRules.add(new WallRenderer());
+
+		RenderRegistra.register(renderRules);
 		
 		
 	}
