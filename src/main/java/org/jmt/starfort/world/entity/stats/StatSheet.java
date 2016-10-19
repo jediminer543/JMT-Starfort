@@ -28,12 +28,13 @@ public class StatSheet {
 	public void addStat(Stat<?> stat) {
 		Stat<?> toMerge = null;
 		if ((toMerge = getStat(stat)) != null) {
-			toMerge
+			//TODO
 		}
 	}
 	
 	public static StatSheet merge(StatSheet ss1, StatSheet ss2) {
-		
+		return null;
+		//TODO
 	}
 
 }

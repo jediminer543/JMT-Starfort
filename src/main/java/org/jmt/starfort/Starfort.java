@@ -17,6 +17,7 @@ import static org.lwjgl.glfw.GLFW.*;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.jmt.starfort.game.components.ComponentStairs;
@@ -41,6 +42,7 @@ import org.jmt.starfort.util.NavContext;
 import org.jmt.starfort.world.TickRequest;
 import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.component.IComponent;
+import org.jmt.starfort.world.component.IComponentUpDown;
 import org.jmt.starfort.world.material.IMaterial;
 import org.jmt.starfort.world.material.IMaterialType;
 import org.jmt.starfort.world.material.MaterialRegistry;
@@ -142,7 +144,14 @@ public class Starfort {
 		w.getBlock(new Coord(4, 1, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.ZDEC, Direction.ZINC), mat));
 		w.getBlock(new Coord(5, 1, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.ZDEC, Direction.XINC), mat));
 		
-
+		w.getBlock(new Coord(5, 1, 1)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XDEC, Direction.XINC), mat));
+		w.getBlock(new Coord(5, 1, 2)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XDEC, Direction.XINC), mat));
+		w.getBlock(new Coord(5, 1, 3)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XDEC, Direction.XINC), mat));
+		w.getBlock(new Coord(5, 1, 4)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XDEC, Direction.XINC), mat));
+		w.getBlock(new Coord(5, 1, 5)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XDEC, Direction.XINC, Direction.ZINC), mat));		
+		
+		w.getBlock(new Coord(5, 0, 5)).addComponent(new ComponentStairs(mat, true, false));
+		w.getBlock(new Coord(5, 1, 5)).addComponent(new ComponentStairs(mat, false, true));
 		
 		IMaterial mat2 = new IMaterial() {
 			
@@ -166,20 +175,31 @@ public class Starfort {
 		System.out.println("Drawing wall with matId:" + mat2ID);
 		r.materialRenderReg.put(mat2ID, new Colour(0.5f, 0.7f, 0.5f, 0.5f));
 		
-		Coord src = new Coord(10, 0, 10);
+		Coord src = new Coord(6, 0, 6);
 		
-		Path p = BruteforcePather.pathBetween(src, new Coord(1, 0, 1), w, new IPassageCallback() {
+		Path p = BruteforcePather.pathBetween(src, new Coord(0, 0, 3), w, new IPassageCallback() {
 			
 			@Override
 			public boolean canPass(World w, Coord src, Direction dir) {
 				if (dir != Direction.YINC && dir != Direction.YDEC) {
 					System.out.println(w.getBlock(src.addR(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(dir)  + " " + w.getBlock(src.addR(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(Direction.SELFFULL) 
 					+ " " + w.getBlock(src).getBlockedDirs(NavContext.Physical).contains(dir.inverse()));
-					if (w.getBlock(src.addR(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(dir) || w.getBlock(src.addR(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(Direction.SELFFULL) 
-							|| w.getBlock(src.get()).getBlockedDirs(NavContext.Physical).contains(dir.inverse())) {
+					if (w.getBlock(src.addR(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(dir.inverse()) || w.getBlock(src.addR(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(Direction.SELFFULL) 
+							|| w.getBlock(src.get()).getBlockedDirs(NavContext.Physical).contains(dir)) {
 							return false;
 					}
 					return true;
+				} else {
+					List<IComponent> UDCL = null;
+					if (!(UDCL = w.getBlock(src).getCompInstances(IComponentUpDown.class)).isEmpty()) {
+						for (IComponent c : UDCL) {
+							IComponentUpDown UDC = (IComponentUpDown) c;
+							if (UDC.canUp() && dir == Direction.YINC)
+								return true;
+							if (UDC.canDown() && dir == Direction.YDEC)
+								return true;
+						}
+					}
 				}
 				return false;
 			}
