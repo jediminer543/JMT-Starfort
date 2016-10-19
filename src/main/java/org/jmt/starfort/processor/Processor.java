@@ -1,8 +1,14 @@
 package org.jmt.starfort.processor;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.Stack;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import org.jmt.starfort.processor.requests.ProcessingRequest;
+import org.jmt.starfort.processor.requests.ReusableProcessingRequest;
 
 /**
  * Statically accessible threading pool
@@ -18,8 +24,8 @@ public class Processor {
 	
 	static boolean online = false;
 	
-	static ArrayList<ProcessingRequest> proccessingJobs = new ArrayList<ProcessingRequest>();
-	static ArrayList<Runnable> simpleJobs = new ArrayList<Runnable>();
+	static LinkedBlockingDeque<ProcessingRequest> proccessingJobs = new LinkedBlockingDeque<ProcessingRequest>();
+	static LinkedBlockingDeque<Runnable> simpleJobs = new LinkedBlockingDeque<Runnable>();
 	
 	static ArrayList<Thread> cores = new ArrayList<Thread>();
 	
@@ -43,13 +49,20 @@ public class Processor {
 						while (online) {
 							totalTicks++;
 							if (simpleJobs.size() > 0) {
-								simpleJobs.remove(0).run();
+								simpleJobs.pop().run();
 							}
 							else if (proccessingJobs.size() > 0) {
-								if (proccessingJobs.get(0).complete()) {
-									proccessingJobs.remove(0);
+								if (proccessingJobs.getFirst().complete()) {
+									if (proccessingJobs.getFirst() instanceof ReusableProcessingRequest<?>) {
+										((ReusableProcessingRequest<?>) proccessingJobs.getFirst()).reset();
+										proccessingJobs.addLast(proccessingJobs.pop());
+									} else {
+										proccessingJobs.remove(0);
+									}
 								} else {
-									proccessingJobs.get(0).processNext();
+									if (proccessingJobs.getFirst().remaining() > 0) {
+										proccessingJobs.getFirst().processNext();
+									}
 								}
 							} else {
 								idleTicks++;
@@ -58,6 +71,9 @@ public class Processor {
 					}
 
 				}, "Processor-Core-" + i));
+			}
+			for (Thread t : cores) {
+				t.start();
 			}
 		}
 	}

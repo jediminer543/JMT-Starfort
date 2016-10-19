@@ -8,7 +8,9 @@ import javax.swing.text.StyledEditorKit.StyledTextAction;
 
 import org.jmt.starfort.game.components.ComponentStairs;
 import org.jmt.starfort.game.components.fluid.ComponentPipe;
+import org.jmt.starfort.game.entity.EntityDrone;
 import org.jmt.starfort.game.renderer.DirectionBasedRenderer;
+import org.jmt.starfort.game.renderer.GenericRenderer;
 import org.jmt.starfort.game.renderer.WallRenderer;
 import org.jmt.starfort.renderer.IRendererRule;
 import org.jmt.starfort.util.Direction;
@@ -66,6 +68,9 @@ public class RenderRegistra {
 				100,
 				false));
 		
+		ruleSet.add(new GenericRenderer(InlineFunctions.inlineArray(EntityDrone.class), 
+				"".getClass().getResourceAsStream("/org/jmt/starfort/texture/component/entity/Drone.png"),
+				150));
 		
 	}
 	

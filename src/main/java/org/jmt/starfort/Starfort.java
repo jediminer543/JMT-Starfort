@@ -23,6 +23,7 @@ import java.util.Map;
 import org.jmt.starfort.game.components.ComponentStairs;
 import org.jmt.starfort.game.components.ComponentWall;
 import org.jmt.starfort.game.components.fluid.ComponentPipe;
+import org.jmt.starfort.game.entity.EntityDrone;
 import org.jmt.starfort.game.registra.RenderRegistra;
 import org.jmt.starfort.game.renderer.DirectionBasedRenderer;
 import org.jmt.starfort.game.renderer.GenericRenderer;
@@ -76,12 +77,43 @@ public class Starfort {
 		
 		init();
 		
+		IMaterialType stony = new IMaterialType() {
+			
+			@Override
+			public String getMaterialTypeName() {
+				return "Stone";
+			}
+			
+			@Override
+			public String getMaterialTypeDescriptor() {
+				// TODO Auto-generated method stub
+				return "A stonelike material";
+			}
+		};
+		
+		IMaterialType metal = new IMaterialType() {
+			
+			@Override
+			public String getMaterialTypeName() {
+				return "Metal";
+			}
+			
+			@Override
+			public String getMaterialTypeDescriptor() {
+				// TODO Auto-generated method stub
+				return "A metalic material";
+			}
+		};
+		
+		MaterialRegistry.registerMaterialType(metal);
+		MaterialRegistry.registerMaterialType(stony);
+		
 		//float[] colour = new float[] {0.5f, 0.2f, 0.5f, 1f};
 		IMaterial mat = new IMaterial() {
 			
 			@Override
 			public IMaterialType getMaterialType() {
-				return null;
+				return MaterialRegistry.getMaterialType("Metal");
 			}
 			
 			@Override
@@ -153,11 +185,13 @@ public class Starfort {
 		w.getBlock(new Coord(5, 0, 5)).addComponent(new ComponentStairs(mat, true, false));
 		w.getBlock(new Coord(5, 1, 5)).addComponent(new ComponentStairs(mat, false, true));
 		
+		w.getBlock(new Coord(6, 0, 6)).addComponent(new EntityDrone());
+		/*
 		IMaterial mat2 = new IMaterial() {
 			
 			@Override
 			public IMaterialType getMaterialType() {
-				return null;
+				return MaterialRegistry.getMaterialType("Metal");
 			}
 			
 			@Override
@@ -211,6 +245,8 @@ public class Starfort {
 			w.getBlock(src).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XINC, Direction.XDEC, Direction.ZINC, Direction.ZDEC), mat2));
 			System.out.println("Path to " + src + "");
 		}
+		*/
+		
 		
 		final Coord displayOffset = new Coord(5, 0, 5);
 		

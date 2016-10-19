@@ -25,6 +25,8 @@ public class BruteforcePather {
 		HashMap<Coord, Integer> fScore = new HashMap<>();
 		fScore.put(src, heuristic_cost_estimate(src, dst));
 		
+		int loopCount = 0;
+		
 		while (openSet.size() > 0) {
 			int lowestCost = Integer.MAX_VALUE;
 			Coord current = null;
@@ -66,6 +68,10 @@ public class BruteforcePather {
 	        	gScore.put(neighbor, tentative_gScore);
 	        	fScore.put(neighbor, tentative_gScore  + heuristic_cost_estimate(neighbor, dst));
 	        	
+	        }
+	        loopCount++;
+	        if (loopCount > 10000) {
+	        	break;
 	        }
 		}
 	

@@ -10,6 +10,7 @@ public interface ProcessingRequest {
 
 	/**
 	 * Processes the next request
+	 * @return 
 	 */
 	public void processNext();
 	

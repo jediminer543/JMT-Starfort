@@ -76,6 +76,8 @@ public class DirectionBasedRenderer implements IRendererRule {
 		Colour c;
 		if (comp.getComponentMaterial() != null && (c = r.getMaterialColor(comp.getComponentMaterial())) != null) {
 			c.apply();
+		} else {
+			glColor4f(1f, 1f, 1f, 1f);
 		}
 		IComponentDirectioned dirComp = (IComponentDirectioned) comp;
 		Arrays.sort(dirComp.getComponentDirections());

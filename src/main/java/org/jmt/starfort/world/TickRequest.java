@@ -36,14 +36,30 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	World w;
 	
 	/**
+	 * Time until rerun
+	 */
+	long sleepTime = 1000;
+	
+	/**
+	 * Time sleep started
+	 */
+	long sleepStart;
+	
+	/**
 	 * Current ticks to process
 	 */
-	volatile Map<Coord, ArrayList<ComplexRunnable>> ticksCurr;
+	volatile Map<Coord, ArrayList<ComplexRunnable>> ticksCurr= new HashMap<Coord, ArrayList<ComplexRunnable>>();;
 	
 	/**
 	 * Ticks to process next cycle
 	 */
 	volatile Map<Coord, ArrayList<ComplexRunnable>> ticksNext = new HashMap<Coord, ArrayList<ComplexRunnable>>();
+	
+	/**
+	 * Ticks to being processed
+	 */
+	volatile Map<ComplexRunnable, Coord> ticksProc = new HashMap<ComplexRunnable, Coord>();
+
 	
 	AtomicInteger runningCount = new AtomicInteger(0);
 	
@@ -53,14 +69,18 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	}
 	
 	public boolean move(Coord src, Coord dst, ComplexRunnable tgt) {
-		if (ticksCurr.get(src).contains(tgt)) {
+		if (ticksCurr.get(src) != null && ticksCurr.get(src).contains(tgt)) {
 			ticksCurr.get(src).remove(tgt);
 			ticksCurr.get(dst).add(tgt);
 			return true;
 		}
-		if (ticksNext.get(src).contains(tgt)) {
+		if (ticksNext.get(src) != null && ticksNext.get(src).contains(tgt)) {
 			ticksNext.get(src).remove(tgt);
 			ticksNext.get(dst).add(tgt);
+			return true;
+		}
+		if (ticksProc.get(tgt) != null && ticksProc.get(tgt).equals(src)) {
+			ticksProc.put(tgt, dst);
 			return true;
 		}
 		return false;
@@ -68,6 +88,7 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	
 	@Override
 	public void processNext() {
+		if (sleepTime + sleepStart <= System.currentTimeMillis()) {
 		ComplexRunnable task = null;
 		Coord execLoc = null;
 		while (task == null) {
@@ -75,6 +96,7 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 				return;
 			}
 			Entry<Coord, ArrayList<ComplexRunnable>> item = ticksCurr.entrySet().iterator().next();
+			synchronized (item.getValue()) {
 			if (item.getValue().size() > 0) {
 				task = item.getValue().remove(0);
 				execLoc = item.getKey();
@@ -83,14 +105,19 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 					ticksCurr.remove(item.getKey());
 				}
 			}
+			}
 		}
+		ticksProc.put(task, execLoc);
 		runningCount.incrementAndGet();
 		task.run(w, execLoc, this);
 		runningCount.decrementAndGet();
 		synchronized (ticksNext) {
-			ticksNext.get(execLoc).add(task);
+			if (ticksNext.get(ticksProc.get(task)) == null) {
+				ticksNext.put(ticksProc.get(task), new ArrayList<ComplexRunnable>());
+			}
+			ticksNext.get(ticksProc.get(task)).add(task);
 		}
-		
+		}
 	}
 
 	@Override
@@ -106,6 +133,7 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 		} else {
 			ticksCurr = w.getTicks();
 		}
+		sleepStart = System.currentTimeMillis();
 		ticksNext = new HashMap<Coord, ArrayList<ComplexRunnable>>();
 	}
 
