@@ -4,8 +4,13 @@ package org.jmt.starfort.renderer;
 import static org.lwjgl.opengl.GL11.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.world.World;
@@ -85,6 +90,28 @@ public class Renderer {
 		System.out.println("Renderer loaded");
 	}
 	
+	static class RRC implements Comparator<RenderPair> {
+
+		public static final RRC INSTANCE = new RRC();
+		
+		@Override
+		public int compare(RenderPair o1, RenderPair o2) {
+			return o1.rr.getPriority() - o2.rr.getPriority();
+		}
+
+		
+	}
+	
+	static class RenderPair  {
+		IRendererRule rr;
+		IComponent comp;
+		
+		public RenderPair(IRendererRule rr, IComponent comp) {
+			this.rr = rr;
+			this.comp = comp;
+		}
+	}
+	
 	/**
 	 * Draws a world
 	 * 
@@ -105,11 +132,16 @@ public class Renderer {
 				if (b == null) {
 					continue;
 				}
+				List<RenderPair> rra = new ArrayList<>();
 				for (IComponent comp : b.getComponents()) {
 					IRendererRule rr = renderSet.get(comp.getClass());
 					if (rr != null)
-					rr.draw(this, offset, comp, curLoc);
+						rra.add(new RenderPair(rr, comp));
 					
+				}
+				Collections.sort(rra, RRC.INSTANCE);
+				for (RenderPair rp : rra) {
+					rp.rr.draw(this, offset, rp.comp, curLoc);
 				}
 				
 			}

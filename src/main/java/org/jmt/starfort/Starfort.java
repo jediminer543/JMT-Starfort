@@ -97,6 +97,10 @@ public class Starfort {
 		
 		int matID = MaterialRegistry.registerMaterial(mat);	
 		r.materialRenderReg.put(matID, new Colour(0.5f, 0.2f, 0.5f, 1f));
+		
+		w.getBlock(new Coord(0, 0, 0)).addComponent(new ComponentStairs(mat, true, false));
+		w.getBlock(new Coord(0, 1, 0)).addComponent(new ComponentStairs(mat, false, true));
+		
 		w.getBlock(new Coord(9, 0, 2)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XINC, Direction.XDEC, Direction.ZINC, Direction.ZDEC), mat));
 		
 		w.getBlock(new Coord(0, 0, -1)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XINC, Direction.XDEC, Direction.ZDEC), mat));
@@ -138,8 +142,7 @@ public class Starfort {
 		w.getBlock(new Coord(4, 1, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.ZDEC, Direction.ZINC), mat));
 		w.getBlock(new Coord(5, 1, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.ZDEC, Direction.XINC), mat));
 		
-		w.getBlock(new Coord(0, 0, 0)).addComponent(new ComponentStairs(mat, true, false));
-		w.getBlock(new Coord(0, 1, 0)).addComponent(new ComponentStairs(mat, false, true));
+
 		
 		IMaterial mat2 = new IMaterial() {
 			

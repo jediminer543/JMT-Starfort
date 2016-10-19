@@ -25,5 +25,12 @@ public interface IRendererRule {
 	 * @param compLoc
 	 */
 	public void draw(Renderer r, Coord offset, IComponent comp, Coord compLoc);
+	
+	/**
+	 * Get's the draw priority
+	 * 
+	 * @return The render rule's draw priority
+	 */
+	public int getPriority();
 
 }

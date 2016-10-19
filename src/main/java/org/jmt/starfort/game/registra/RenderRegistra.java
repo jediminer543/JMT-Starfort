@@ -49,7 +49,8 @@ public class RenderRegistra {
 		ruleSet.add(new DirectionBasedRenderer(InlineFunctions.inlineArray(ComponentPipe.class), 
 				"".getClass().getResourceAsStream("/org/jmt/starfort/texture/component/fluid/pipe/Pipe.png"), 
 				4, 4, 
-				mapping, 
+				mapping,
+				10, 
 				false));
 		
 		mapping = new HashMap<>();
@@ -62,6 +63,7 @@ public class RenderRegistra {
 				"".getClass().getResourceAsStream("/org/jmt/starfort/texture/component/stair/Stairs.png"), 
 				2, 2, 
 				mapping, 
+				100,
 				false));
 		
 		

@@ -27,8 +27,9 @@ public class DirectionBasedRenderer implements IRendererRule {
 	InputStream is;
 	float atlasWidth, atlasHeight;
 	boolean multiSelfull;
+	int priority;
 	
-	public DirectionBasedRenderer(Class<? extends IComponent>[] comps, InputStream atlas, int atlasWidth, int atlasHeight, Map<Direction[], int[]> mapping, boolean multiSelfFull) {
+	public DirectionBasedRenderer(Class<? extends IComponent>[] comps, InputStream atlas, int atlasWidth, int atlasHeight, Map<Direction[], int[]> mapping, int priority, boolean multiSelfFull) {
 		this.comps = comps;
 		this.is = atlas;
 		Map<List<Direction>, int[]> newMap = new HashMap<List<Direction>, int[]>();
@@ -40,6 +41,7 @@ public class DirectionBasedRenderer implements IRendererRule {
 		this.atlasWidth = atlasWidth;
 		this.atlasHeight = atlasHeight;
 		this.multiSelfull = multiSelfFull;
+		this.priority = priority;
 	}
 	
 	@Override
@@ -101,6 +103,11 @@ public class DirectionBasedRenderer implements IRendererRule {
 		//}
 		
 		glPopMatrix();
+	}
+
+	@Override
+	public int getPriority() {
+		return priority;
 	}
 
 }

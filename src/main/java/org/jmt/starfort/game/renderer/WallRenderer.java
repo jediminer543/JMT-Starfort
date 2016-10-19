@@ -725,4 +725,9 @@ public class WallRenderer implements IRendererRule {
 		return InlineFunctions.inlineArray(ComponentWall.class);
 	}
 
+	@Override
+	public int getPriority() {
+		return -10;
+	}
+
 }

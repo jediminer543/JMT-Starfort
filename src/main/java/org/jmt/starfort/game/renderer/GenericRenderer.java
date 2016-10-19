@@ -19,14 +19,16 @@ public class GenericRenderer implements IRendererRule {
 
 	Class<? extends IComponent>[] toRender;
 	InputStream is;
+	int priority;
 	
-	public GenericRenderer(Class<? extends IComponent>[] compClass, InputStream tex) {
+	public GenericRenderer(Class<? extends IComponent>[] compClass, InputStream tex, int priority) {
 		toRender = compClass;
 		is = tex;
+		this.priority = priority;
 	}
 
-	public GenericRenderer(Class<? extends IComponent>[] compClass, String fileName, boolean ext) throws FileNotFoundException {
-		this(compClass, ext ? new FileInputStream(fileName) : fileName.getClass().getResourceAsStream(fileName));
+	public GenericRenderer(Class<? extends IComponent>[] compClass, String fileName, int priority, boolean ext) throws FileNotFoundException {
+		this(compClass, ext ? new FileInputStream(fileName) : fileName.getClass().getResourceAsStream(fileName), priority);
 	}
 
 	@Override
@@ -79,5 +81,10 @@ public class GenericRenderer implements IRendererRule {
 		glVertex2f(r.worldToRenderLengthConvert(1), 0);
 		glEnd();
 		glPopMatrix();
+	}
+
+	@Override
+	public int getPriority() {
+		return priority;
 	}
 }
