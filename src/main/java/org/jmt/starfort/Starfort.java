@@ -187,6 +187,8 @@ public class Starfort {
 		
 		w.getBlock(new Coord(6, 0, 6)).addComponent(new EntityDrone());
 		w.getBlock(new Coord(0, 0, 0)).addComponent(new EntityDrone());
+		w.getBlock(new Coord(0, 0, 1)).addComponent(new EntityDrone());
+		w.getBlock(new Coord(5, 1, 0)).addComponent(new EntityDrone());
 		/*
 		IMaterial mat2 = new IMaterial() {
 			
