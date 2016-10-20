@@ -2,7 +2,9 @@ package org.jmt.starfort.pathing.bruteforce;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -15,53 +17,30 @@ import org.jmt.starfort.world.World;
 public class BruteforcePather {
 
 	public static RunnableFuture<Path> pathBetweenAsync(Coord src, Coord dst, World NodeSet, IPassageCallback passController) {
-		return new RunnableFuture<Path>() {
+		return new FutureTask<Path>(new BruteforcePathingCallable(src, dst, NodeSet, passController));
+	}
+	
+	public static class BruteforcePathingCallable implements Callable<Path> {
 
-			boolean running;
-			boolean cancel;
-			
-			@Override
-			public boolean cancel(boolean mayInterruptIfRunning) {
-				if (running && !mayInterruptIfRunning) {
-					return false;
-				} else {
-					cancel = true;
-					return true;
-				}
-			}
-
-			@Override
-			public boolean isCancelled() {
-				// TODO Auto-generated method stub
-				return false;
-			}
-
-			@Override
-			public boolean isDone() {
-				// TODO Auto-generated method stub
-				return false;
-			}
-
-			@Override
-			public Path get() throws InterruptedException, ExecutionException {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-			@Override
-			public Path get(long timeout, TimeUnit unit)
-					throws InterruptedException, ExecutionException, TimeoutException {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				
-			}
-			
-		};
+		Coord src, dst;
+		World NodeSet;
+		IPassageCallback passController;
+		
+		public BruteforcePathingCallable(Coord src, Coord dst, 
+				World NodeSet, IPassageCallback passController) {
+			this.src = src;
+			this.dst = dst;
+			this.NodeSet = NodeSet;
+			this.passController = passController;
+		}
+		
+		@Override
+		public Path call() throws Exception {
+			Path out = pathBetween(src, dst, NodeSet, passController);
+			//System.out.println("Path calculated");
+			return out;
+		}
+		
 	}
 	
 	public static Path pathBetween(Coord src, Coord dst, World NodeSet, IPassageCallback passController) {

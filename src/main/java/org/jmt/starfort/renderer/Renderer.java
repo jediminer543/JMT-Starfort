@@ -6,6 +6,7 @@ import static org.lwjgl.opengl.GL11.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -133,11 +134,16 @@ public class Renderer {
 					continue;
 				}
 				List<RenderPair> rra = new ArrayList<>();
+				try {
 				for (IComponent comp : b.getComponents()) {
 					IRendererRule rr = renderSet.get(comp.getClass());
 					if (rr != null)
 						rra.add(new RenderPair(rr, comp));
 					
+				}
+				} catch (ConcurrentModificationException cme) {
+					System.err.println("Rendering concurrent modification exception - Not a problem - Skipping tile - WARN");
+					cme.printStackTrace();
 				}
 				Collections.sort(rra, RRC.INSTANCE);
 				for (RenderPair rp : rra) {

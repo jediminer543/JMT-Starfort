@@ -39,7 +39,7 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	/**
 	 * Time until rerun
 	 */
-	long sleepTime = 1000;
+	long sleepTime = 100000000;
 	
 	/**
 	 * Time sleep started
@@ -95,7 +95,7 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	
 	@Override
 	public void processNext() {
-		if (sleepTime + sleepStart <= System.currentTimeMillis()) {
+		if (sleepTime + sleepStart <= System.nanoTime()) {
 		ComplexRunnable task = null;
 		Coord execLoc = null;
 		while (task == null) {
@@ -151,7 +151,7 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 				ticksCurr = (ConcurrentHashMap<Coord, ArrayList<ComplexRunnable>>) w.getTicks();
 			}
 		}
-		sleepStart = System.currentTimeMillis();
+		sleepStart = System.nanoTime();
 		synchronized (ticksNext) {
 			ticksNext = new ConcurrentHashMap <Coord, ArrayList<ComplexRunnable>>();
 		}

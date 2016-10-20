@@ -3,11 +3,17 @@ package org.jmt.starfort.game.entity;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.RunnableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.jmt.starfort.pathing.bruteforce.BruteforcePather;
 import org.jmt.starfort.pathing.bruteforce.IPassageCallback;
 import org.jmt.starfort.pathing.bruteforce.Path;
 import org.jmt.starfort.processor.ComplexRunnable;
+import org.jmt.starfort.processor.Processor;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.util.Direction;
 import org.jmt.starfort.util.NavContext;
@@ -24,6 +30,7 @@ public class EntityDrone implements IEntity {
 
 	public final class Dataset {
 		Path p;
+		RunnableFuture<Path> futurePath;
 		Deque<Coord> targets = new ArrayDeque<Coord>();
 		{
 			targets.addLast(new Coord(0, 0, 3));
@@ -81,15 +88,30 @@ public class EntityDrone implements IEntity {
 				World w = (World) args[0];
 				Coord c = (Coord) args[1];
 				TickRequest tr = (TickRequest) args[2];
-				if (parent.ds.p == null) {
-					parent.ds.p = BruteforcePather.pathBetween(c, parent.ds.targets.getFirst(), w, parent.ds.pc);
+				if (parent.ds.p == null && parent.ds.futurePath == null) {
+					parent.ds.futurePath = BruteforcePather.pathBetweenAsync(c, parent.ds.targets.getFirst(), w, parent.ds.pc);
+					Processor.addRequest(parent.ds.futurePath);
+					parent.ds.p = null;
 				}
 				if (c.equals(parent.ds.targets.getFirst())) {
 					parent.ds.targets.addLast(parent.ds.targets.pop());
 				}
-				if (parent.ds.p.remaining() <= 0) {
-					parent.ds.p = BruteforcePather.pathBetween(c, parent.ds.targets.getFirst(), w, parent.ds.pc);
-				} else {
+				if (parent.ds.futurePath != null && parent.ds.futurePath.isDone()) {
+					try {
+						parent.ds.p = parent.ds.futurePath.get(100, TimeUnit.MICROSECONDS);
+						parent.ds.futurePath = null;
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					} catch (ExecutionException e) {
+						e.printStackTrace();
+					} catch (TimeoutException e) {
+					}
+				}
+				if (parent.ds.p != null && parent.ds.p.remaining() <= 0 && parent.ds.futurePath == null) {
+					parent.ds.futurePath = BruteforcePather.pathBetweenAsync(c, parent.ds.targets.getFirst(), w, parent.ds.pc);
+					Processor.addRequest(parent.ds.futurePath);
+					parent.ds.p = null;
+				} else if (parent.ds.p != null && parent.ds.p.remaining() > 0) {
 					w.getBlockNoAdd(c).removeComponent(parent);
 					Coord dst = c.addR(parent.ds.p.pop().getDir());
 					w.getBlock(dst).addComponent(parent);
