@@ -80,7 +80,7 @@ public class World {
 	 * @return An array of all the ticks for this world
 	 */
 	public Map<Coord, ArrayList<ComplexRunnable>> getTicks() {
-		HashMap<Coord, ArrayList<ComplexRunnable>> ticks = new HashMap<Coord, ArrayList<ComplexRunnable>>();
+		ConcurrentHashMap <Coord, ArrayList<ComplexRunnable>> ticks = new ConcurrentHashMap <Coord, ArrayList<ComplexRunnable>>();
 			for (Entry<Coord, Block> b: blocks.entrySet()) {
 				ticks.put(b.getKey(), b.getValue().getTicks());
 			}
@@ -89,7 +89,7 @@ public class World {
 			for (IController c: controllers) {
 				controllerTicks.add(c.getTick());
 			}
-			ticks.put(null, controllerTicks);
+			ticks.put(new Coord(), controllerTicks);
 		}
 		return ticks;
 	}

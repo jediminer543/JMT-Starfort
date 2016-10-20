@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jmt.starfort.processor.ComplexRunnable;
@@ -48,24 +49,24 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	/**
 	 * Current ticks to process
 	 */
-	volatile Map<Coord, ArrayList<ComplexRunnable>> ticksCurr= new HashMap<Coord, ArrayList<ComplexRunnable>>();;
+	volatile ConcurrentHashMap <Coord, ArrayList<ComplexRunnable>> ticksCurr= new ConcurrentHashMap <Coord, ArrayList<ComplexRunnable>>();;
 	
 	/**
 	 * Ticks to process next cycle
 	 */
-	volatile Map<Coord, ArrayList<ComplexRunnable>> ticksNext = new HashMap<Coord, ArrayList<ComplexRunnable>>();
+	volatile ConcurrentHashMap <Coord, ArrayList<ComplexRunnable>> ticksNext = new ConcurrentHashMap <Coord, ArrayList<ComplexRunnable>>();
 	
 	/**
 	 * Ticks to being processed
 	 */
-	volatile Map<ComplexRunnable, Coord> ticksProc = new HashMap<ComplexRunnable, Coord>();
+	volatile ConcurrentHashMap <ComplexRunnable, Coord> ticksProc = new ConcurrentHashMap <ComplexRunnable, Coord>();
 
 	
 	AtomicInteger runningCount = new AtomicInteger(0);
 	
 	public TickRequest(World w) {
 		this.w = w;
-		ticksCurr = w.getTicks();
+		ticksCurr = (ConcurrentHashMap<Coord, ArrayList<ComplexRunnable>>) w.getTicks();
 	}
 	
 	public boolean move(Coord src, Coord dst, ComplexRunnable tgt) {
@@ -107,15 +108,19 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 			}
 			}
 		}
+		synchronized (ticksProc) {
 		ticksProc.put(task, execLoc);
+		}
 		runningCount.incrementAndGet();
 		task.run(w, execLoc, this);
 		runningCount.decrementAndGet();
 		synchronized (ticksNext) {
+			synchronized (ticksProc) {
 			if (ticksNext.get(ticksProc.get(task)) == null) {
 				ticksNext.put(ticksProc.get(task), new ArrayList<ComplexRunnable>());
 			}
 			ticksNext.get(ticksProc.get(task)).add(task);
+			}
 		}
 		}
 	}
@@ -131,10 +136,10 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 		if (!(loopCount % reload == 0)) {
 			ticksCurr = ticksNext;
 		} else {
-			ticksCurr = w.getTicks();
+			ticksCurr = (ConcurrentHashMap<Coord, ArrayList<ComplexRunnable>>) w.getTicks();
 		}
 		sleepStart = System.currentTimeMillis();
-		ticksNext = new HashMap<Coord, ArrayList<ComplexRunnable>>();
+		ticksNext = new ConcurrentHashMap <Coord, ArrayList<ComplexRunnable>>();
 	}
 
 	@Override

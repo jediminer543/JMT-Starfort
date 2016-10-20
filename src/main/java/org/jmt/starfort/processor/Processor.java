@@ -3,6 +3,7 @@ package org.jmt.starfort.processor;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.NoSuchElementException;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -24,8 +25,8 @@ public class Processor {
 	
 	static boolean online = false;
 	
-	static LinkedBlockingDeque<ProcessingRequest> proccessingJobs = new LinkedBlockingDeque<ProcessingRequest>();
-	static LinkedBlockingDeque<Runnable> simpleJobs = new LinkedBlockingDeque<Runnable>();
+	static LinkedBlockingDeque <ProcessingRequest> proccessingJobs = new LinkedBlockingDeque <ProcessingRequest>();
+	static LinkedBlockingDeque <Runnable> simpleJobs = new LinkedBlockingDeque <Runnable>();
 	
 	static ArrayList<Thread> cores = new ArrayList<Thread>();
 	
@@ -47,13 +48,14 @@ public class Processor {
 					@Override
 					public void run() {
 						while (online) {
+							try {
 							totalTicks++;
 							if (simpleJobs.size() > 0) {
 								simpleJobs.pop().run();
 							}
 							else if (proccessingJobs.size() > 0) {
-								if (proccessingJobs.getFirst().complete()) {
-									if (proccessingJobs.getFirst() instanceof ReusableProcessingRequest<?>) {
+								if (proccessingJobs.size() > 0 && proccessingJobs.getFirst().complete()) {
+									if (proccessingJobs.size() > 0 && proccessingJobs.getFirst() instanceof ReusableProcessingRequest<?>) {
 										((ReusableProcessingRequest<?>) proccessingJobs.getFirst()).reset();
 										proccessingJobs.addLast(proccessingJobs.pop());
 									} else {
@@ -66,6 +68,10 @@ public class Processor {
 								}
 							} else {
 								idleTicks++;
+							}
+							} catch (NoSuchElementException nsee) {
+								//nsee.printStackTrace();
+								//Happens when task is being cycled; shouldn't be a problem
 							}
 						}
 					}
