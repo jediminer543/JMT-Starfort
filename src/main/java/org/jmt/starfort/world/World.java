@@ -89,7 +89,11 @@ public class World {
 			for (IController c: controllers) {
 				controllerTicks.add(c.getTick());
 			}
-			ticks.put(new Coord(), controllerTicks);
+			if (ticks.containsKey(new Coord())) {
+				ticks.get(new Coord()).addAll(controllerTicks);
+			} else {
+				ticks.put(new Coord(), controllerTicks);
+			}
 		}
 		return ticks;
 	}

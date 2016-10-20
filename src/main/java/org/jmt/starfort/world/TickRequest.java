@@ -70,19 +70,25 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	}
 	
 	public boolean move(Coord src, Coord dst, ComplexRunnable tgt) {
+		synchronized (ticksCurr) {
 		if (ticksCurr.get(src) != null && ticksCurr.get(src).contains(tgt)) {
 			ticksCurr.get(src).remove(tgt);
 			ticksCurr.get(dst).add(tgt);
 			return true;
 		}
+		}
+		synchronized (ticksNext) {
 		if (ticksNext.get(src) != null && ticksNext.get(src).contains(tgt)) {
 			ticksNext.get(src).remove(tgt);
 			ticksNext.get(dst).add(tgt);
 			return true;
 		}
+		}
+		synchronized (ticksProc) {
 		if (ticksProc.get(tgt) != null && ticksProc.get(tgt).equals(src)) {
 			ticksProc.put(tgt, dst);
 			return true;
+		}
 		}
 		return false;
 	}
@@ -99,6 +105,7 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 			Entry<Coord, ArrayList<ComplexRunnable>> item = ticksCurr.entrySet().iterator().next();
 			synchronized (item.getValue()) {
 			if (item.getValue().size() > 0) {
+				runningCount.incrementAndGet();
 				task = item.getValue().remove(0);
 				execLoc = item.getKey();
 			} else {
@@ -111,17 +118,19 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 		synchronized (ticksProc) {
 		ticksProc.put(task, execLoc);
 		}
-		runningCount.incrementAndGet();
 		task.run(w, execLoc, this);
-		runningCount.decrementAndGet();
 		synchronized (ticksNext) {
 			synchronized (ticksProc) {
 			if (ticksNext.get(ticksProc.get(task)) == null) {
-				ticksNext.put(ticksProc.get(task), new ArrayList<ComplexRunnable>());
+				ArrayList<ComplexRunnable> dsta = new ArrayList<ComplexRunnable>();
+				dsta.add(task);
+				ticksNext.put(ticksProc.get(task), dsta);
+			} else {
+				ticksNext.get(ticksProc.get(task)).add(task);
 			}
-			ticksNext.get(ticksProc.get(task)).add(task);
 			}
 		}
+		runningCount.decrementAndGet();
 		}
 	}
 
@@ -134,12 +143,18 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	public void reset() {
 		loopCount++;
 		if (!(loopCount % reload == 0)) {
-			ticksCurr = ticksNext;
+			synchronized (ticksCurr) {
+				ticksCurr = ticksNext;
+			}
 		} else {
-			ticksCurr = (ConcurrentHashMap<Coord, ArrayList<ComplexRunnable>>) w.getTicks();
+			synchronized (ticksCurr) {
+				ticksCurr = (ConcurrentHashMap<Coord, ArrayList<ComplexRunnable>>) w.getTicks();
+			}
 		}
 		sleepStart = System.currentTimeMillis();
-		ticksNext = new ConcurrentHashMap <Coord, ArrayList<ComplexRunnable>>();
+		synchronized (ticksNext) {
+			ticksNext = new ConcurrentHashMap <Coord, ArrayList<ComplexRunnable>>();
+		}
 	}
 
 	@Override

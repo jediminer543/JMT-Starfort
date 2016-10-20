@@ -186,6 +186,7 @@ public class Starfort {
 		w.getBlock(new Coord(5, 1, 5)).addComponent(new ComponentStairs(mat, false, true));
 		
 		w.getBlock(new Coord(6, 0, 6)).addComponent(new EntityDrone());
+		w.getBlock(new Coord(0, 0, 0)).addComponent(new EntityDrone());
 		/*
 		IMaterial mat2 = new IMaterial() {
 			
@@ -292,6 +293,9 @@ public class Starfort {
 			r.draw(w, displayOffset);
 			//NanoVG.nvgEndFrame(worldNvgCtx);
 		}
+		
+		glfwTerminate();
+		Processor.down();
 	}
 	
 	public static void preInit() {

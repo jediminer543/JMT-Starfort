@@ -2,6 +2,10 @@ package org.jmt.starfort.pathing.bruteforce;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.RunnableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.util.Direction;
@@ -10,6 +14,55 @@ import org.jmt.starfort.world.World;
 //TODO kill
 public class BruteforcePather {
 
+	public static RunnableFuture<Path> pathBetweenAsync(Coord src, Coord dst, World NodeSet, IPassageCallback passController) {
+		return new RunnableFuture<Path>() {
+
+			boolean running;
+			boolean cancel;
+			
+			@Override
+			public boolean cancel(boolean mayInterruptIfRunning) {
+				if (running && !mayInterruptIfRunning) {
+					return false;
+				} else {
+					cancel = true;
+					return true;
+				}
+			}
+
+			@Override
+			public boolean isCancelled() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public boolean isDone() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public Path get() throws InterruptedException, ExecutionException {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public Path get(long timeout, TimeUnit unit)
+					throws InterruptedException, ExecutionException, TimeoutException {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		};
+	}
 	
 	public static Path pathBetween(Coord src, Coord dst, World NodeSet, IPassageCallback passController) {
 		ArrayList<Coord> closedSet = new ArrayList<>();
