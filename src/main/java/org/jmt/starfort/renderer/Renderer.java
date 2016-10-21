@@ -125,6 +125,55 @@ public class Renderer {
 		//glRotatef(90, 0, 0, 1);
 		long startTime = System.nanoTime();
 		int[] bounds = w.getBounds(true);
+		/* EXPERIMENTAL BEGIN - Multi Layer Rendering
+		glPushMatrix();
+		glTranslatef(0, 0, -worldToRenderLengthConvert(1));
+		for (int x = bounds[0]-1; x < bounds[3]+1; x++) {
+			for (int z = bounds[2]-1; z < bounds[5]+1; z++) {
+				int y = offset.y - 1;
+				Coord curLoc = new Coord(x, y, z);
+				Block b = w.getBlockNoAdd(curLoc);
+				if (b == null) {
+					continue;
+				}
+				List<RenderPair> rra = new ArrayList<>();
+				try {
+				for (IComponent comp : b.getComponents()) {
+					IRendererRule rr = renderSet.get(comp.getClass());
+					if (rr != null)
+						rra.add(new RenderPair(rr, comp));
+					
+				}
+				} catch (ConcurrentModificationException cme) {
+					System.err.println("Rendering concurrent modification exception - Not a problem - Skipping tile - WARN");
+					cme.printStackTrace();
+				}
+				Collections.sort(rra, RRC.INSTANCE);
+				for (RenderPair rp : rra) {
+					rp.rr.draw(this, offset, rp.comp, curLoc);
+				}
+				/* VERY EXPERIMENTAL - Darkening of multi layer rendering
+				if (rra.size() > 0) {
+					Vector2f dst = worldToRenderSpatialConvert(curLoc, offset);
+					glPushMatrix();
+					glTranslatef(dst.x, dst.y, 0.8f);
+					glColor4f(0.1f, 0.1f, 0.2f, 0.3f);
+					glBegin(GL_TRIANGLES);
+					glVertex2f(0, 0);
+					glVertex2f(0, worldToRenderLengthConvert(1));
+					glVertex2f(worldToRenderLengthConvert(1), 0);
+					
+					glVertex2f(worldToRenderLengthConvert(1), worldToRenderLengthConvert(1));
+					glVertex2f(0, worldToRenderLengthConvert(1));
+					glVertex2f(worldToRenderLengthConvert(1), 0);
+					glEnd();
+					glPopMatrix();
+				}
+				*//*
+			}
+		}
+		glPopMatrix();
+		/*EXPERIMENTAL END*/
 		for (int x = bounds[0]-1; x < bounds[3]+1; x++) {
 			for (int z = bounds[2]-1; z < bounds[5]+1; z++) {
 				int y = offset.y;

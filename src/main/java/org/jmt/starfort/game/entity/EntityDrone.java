@@ -88,6 +88,7 @@ public class EntityDrone implements IEntity {
 				World w = (World) args[0];
 				Coord c = (Coord) args[1];
 				TickRequest tr = (TickRequest) args[2];
+				//System.out.println("Processing");
 				if (parent.ds.p == null && parent.ds.futurePath == null) {
 					parent.ds.futurePath = BruteforcePather.pathBetweenAsync(c, parent.ds.targets.getFirst(), w, parent.ds.pc);
 					Processor.addRequest(parent.ds.futurePath);
@@ -112,10 +113,10 @@ public class EntityDrone implements IEntity {
 					Processor.addRequest(parent.ds.futurePath);
 					parent.ds.p = null;
 				} else if (parent.ds.p != null && parent.ds.p.remaining() > 0) {
-					w.getBlockNoAdd(c).removeComponent(parent);
 					Coord dst = c.addR(parent.ds.p.pop().getDir());
-					w.getBlock(dst).addComponent(parent);
 					tr.move(c, dst, this);
+					w.getBlockNoAdd(c).removeComponent(parent);
+					w.getBlock(dst).addComponent(parent);
 				}
 				//System.out.println("Drone Proccecing cycle complete");
 			}

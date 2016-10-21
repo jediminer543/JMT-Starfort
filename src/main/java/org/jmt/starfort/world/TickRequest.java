@@ -39,7 +39,7 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	/**
 	 * Time until rerun
 	 */
-	long sleepTime = 100000000;
+	long sleepTime = 10000000;
 	
 	/**
 	 * Time sleep started
@@ -70,25 +70,23 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	}
 	
 	public boolean move(Coord src, Coord dst, ComplexRunnable tgt) {
-		synchronized (ticksCurr) {
+		try {
 		if (ticksCurr.get(src) != null && ticksCurr.get(src).contains(tgt)) {
 			ticksCurr.get(src).remove(tgt);
 			ticksCurr.get(dst).add(tgt);
 			return true;
 		}
-		}
-		synchronized (ticksNext) {
+		} catch (NullPointerException npe) {/*Concurrent Mod; IGNORE*/}
+		try {
 		if (ticksNext.get(src) != null && ticksNext.get(src).contains(tgt)) {
 			ticksNext.get(src).remove(tgt);
 			ticksNext.get(dst).add(tgt);
 			return true;
 		}
-		}
-		synchronized (ticksProc) {
+		} catch (NullPointerException npe) {/*Concurrent Mod; IGNORE*/}
 		if (ticksProc.get(tgt) != null && ticksProc.get(tgt).equals(src)) {
 			ticksProc.put(tgt, dst);
 			return true;
-		}
 		}
 		return false;
 	}
@@ -119,16 +117,19 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 		ticksProc.put(task, execLoc);
 		}
 		task.run(w, execLoc, this);
-		synchronized (ticksNext) {
-			synchronized (ticksProc) {
+		boolean complete = false;
+		while (!complete) {
+			try {
 			if (ticksNext.get(ticksProc.get(task)) == null) {
 				ArrayList<ComplexRunnable> dsta = new ArrayList<ComplexRunnable>();
 				dsta.add(task);
 				ticksNext.put(ticksProc.get(task), dsta);
+				complete = true;
 			} else {
 				ticksNext.get(ticksProc.get(task)).add(task);
+				complete = true;
 			}
-			}
+			} catch (NullPointerException npe) {/*concurrency error*/}
 		}
 		runningCount.decrementAndGet();
 		}
