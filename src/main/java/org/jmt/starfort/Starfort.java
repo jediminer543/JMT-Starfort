@@ -152,8 +152,8 @@ public class Starfort {
 		
 		w.getBlock(new Coord(7, 0, 5)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XDEC), mat));
 		w.getBlock(new Coord(4, 0, 6)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XINC), mat));
-		w.getBlock(new Coord(5, 0, 4)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.ZDEC), mat));
-		w.getBlock(new Coord(6, 0, 7)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.ZINC), mat));
+		w.getBlock(new Coord(5, 0, 4)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.ZINC), mat));
+		w.getBlock(new Coord(6, 0, 7)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.ZDEC), mat));
 		
 		w.getBlock(new Coord(-1, 0, -1)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.SELFFULL), mat));
 		
@@ -189,6 +189,9 @@ public class Starfort {
 		w.getBlock(new Coord(0, 0, 0)).addComponent(new EntityDrone());
 		w.getBlock(new Coord(0, 0, 1)).addComponent(new EntityDrone());
 		w.getBlock(new Coord(5, 1, 0)).addComponent(new EntityDrone());
+		
+		makeRoom(w1, mat, new Coord(0,0,5), new Coord(3,1,8));
+		
 		/*
 		IMaterial mat2 = new IMaterial() {
 			
@@ -343,6 +346,35 @@ public class Starfort {
 		r = new Renderer();
 		preInitGenRenderRules();
 		w1 = new World(); 
+	}
+	
+	public static void makeRoom(World w, IMaterial m, Coord minCorner, Coord maxCorner) {
+		for (int x = minCorner.x; x <= maxCorner.x; x++) {
+			boolean XDEC = x == minCorner.x;
+			boolean XINC = x == maxCorner.x;
+			for (int z = minCorner.z; z <= maxCorner.z; z++) {
+				boolean ZDEC = z == minCorner.z;
+				boolean ZINC = z == maxCorner.z;
+				for (int y = minCorner.y; y <= maxCorner.y; y++) {
+					boolean YDEC = y == minCorner.y;
+					boolean YINC = y == maxCorner.y;
+					
+					Direction[] wallConf = makeDirArray(XINC, XDEC, ZINC, ZDEC, YINC, YDEC);
+					w.getBlock(new Coord(x, y, z)).addComponent(new ComponentWall(wallConf, m));
+				}
+			}
+		}
+	}
+	
+	public static Direction[] makeDirArray(boolean XINC, boolean XDEC, boolean ZINC, boolean ZDEC, boolean YINC, boolean YDEC) {
+		ArrayList<Direction> dirArr = new ArrayList<>();
+		if (XINC) { dirArr.add(Direction.XINC); }
+		if (XDEC) { dirArr.add(Direction.XDEC); }
+		if (YINC) { dirArr.add(Direction.YINC); }
+		if (YDEC) { dirArr.add(Direction.YDEC); }
+		if (ZINC) { dirArr.add(Direction.ZINC); }
+		if (ZDEC) { dirArr.add(Direction.ZDEC); }
+		return dirArr.toArray(new Direction[dirArr.size()]);
 	}
 	
 	public static void preInitGenRenderRules() {

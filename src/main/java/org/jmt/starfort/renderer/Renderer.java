@@ -116,7 +116,7 @@ public class Renderer {
 	/**
 	 * Draws a world
 	 * 
-	 * TODO: Optimise; Remove Off Screen Rendering
+	 * TODO: Optimise; Remove Off Screen Rendering; Multi-layer Rendering
 	 * 
 	 * @param w World to draw
 	 * @param offset Offset to draw to
@@ -125,7 +125,7 @@ public class Renderer {
 		//glRotatef(90, 0, 0, 1);
 		long startTime = System.nanoTime();
 		int[] bounds = w.getBounds(true);
-		/* EXPERIMENTAL BEGIN - Multi Layer Rendering
+		/* EXPERIMENTAL BEGIN - Multi Layer Rendering */
 		glPushMatrix();
 		glTranslatef(0, 0, -worldToRenderLengthConvert(1));
 		for (int x = bounds[0]-1; x < bounds[3]+1; x++) {
@@ -152,7 +152,7 @@ public class Renderer {
 				for (RenderPair rp : rra) {
 					rp.rr.draw(this, offset, rp.comp, curLoc);
 				}
-				/* VERY EXPERIMENTAL - Darkening of multi layer rendering
+				/* VERY EXPERIMENTAL - Darkening of multi layer rendering 
 				if (rra.size() > 0) {
 					Vector2f dst = worldToRenderSpatialConvert(curLoc, offset);
 					glPushMatrix();
@@ -169,7 +169,7 @@ public class Renderer {
 					glEnd();
 					glPopMatrix();
 				}
-				*//*
+				/**/
 			}
 		}
 		glPopMatrix();
