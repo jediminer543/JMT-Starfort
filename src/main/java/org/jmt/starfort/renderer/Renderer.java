@@ -2,6 +2,7 @@
 package org.jmt.starfort.renderer;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL20.*;
 import static org.jmt.starfort.renderer.JMTGl.*;
 
 import java.io.IOException;
@@ -141,8 +142,13 @@ public class Renderer {
 		long startTime = System.nanoTime();
 		int[] bounds = w.getBounds(true);
 		/* EXPERIMENTAL BEGIN - Multi Layer Rendering */
+		jglUseProgram(program);
+		glUniform1i(jglGetUniformLocation("u_depth"), 1);
+		glUniform4fv(jglGetUniformLocation("u_depthCol"), new float[] {0.1f, 0.1f, 0.2f, 0.3f});
+		jglUseProgram(0);
 		glPushMatrix();
 		glTranslatef(0, 0, -worldToRenderLengthConvert(1));
+		jglPushMatrix();
 		for (int x = bounds[0]-1; x < bounds[3]+1; x++) {
 			for (int z = bounds[2]-1; z < bounds[5]+1; z++) {
 				int y = offset.y - 1;
@@ -188,6 +194,10 @@ public class Renderer {
 			}
 		}
 		glPopMatrix();
+		jglPopMatrix();
+		jglUseProgram(program);
+		glUniform1i(jglGetUniformLocation("u_depth"), 0);
+		jglUseProgram(0);
 		/*EXPERIMENTAL END*/
 		for (int x = bounds[0]-1; x < bounds[3]+1; x++) {
 			for (int z = bounds[2]-1; z < bounds[5]+1; z++) {

@@ -10,6 +10,9 @@ uniform sampler2D u_tex;
 out vec4 o_col;
 
 void main(void) {
-
-	o_col = u_col * texture(u_tex, f_tex);// * (u_depth * u_depthCol) ;
+	if (u_depth > 0) {
+		o_col = u_col * texture(u_tex, f_tex); //TODO: implement u_depthCol
+	} else { 
+		o_col = u_col * texture(u_tex, f_tex);
+	} 
 }
