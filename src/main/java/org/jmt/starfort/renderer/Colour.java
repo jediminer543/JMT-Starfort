@@ -38,5 +38,6 @@ public class Colour {
 	
 	public void apply() {
 		GL11.glColor4f(r, g, b, a);
+		JMTGl.jglColor4f(r, g, b, a);
 	}
 }

@@ -81,7 +81,7 @@ public class Renderer {
 	/**
 	 * The component shader
 	 */
-	int program;
+	public int program;
 	
 	/**
 	 * Initialize the renderer
@@ -103,6 +103,7 @@ public class Renderer {
 			rr.init(this);
 		}
 		System.out.println("Renderer loaded");
+		jglUseProgram(0);
 	}
 	
 	static class RRC implements Comparator<RenderPair> {

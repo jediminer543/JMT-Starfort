@@ -56,6 +56,7 @@ import org.lwjgl.nanovg.NanoVG;
 import org.lwjgl.nanovg.NanoVGGL3;
 import org.lwjgl.nuklear.NkContext;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL30;
 import org.reflections.vfs.CommonsVfs2UrlType.Dir;
 
 public class Starfort {
@@ -339,13 +340,23 @@ public class Starfort {
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 		
+		jglMatrixMode(GL_PROJECTION);
+		jglLoadIdentity();
+		jglOrtho(0, 1600, 900, 0, 0.000001, 100);
+		
+		jglMatrixMode(GL_MODELVIEW);
+		jglLoadIdentity();
+		
 		//jglLoadShader("".getClass().getResourceAsStream("/org/jmt/starfort/shader/ComponentShader.GLSL13.vert"), 
 		//		"".getClass().getResourceAsStream("/org/jmt/starfort/shader/ComponentShader.GLSL13.frag"));
 		
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
 		glEnable(GL_BLEND);
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnableClientState(GL_VERTEX_ARRAY);
+    	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		//glTexEnvf(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE);
 		
 		worldNvgCtx = 0;//NanoVGGL3.nvgCreateGL3(NanoVGGL3.NVG_ANTIALIAS | NanoVGGL3.NVG_STENCIL_STROKES | NanoVGGL3.NVG_DEBUG);

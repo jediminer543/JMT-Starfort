@@ -12,6 +12,7 @@ import java.util.Scanner;
 import org.joml.Matrix4f;
 import org.joml.MatrixStack;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 
 /**
@@ -33,6 +34,7 @@ public class JMTGl {
 	public static MatrixStack matModelviewStack = new MatrixStack(16);
 	public static MatrixStack matProjectionStack = new MatrixStack(16);
 	public static MatrixStack curMatStack = matModelviewStack;
+	public static Vector4f color = new Vector4f(1f, 1f, 1f, 1f);
 	
 	/**
 	 * Mapped straight from glApi
@@ -48,6 +50,14 @@ public class JMTGl {
 		} else {
 			//NYI
 		}
+	}
+	
+	public static void jglPushMatrix() {
+		curMatStack.pushMatrix();
+	}
+	
+	public static void jglPopMatrix() {
+		curMatStack.popMatrix();
 	}
 	
 	public static void jglOrtho(double l, double r, double b, double t, double n, double f) {
@@ -68,6 +78,13 @@ public class JMTGl {
 
 	public static void jglTranslated(double x, double y, double z) {
 		curMatStack.translate((float)x, (float)y, (float)z);
+	}
+	
+	public static void jglColor4f(float red, float green, float blue, float alpha) {
+		color.x = red;
+		color.y = green;
+		color.z = blue;
+		color.w = alpha;
 	}
 	
 	//OpenGL END
@@ -106,15 +123,11 @@ public class JMTGl {
 		String fragShaderSrc = readFile(fragShaderStream);
 		
 		int shader = glCreateProgram();
-		
 		int vertShader = glCreateShader(GL_VERTEX_SHADER);
+		int fragShader = glCreateShader(GL_FRAGMENT_SHADER);
+		
 		glShaderSource(vertShader, vertShaderSrc);
-		glCompileShader(vertShader);
-		
-		
-		int fragShader = glCreateShader(GL_VERTEX_SHADER);
 		glShaderSource(fragShader, fragShaderSrc);
-		glCompileShader(fragShader);
 		
 		glCompileShader(vertShader);
 		System.out.println("Vert Shader Compile status: " + (glGetShaderi(vertShader, GL_COMPILE_STATUS) == GL_TRUE));
@@ -124,12 +137,19 @@ public class JMTGl {
 		System.out.println("Frag Shader Compile status: " + (glGetShaderi(fragShader, GL_COMPILE_STATUS) == GL_TRUE));
 		System.out.println(glGetShaderInfoLog(fragShader));
 		
+		
 		glAttachShader(shader, vertShader);
 		//assert(GL_NO_ERROR == glGetError());
 		glAttachShader(shader, fragShader);
 		//assert(GL_NO_ERROR == glGetError());
 		
+		//glBindAttribLocation(glslprog, 13, "texCoord");
+		
+		glLinkProgram(shader);
+		//assert(GL_NO_ERROR == glGetError());
+		
 		return shader;
+		
 	}
 	
 	/**
@@ -144,24 +164,46 @@ public class JMTGl {
 	 */
 	public static void jglUseProgram(int program) {
 		glUseProgram(program);
-		int projLoc = glGetUniformLocation(program, "u_modelview");
+		
+		int projLoc = glGetUniformLocation(program, "u_projection");
+		//System.out.println("u_projection:" + projLoc);
 		if (projLoc >=0 ) {
 			FloatBuffer buf = BufferUtils.createFloatBuffer(16);
 			matProjectionStack.get(buf);
 			glUniformMatrix4fv(projLoc, false, buf);
 		}
+		
 		int modlLoc = glGetUniformLocation(program, "u_modelview");
+		//System.out.println("u_modelview:" + modlLoc);
 		if (modlLoc >=0 ) {
 			FloatBuffer buf = BufferUtils.createFloatBuffer(16);
 			matModelviewStack.get(buf);
 			glUniformMatrix4fv(modlLoc, false, buf);
 		}
+		
 		// If shaders use single matrix instead of two
 		int matLoc = glGetUniformLocation(program, "u_matrix");
+		//System.out.println("u_matrix:" + matLoc);
 		if (matLoc >=0 ) {
 			FloatBuffer buf = BufferUtils.createFloatBuffer(16);
 			matModelviewStack.get(new Matrix4f()).mul(matProjectionStack.getDirect()).get(buf);
 			glUniformMatrix4fv(matLoc, false, buf);
+		}
+		
+		//ColorMapping
+		int colLoc = glGetUniformLocation(program, "u_col");
+		//System.out.println("u_col:" + colLoc);
+		if (colLoc >=0 ) {
+			FloatBuffer buf = BufferUtils.createFloatBuffer(4);
+			color.get(buf);
+			glUniform4fv(colLoc, buf);;
+		}
+		
+		//TextureMapping
+		int texLoc = glGetUniformLocation(program, "u_tex");
+		//System.out.println("u_tex:" + texLoc);
+		if (texLoc >=0 ) {
+			glUniform1i(texLoc, 0);;
 		}
 	}
 	
