@@ -2,7 +2,9 @@
 package org.jmt.starfort.renderer;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.jmt.starfort.renderer.JMTGl.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -77,11 +79,23 @@ public class Renderer {
 	}
 	
 	/**
+	 * The component shader
+	 */
+	int program;
+	
+	/**
 	 * Initialize the renderer
 	 * @param nvgCtx
 	 * @param renderRules
 	 */
 	public void init(ArrayList<IRendererRule> renderRules) {
+		try {
+			program = jglLoadShader("".getClass().getResourceAsStream("/org/jmt/starfort/shader/ComponentShader.GLSL13.vert"), 
+					"".getClass().getResourceAsStream("/org/jmt/starfort/shader/ComponentShader.GLSL13.frag"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		jglUseProgram(program);
 		for (IRendererRule rr : renderRules) {
 			for (Class<? extends IComponent> comp : rr.getRenderableComponents())
 				renderSet.put(comp, rr);

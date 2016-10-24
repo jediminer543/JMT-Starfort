@@ -13,8 +13,10 @@ import static org.lwjgl.opengl.GL31.*;
 import static org.lwjgl.opengl.GL32.*;
 */
 import static org.lwjgl.glfw.GLFW.*;
+import static org.jmt.starfort.renderer.JMTGl.*;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -303,7 +305,7 @@ public class Starfort {
 		Processor.down();
 	}
 	
-	public static void preInit() {
+	public static void preInit() throws IOException {
 		
 		glfwSetErrorCallback(GLFWErrorCallback.createPrint(System.err));
 		if (!glfwInit())
@@ -337,6 +339,11 @@ public class Starfort {
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 		
+		//jglLoadShader("".getClass().getResourceAsStream("/org/jmt/starfort/shader/ComponentShader.GLSL13.vert"), 
+		//		"".getClass().getResourceAsStream("/org/jmt/starfort/shader/ComponentShader.GLSL13.frag"));
+		
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LEQUAL);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		//glTexEnvf(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE);

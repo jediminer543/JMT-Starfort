@@ -35,7 +35,7 @@ public class RenderUtil {
 			width * (xPos+1), height * (yPos+1),
 			width * (xPos+1), height * yPos    
 		};
-		System.out.println("item-width:" + width + "; item-height:" + height + "; " + Arrays.toString(out));
+		//System.out.println("item-width:" + width + "; item-height:" + height + "; " + Arrays.toString(out));
 		return out;
 	}
 	
@@ -83,7 +83,8 @@ public class RenderUtil {
 	}
 	
 	public static FloatBuffer singleBufGen() {
-		System.out.println(Arrays.toString(singleBufferGen));
+		//System.out.println(Arrays.toString(singleBufferGen));
 		return arrayToBuffer(singleBufferGen);
 	}
+	
 }
