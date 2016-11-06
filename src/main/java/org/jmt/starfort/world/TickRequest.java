@@ -189,13 +189,11 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 
 	@Override
 	public int remaining() {
-		synchronized (ticksCurr) {
-			int count = 0;
-			for (Entry<Coord, ArrayList<ComplexRunnable>> entry : ticksCurr.entrySet()) {
-				count += entry.getValue().size();
-			}
-			return count;
+		int count = 0;
+		for (Entry<Coord, ArrayList<ComplexRunnable>> entry : ticksCurr.entrySet()) {
+			count += entry.getValue().size();
 		}
+		return count;
 	}
 
 }

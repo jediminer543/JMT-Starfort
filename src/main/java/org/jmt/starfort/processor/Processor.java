@@ -7,6 +7,7 @@ import java.util.NoSuchElementException;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jmt.starfort.processor.requests.ProcessingRequest;
 import org.jmt.starfort.processor.requests.ReusableProcessingRequest;
@@ -24,6 +25,8 @@ public class Processor {
 	static long totalTicks, idleTicks;
 	
 	static boolean online = false;
+	
+	static volatile AtomicInteger curMoving = new AtomicInteger();
 	
 	static LinkedBlockingDeque <ProcessingRequest> proccessingJobs = new LinkedBlockingDeque <ProcessingRequest>();
 	static LinkedBlockingDeque <Runnable> simpleJobs = new LinkedBlockingDeque <Runnable>();
@@ -48,30 +51,40 @@ public class Processor {
 					@Override
 					public void run() {
 						while (online) {
-							try {
 							totalTicks++;
 							if (simpleJobs.size() > 0) {
 								simpleJobs.pop().run();
 							}
-							else if (proccessingJobs.size() > 0) {
-								if (proccessingJobs.size() > 0 && proccessingJobs.getFirst().complete()) {
-									if (proccessingJobs.size() > 0 && proccessingJobs.getFirst() instanceof ReusableProcessingRequest<?>) {
-										((ReusableProcessingRequest<?>) proccessingJobs.getFirst()).reset();
-										proccessingJobs.addLast(proccessingJobs.pop());
+							else if (proccessingJobs.size() - curMoving.get() > 0) {
+								if (proccessingJobs.size() - curMoving.get() > 0 && proccessingJobs.getFirst().complete()) {
+									if (proccessingJobs.size() - curMoving.get() > 0 && proccessingJobs.getFirst() instanceof ReusableProcessingRequest<?>) {
+										curMoving.incrementAndGet();
+										ProcessingRequest job = null;
+										while (job == null && online) {
+										try {
+											job = proccessingJobs.pop();
+										} catch (NoSuchElementException nsee) {
+										nsee.printStackTrace();
+										//Happens when task is being cycled; shouldn't be a problem
+										} }
+										((ReusableProcessingRequest<?>) job).reset();
+										proccessingJobs.addLast(job);
+										curMoving.decrementAndGet();
 									} else {
 										proccessingJobs.remove(0);
 									}
 								} else {
+									try {
 									if (proccessingJobs.getFirst().remaining() > 0) {
 										proccessingJobs.getFirst().processNext();
+									}
+									} catch (NoSuchElementException nsee) {
+										nsee.printStackTrace();
+										//Happens when task is being cycled; shouldn't be a problem
 									}
 								}
 							} else {
 								idleTicks++;
-							}
-							} catch (NoSuchElementException nsee) {
-								//nsee.printStackTrace();
-								//Happens when task is being cycled; shouldn't be a problem
 							}
 						}
 					}

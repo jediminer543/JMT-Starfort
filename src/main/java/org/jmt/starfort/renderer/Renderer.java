@@ -141,96 +141,53 @@ public class Renderer {
 		//glRotatef(90, 0, 0, 1);
 		long startTime = System.nanoTime();
 		int[] bounds = w.getBounds(true);
-		/* EXPERIMENTAL BEGIN - Multi Layer Rendering */
-		jglUseProgram(program);
-		glUniform1i(jglGetUniformLocation("u_depth"), 1);
-		glUniform4fv(jglGetUniformLocation("u_depthCol"), new float[] {0.1f, 0.1f, 0.2f, 0.3f});
-		jglUseProgram(0);
-		glPushMatrix();
-		glTranslatef(0, 0, -worldToRenderLengthConvert(1));
-		jglPushMatrix();
-		for (int x = bounds[0]-1; x < bounds[3]+1; x++) {
-			for (int z = bounds[2]-1; z < bounds[5]+1; z++) {
-				int y = offset.y - 1;
-				Coord curLoc = new Coord(x, y, z);
-				Block b = w.getBlockNoAdd(curLoc);
-				if (b == null) {
-					continue;
-				}
-				List<RenderPair> rra = new ArrayList<>();
-				try {
-				for (IComponent comp : b.getComponents()) {
-					IRendererRule rr = renderSet.get(comp.getClass());
-					if (rr != null)
-						rra.add(new RenderPair(rr, comp));
-					
-				}
-				} catch (ConcurrentModificationException cme) {
-					System.err.println("Rendering concurrent modification exception - Not a problem - Skipping tile - WARN");
-					cme.printStackTrace();
-				}
-				Collections.sort(rra, RRC.INSTANCE);
-				for (RenderPair rp : rra) {
-					rp.rr.draw(this, offset, rp.comp, curLoc);
-				}
-				/* VERY EXPERIMENTAL - Darkening of multi layer rendering 
-				if (rra.size() > 0) {
-					Vector2f dst = worldToRenderSpatialConvert(curLoc, offset);
-					glPushMatrix();
-					glTranslatef(dst.x, dst.y, 0.8f);
-					glColor4f(0.1f, 0.1f, 0.2f, 0.3f);
-					glBegin(GL_TRIANGLES);
-					glVertex2f(0, 0);
-					glVertex2f(0, worldToRenderLengthConvert(1));
-					glVertex2f(worldToRenderLengthConvert(1), 0);
-					
-					glVertex2f(worldToRenderLengthConvert(1), worldToRenderLengthConvert(1));
-					glVertex2f(0, worldToRenderLengthConvert(1));
-					glVertex2f(worldToRenderLengthConvert(1), 0);
-					glEnd();
-					glPopMatrix();
-				}
-				/**/
-			}
-		}
-		glPopMatrix();
-		jglPopMatrix();
-		jglUseProgram(program);
-		glUniform1i(jglGetUniformLocation("u_depth"), 0);
-		jglUseProgram(0);
-		/*EXPERIMENTAL END*/
-		for (int x = bounds[0]-1; x < bounds[3]+1; x++) {
-			for (int z = bounds[2]-1; z < bounds[5]+1; z++) {
-				int y = offset.y;
-				Coord curLoc = new Coord(x, y, z);
-				Block b = w.getBlockNoAdd(curLoc);
-				if (b == null) {
-					continue;
-				}
-				List<RenderPair> rra = new ArrayList<>();
-				try {
-				for (IComponent comp : b.getComponents()) {
-					IRendererRule rr = renderSet.get(comp.getClass());
-					if (rr != null)
-						rra.add(new RenderPair(rr, comp));
-					
-				}
-				} catch (ConcurrentModificationException cme) {
-					System.err.println("Rendering concurrent modification exception - Not a problem - Skipping tile - WARN");
-					cme.printStackTrace();
-				}
-				Collections.sort(rra, RRC.INSTANCE);
-				for (RenderPair rp : rra) {
-					rp.rr.draw(this, offset, rp.comp, curLoc);
-				}
-				
-			}
-		}
+		drawLayer(w, offset, bounds, 2);
+		drawLayer(w, offset, bounds, 1);
+		drawLayer(w, offset, bounds, 0);
 		long endTime = System.nanoTime();
 		long frameTime = endTime - startTime;
 		float FPS = (1000000000/frameTime);
 		System.out.println("FPS: " + FPS);
 		//glRotatef(-90, 0, 0, 1);
+	}
+	
+	private void drawLayer(World w, Coord offset, int[] bounds, int depth) {
+		jglUseProgram(program);
+		glUniform1i(jglGetUniformLocation("u_depth"), depth);
+		glUniform4fv(jglGetUniformLocation("u_depthCol"), new float[] {0.1f, 0.1f, 0.2f, 1f});
+		jglUseProgram(0);
+		glPushMatrix();
+		glTranslatef(0, 0, -worldToRenderLengthConvert(depth));
+		jglPushMatrix();
+		jglTranslatef(0, 0, -worldToRenderLengthConvert(depth));
+		for (int x = bounds[0]-1; x < bounds[3]+1; x++) {
+			for (int z = bounds[2]-1; z < bounds[5]+1; z++) {
+				int y = offset.y - depth;
+				Coord curLoc = new Coord(x, y, z);
+				Block b = w.getBlockNoAdd(curLoc);
+				if (b == null) {
+					continue;
+				}
+				List<RenderPair> rra = new ArrayList<>();
+				try {
+				for (IComponent comp : b.getComponents()) {
+					IRendererRule rr = renderSet.get(comp.getClass());
+					if (rr != null)
+						rra.add(new RenderPair(rr, comp));
+					
+				}
+				} catch (ConcurrentModificationException cme) {
+					System.err.println("Rendering concurrent modification exception - Not a problem - Skipping tile - WARN");
+					cme.printStackTrace();
+				}
+				Collections.sort(rra, RRC.INSTANCE);
+				for (RenderPair rp : rra) {
+					rp.rr.draw(this, offset, rp.comp, curLoc);
+				}
+			}
+		}
+		glPopMatrix();
+		jglPopMatrix();
 	}
 	
 }

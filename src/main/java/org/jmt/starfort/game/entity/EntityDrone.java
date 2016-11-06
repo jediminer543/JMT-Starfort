@@ -36,7 +36,7 @@ public class EntityDrone implements IEntity {
 			targets.addLast(new Coord(0, 0, 3));
 			targets.addLast(new Coord(-1, 0, 0));
 			targets.addLast(new Coord(0, 0, -1));
-			targets.addLast(new Coord(1, 0, 0));
+			targets.addLast(new Coord(2, 0, 0));
 			targets.addLast(new Coord(6, 0, 6));
 		}
 		IPassageCallback pc = new IPassageCallback() {
