@@ -10,14 +10,10 @@ public class StatSheet {
 	boolean sorted = false;
 	
 	public Stat<?> getStat(String statName) {
-		return getStat(new Stat<Object>(statName, null));
+		return getStat(new Stat<Object>(statName, null, Stat.StatType.Value));
 	}
 	
 	public Stat<?> getStat(Stat<?> stat) {
-		if (!sorted) {
-			Collections.sort(stats);
-			sorted = true;
-		}
 		Stat<?> out = stats.get(Collections.binarySearch(stats, stat));
 		if (out.getStatName() == stat.getStatName())
 			return out;
@@ -28,7 +24,18 @@ public class StatSheet {
 	public void addStat(Stat<?> stat) {
 		Stat<?> toMerge = null;
 		if ((toMerge = getStat(stat)) != null) {
-			//TODO
+			sorted = false;
+			
+		} else {
+			sorted = false;
+			
+		}
+	}
+	
+	public void checkSorted() {
+		if (!sorted) {
+			Collections.sort(stats);
+			sorted = true;
 		}
 	}
 	

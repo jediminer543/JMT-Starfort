@@ -1,10 +1,7 @@
 package org.jmt.starfort.processor;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.NoSuchElementException;
-import java.util.Stack;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -24,6 +21,14 @@ public class Processor {
 
 	static long totalTicks, idleTicks;
 	
+	public static long getTotalTicks() {
+		return totalTicks;
+	}
+
+	public static long getIdleTicks() {
+		return idleTicks;
+	}
+
 	static boolean online = false;
 	
 	static volatile AtomicInteger curMoving = new AtomicInteger();
@@ -53,34 +58,55 @@ public class Processor {
 						while (online) {
 							totalTicks++;
 							if (simpleJobs.size() > 0) {
-								simpleJobs.pop().run();
+								try {
+									simpleJobs.pop().run();
+								} catch (NoSuchElementException nsee) {
+									//nsee.printStackTrace();
+									//Happens when task is being cycled; shouldn't be a problem
+								}
 							}
 							else if (proccessingJobs.size() - curMoving.get() > 0) {
-								if (proccessingJobs.size() - curMoving.get() > 0 && proccessingJobs.getFirst().complete()) {
-									if (proccessingJobs.size() - curMoving.get() > 0 && proccessingJobs.getFirst() instanceof ReusableProcessingRequest<?>) {
+								ProcessingRequest first = null;
+								while (first == null && online) {
+									try {
+										first = proccessingJobs.getFirst();
+									} catch (NoSuchElementException nsee) {
+									//nsee.printStackTrace();
+									//Happens when task is being cycled; shouldn't be a problem
+								} }
+								try {
+								if (first.complete()) {
+									if (first instanceof ReusableProcessingRequest<?>) {
 										curMoving.incrementAndGet();
 										ProcessingRequest job = null;
 										while (job == null && online) {
 										try {
 											job = proccessingJobs.pop();
 										} catch (NoSuchElementException nsee) {
-										nsee.printStackTrace();
+										//nsee.printStackTrace();
 										//Happens when task is being cycled; shouldn't be a problem
 										} }
 										((ReusableProcessingRequest<?>) job).reset();
 										proccessingJobs.addLast(job);
 										curMoving.decrementAndGet();
 									} else {
-										proccessingJobs.remove(0);
+										proccessingJobs.remove(first);
+										//proccessingJobs.remove(0);
 									}
 								} else {
 									try {
-									if (proccessingJobs.getFirst().remaining() > 0) {
-										proccessingJobs.getFirst().processNext();
+									if (first.remaining() > 0) {
+										first.processNext();
 									}
 									} catch (NoSuchElementException nsee) {
-										nsee.printStackTrace();
+										//nsee.printStackTrace();
 										//Happens when task is being cycled; shouldn't be a problem
+									}
+								}
+								} catch (NullPointerException npe) {
+									//NPE on thread issue; common on shutdown
+									if (online) {
+										npe.printStackTrace();
 									}
 								}
 							} else {

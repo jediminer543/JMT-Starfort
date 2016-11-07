@@ -305,6 +305,8 @@ public class Starfort {
 		
 		glfwTerminate();
 		Processor.down();
+		System.out.println("Processor: TotalTicks="+Processor.getTotalTicks()+";IdleTicks="+Processor.getIdleTicks()+";%Idle="+((double)Processor.getIdleTicks()/Processor.getTotalTicks())*100);
+		
 	}
 	
 	public static void preInit() throws IOException {
