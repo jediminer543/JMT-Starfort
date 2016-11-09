@@ -36,13 +36,13 @@ public class ControllerTask implements IController {
 				ITask highestPerformableTask = null;
 				int highestTaskScore = Integer.MIN_VALUE;
 				for (ITask task : e.getEntityTaskList()) {
-					if (task.getTaskPriority() > highestTaskScore && task.canTaskPerform()) {
+					if (task.getTaskPriority() > highestTaskScore && task.canTaskPerform(e)) {
 						highestTaskScore = task.getTaskPriority();
 						highestPerformableTask = task;
 					}
 				}
 				for (ITask task : worldTasks) {
-					if (task.getTaskPriority() > highestTaskScore && task.canTaskPerform()) {
+					if (task.getTaskPriority() > highestTaskScore && task.canTaskPerform(e)) {
 						highestTaskScore = task.getTaskPriority();
 						highestPerformableTask = task;
 					}

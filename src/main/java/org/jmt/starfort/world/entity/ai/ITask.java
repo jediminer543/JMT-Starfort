@@ -1,5 +1,7 @@
 package org.jmt.starfort.world.entity.ai;
 
+import org.jmt.starfort.world.entity.IEntity;
+
 public interface ITask {
 
 	/**
@@ -16,9 +18,10 @@ public interface ITask {
 	
 	/**
 	 * Update the task state
-	 * @return true when the task is complete
+	 * @param args Input values being passed; First will be supertask
+	 * @return true when the task is running (not waiting or completed)
 	 */
-	public boolean tickTask();
+	public boolean tickTask(Object... args);
 	
 	/**
 	 * Get the state of the task
@@ -37,7 +40,7 @@ public interface ITask {
 	 * Check if the task can be performed
 	 * @return Whether the task can be performed
 	 */
-	public boolean canTaskPerform();
+	public boolean canTaskPerform(IEntity entity);
 	
 	/**
 	 * Defines possible task states
@@ -48,6 +51,7 @@ public interface ITask {
 	public static enum TaskState {
 		PRE,
 		RUNNING,
+		WAITING,
 		STUCK,
 		ERROR,
 		COMPLETE;
