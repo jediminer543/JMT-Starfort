@@ -58,7 +58,7 @@ public class GenericRenderer implements IRendererRule {
 	public void draw(Renderer r, Coord offset, IComponent comp,
 			Coord compLoc) {
 		glPushMatrix();
-		Vector2f drawSrc = r.worldToRenderSpatialConvert(compLoc, offset);
+		Vector2f drawSrc = r.wtrCoord(compLoc, offset);
 		glTranslatef(drawSrc.x, drawSrc.y, 0);
 		t.bind();
 		Colour c;
@@ -71,16 +71,16 @@ public class GenericRenderer implements IRendererRule {
 		glTexCoord2f(0, 0);
 		glVertex2f(0, 0);
 		glTexCoord2f(0, 1);
-		glVertex2f(0, r.worldToRenderLengthConvert(1));
+		glVertex2f(0, r.wtrLen(1));
 		glTexCoord2f(1, 0);
-		glVertex2f(r.worldToRenderLengthConvert(1), 0);
+		glVertex2f(r.wtrLen(1), 0);
 		
 		glTexCoord2f(1, 1);
-		glVertex2f(r.worldToRenderLengthConvert(1), r.worldToRenderLengthConvert(1));
+		glVertex2f(r.wtrLen(1), r.wtrLen(1));
 		glTexCoord2f(0, 1);
-		glVertex2f(0, r.worldToRenderLengthConvert(1));
+		glVertex2f(0, r.wtrLen(1));
 		glTexCoord2f(1, 0);
-		glVertex2f(r.worldToRenderLengthConvert(1), 0);
+		glVertex2f(r.wtrLen(1), 0);
 		glEnd();
 		glPopMatrix();
 	}

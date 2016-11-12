@@ -44,7 +44,7 @@ public class Renderer {
 	 * @param offset
 	 * @return
 	 */
-	public Vector2f worldToRenderSpatialConvert(Coord worldC, Coord offset) {
+	public Vector2f wtrCoord(Coord worldC, Coord offset) {
 		Coord tmp = worldC.addR(offset);
 		return new Vector2f(tmp.x * 1/zoom * renderSpacePerWorldSpace, tmp.z * 1/zoom * renderSpacePerWorldSpace);
 	}
@@ -55,7 +55,7 @@ public class Renderer {
 	 * @param offset
 	 * @return
 	 */
-	public float worldToRenderLengthConvert(float frac) {
+	public float wtrLen(float frac) {
 		return (frac) * 1/zoom * renderSpacePerWorldSpace ;
 	}
 	
@@ -141,6 +141,7 @@ public class Renderer {
 		//glRotatef(90, 0, 0, 1);
 		long startTime = System.nanoTime();
 		int[] bounds = w.getBounds(true);
+		drawLayer(w, offset, bounds, 3);
 		drawLayer(w, offset, bounds, 2);
 		drawLayer(w, offset, bounds, 1);
 		drawLayer(w, offset, bounds, 0);
@@ -157,9 +158,9 @@ public class Renderer {
 		glUniform4fv(jglGetUniformLocation("u_depthCol"), new float[] {0.1f, 0.1f, 0.2f, 1f});
 		jglUseProgram(0);
 		glPushMatrix();
-		glTranslatef(0, 0, -worldToRenderLengthConvert(depth));
+		glTranslatef(0, 0, -wtrLen(depth));
 		jglPushMatrix();
-		jglTranslatef(0, 0, -worldToRenderLengthConvert(depth));
+		jglTranslatef(0, 0, -wtrLen(depth));
 		for (int x = bounds[0]-1; x < bounds[3]+1; x++) {
 			for (int z = bounds[2]-1; z < bounds[5]+1; z++) {
 				int y = offset.y - depth;

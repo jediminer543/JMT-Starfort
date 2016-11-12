@@ -85,7 +85,7 @@ public class DirectionBasedRenderer implements IRendererRule {
 	public void draw(Renderer r, Coord offset, IComponent comp, Coord compLoc) {
 		if (!GL30) {
 			glPushMatrix();
-			Vector2f drawSrc = r.worldToRenderSpatialConvert(compLoc, offset);
+			Vector2f drawSrc = r.wtrCoord(compLoc, offset);
 			glTranslatef(drawSrc.x, drawSrc.y, 0);
 			t.bind();
 			Colour c;
@@ -102,16 +102,16 @@ public class DirectionBasedRenderer implements IRendererRule {
 				glTexCoord2f(target[0]/atlasWidth, target[1]/atlasHeight);
 				glVertex2f(0, 0);
 				glTexCoord2f(target[0]/atlasWidth, (target[1]+1)/atlasHeight);
-				glVertex2f(0, r.worldToRenderLengthConvert(1));
+				glVertex2f(0, r.wtrLen(1));
 				glTexCoord2f((target[0]+1)/atlasWidth, target[1]/atlasHeight);
-				glVertex2f(r.worldToRenderLengthConvert(1), 0);
+				glVertex2f(r.wtrLen(1), 0);
 			
 				glTexCoord2f((target[0]+1)/atlasWidth, (target[1]+1)/atlasHeight);
-				glVertex2f(r.worldToRenderLengthConvert(1), r.worldToRenderLengthConvert(1));
+				glVertex2f(r.wtrLen(1), r.wtrLen(1));
 				glTexCoord2f(target[0]/atlasWidth, (target[1]+1)/atlasHeight);
-				glVertex2f(0, r.worldToRenderLengthConvert(1));
+				glVertex2f(0, r.wtrLen(1));
 				glTexCoord2f((target[0]+1)/atlasWidth, target[1]/atlasHeight);
-				glVertex2f(r.worldToRenderLengthConvert(1), 0);
+				glVertex2f(r.wtrLen(1), 0);
 				glEnd();
 			
 			
@@ -119,7 +119,7 @@ public class DirectionBasedRenderer implements IRendererRule {
 			glPopMatrix();
 		} else {
 			jglPushMatrix();
-			Vector2f drawSrc = r.worldToRenderSpatialConvert(compLoc, offset);
+			Vector2f drawSrc = r.wtrCoord(compLoc, offset);
 			jglTranslatef(drawSrc.x, drawSrc.y, 0);
 			t.bind();
 			IComponentDirectioned dirComp = (IComponentDirectioned) comp;
@@ -148,12 +148,12 @@ public class DirectionBasedRenderer implements IRendererRule {
 				
 				float[] vaodata = new float[] {
 						target[0]/atlasWidth, target[1]/atlasHeight, 0, 0,
-						target[0]/atlasWidth, (target[1]+1)/atlasHeight, 0, r.worldToRenderLengthConvert(1),
-						(target[0]+1)/atlasWidth, target[1]/atlasHeight, r.worldToRenderLengthConvert(1), 0,
+						target[0]/atlasWidth, (target[1]+1)/atlasHeight, 0, r.wtrLen(1),
+						(target[0]+1)/atlasWidth, target[1]/atlasHeight, r.wtrLen(1), 0,
 						
-						(target[0]+1)/atlasWidth, (target[1]+1)/atlasHeight, r.worldToRenderLengthConvert(1), r.worldToRenderLengthConvert(1),
-						target[0]/atlasWidth, (target[1]+1)/atlasHeight, 0, r.worldToRenderLengthConvert(1),
-						(target[0]+1)/atlasWidth, target[1]/atlasHeight, r.worldToRenderLengthConvert(1), 0
+						(target[0]+1)/atlasWidth, (target[1]+1)/atlasHeight, r.wtrLen(1), r.wtrLen(1),
+						target[0]/atlasWidth, (target[1]+1)/atlasHeight, 0, r.wtrLen(1),
+						(target[0]+1)/atlasWidth, target[1]/atlasHeight, r.wtrLen(1), 0
 				};
 				glBindVertexArray(vaoId);
 				glBindBuffer(GL_ARRAY_BUFFER, vboId);
