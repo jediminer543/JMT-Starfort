@@ -36,7 +36,7 @@ import org.jmt.starfort.world.component.IComponent;
 import org.jmt.starfort.world.component.IComponentDirectioned;
 import org.joml.Vector2f;
 
-public class RendererHuman implements IRendererRule {
+public class HumanRenderer implements IRendererRule {
 
 	@Override
 	public Class<? extends IComponent>[] getRenderableComponents() {
@@ -51,7 +51,7 @@ public class RendererHuman implements IRendererRule {
 		
 	}
 	
-	int vaoId = 0;
+	int vaoId = 0, vboId = 0;
 	
 	@Override
 	public void draw(Renderer r, Coord offset, IComponent comp, Coord compLoc) {
@@ -73,7 +73,7 @@ public class RendererHuman implements IRendererRule {
         	glEnableClientState(GL_VERTEX_ARRAY);
         	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		
-			int vboId = glGenBuffers();
+			vboId = glGenBuffers();
 			vaoId = glGenVertexArrays();
 			
 			float[] vaodata = new float[] {

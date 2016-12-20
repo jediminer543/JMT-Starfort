@@ -1,17 +1,11 @@
 package org.jmt.starfort.game.renderer;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL30.*;
-
 import java.io.IOException;
-import java.nio.FloatBuffer;
 import java.util.Arrays;
 
 import org.jmt.starfort.game.components.ComponentWall;
 import org.jmt.starfort.renderer.IRendererRule;
-import org.jmt.starfort.renderer.RenderUtil;
 import org.jmt.starfort.renderer.Renderer;
 import org.jmt.starfort.renderer.Texture;
 import org.jmt.starfort.util.Coord;
@@ -19,10 +13,9 @@ import org.jmt.starfort.util.Direction;
 import org.jmt.starfort.util.InlineFunctions;
 import org.jmt.starfort.util.NavContext;
 import org.jmt.starfort.world.component.IComponent;
-import org.jmt.starfort.world.material.MaterialRegistry;
 import org.joml.Vector2f;
 
-
+@Deprecated
 public class WallRenderer implements IRendererRule {
 
 	//int vboId, vaoId;

@@ -14,6 +14,7 @@ import org.joml.MatrixStack;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.stb.STBTruetype;
 
 /**
  * A wrapper for OpenGL, implemented during conversion between GL11 and
@@ -248,4 +249,10 @@ public class JMTGl {
 	}
 	
 	//SHADER END
+	
+	//FONT STUFFS BEGIN
+	
+	//TODO
+	
+	//FONTS STUFFS END
 }

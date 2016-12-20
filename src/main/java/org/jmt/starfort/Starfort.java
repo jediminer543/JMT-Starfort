@@ -37,6 +37,8 @@ import org.jmt.starfort.processor.Processor;
 import org.jmt.starfort.renderer.Colour;
 import org.jmt.starfort.renderer.IRendererRule;
 import org.jmt.starfort.renderer.Renderer;
+import org.jmt.starfort.ui.gui.GUI;
+import org.jmt.starfort.ui.gui.widget.GUIWidgetPanel;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.util.Direction;
 import org.jmt.starfort.util.InlineFunctions;
@@ -49,6 +51,7 @@ import org.jmt.starfort.world.component.IComponentUpDown;
 import org.jmt.starfort.world.material.IMaterial;
 import org.jmt.starfort.world.material.IMaterialType;
 import org.jmt.starfort.world.material.MaterialRegistry;
+import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWKeyCallbackI;
@@ -290,6 +293,7 @@ public class Starfort {
 		});
 		
 		Processor.addRequest(new TickRequest(w));
+		GUI.getGUIChildren().add(new GUIWidgetPanel(null, new Vector2f(), 50, 50));
 		
 		while (!GLFW.glfwWindowShouldClose(window)) {
 			GLFW.glfwPollEvents();
@@ -300,6 +304,8 @@ public class Starfort {
 			//NanoVG.nvgBeginFrame(worldNvgCtx, 1600, 900, 1);
 			//NanoVG.nvgStrokeWidth(worldNvgCtx, 1f);
 			r.draw(w, displayOffset);
+			
+			GUI.draw();
 			//NanoVG.nvgEndFrame(worldNvgCtx);
 		}
 		
@@ -338,14 +344,14 @@ public class Starfort {
 		
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		glOrtho(0, 1600, 900, 0, 0.000001, 100);
+		glOrtho(0, 1600, 900, 0, 0.000001, 100000);
 		
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 		
 		jglMatrixMode(GL_PROJECTION);
 		jglLoadIdentity();
-		jglOrtho(0, 1600, 900, 0, 0.000001, 100);
+		jglOrtho(0, 1600, 900, 0, 0.000001, 100000);
 		
 		jglMatrixMode(GL_MODELVIEW);
 		jglLoadIdentity();

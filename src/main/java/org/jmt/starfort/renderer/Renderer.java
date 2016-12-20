@@ -141,10 +141,14 @@ public class Renderer {
 		//glRotatef(90, 0, 0, 1);
 		long startTime = System.nanoTime();
 		int[] bounds = w.getBounds(true);
+		glPushMatrix();
+		jglPushMatrix();
 		drawLayer(w, offset, bounds, 3);
 		drawLayer(w, offset, bounds, 2);
 		drawLayer(w, offset, bounds, 1);
 		drawLayer(w, offset, bounds, 0);
+		glPopMatrix();
+		jglPopMatrix();
 		long endTime = System.nanoTime();
 		long frameTime = endTime - startTime;
 		float FPS = (1000000000/frameTime);

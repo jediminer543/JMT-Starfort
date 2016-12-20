@@ -40,6 +40,7 @@ public class DirectionBasedRenderer implements IRendererRule {
 	int priority;
 	
 	Map<List<Direction>, Integer> vaoCache = new HashMap<List<Direction>, Integer>();
+	Map<List<Direction>, Integer> vboCache = new HashMap<List<Direction>, Integer>();
 	
 	static final boolean GL30 = true;
 	
@@ -174,6 +175,7 @@ public class DirectionBasedRenderer implements IRendererRule {
 	        	glBindVertexArray(0);
 				
 				vaoCache.put(Arrays.asList(dirComp.getComponentDirections()), vaoId);
+				vboCache.put(Arrays.asList(dirComp.getComponentDirections()), vboId);
 				System.out.println("VAO GENERATED");
 			}
 			jglUseProgram(0);
