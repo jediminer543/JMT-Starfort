@@ -24,6 +24,7 @@ public class GUI {
 	}
 	
 	public static void draw() {
+		/*
 		GL11.glPushMatrix();
 		JMTGl.jglPushMatrix();
 		GL11.glLoadIdentity();
@@ -33,5 +34,6 @@ public class GUI {
 		}
 		GL11.glPopMatrix();
 		JMTGl.jglPopMatrix();
+		*/
 	}
 }

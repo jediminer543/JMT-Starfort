@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jmt.starfort.processor.requests.ProcessingRequest;
@@ -41,7 +42,7 @@ public class Processor {
 	/**
 	 * Number of threads to run
 	 */
-	static int size = 64;
+	static int size = 1;
 	
 	public static void init() {
 		// Tells threads that they should run
@@ -58,11 +59,15 @@ public class Processor {
 						while (online) {
 							totalTicks++;
 							if (simpleJobs.size() > 0) {
+								Runnable job = null;
 								try {
-									simpleJobs.pop().run();
-								} catch (NoSuchElementException nsee) {
+									job = simpleJobs.pollFirst(100, TimeUnit.MICROSECONDS);
+								} catch (InterruptedException nsee) {
 									//nsee.printStackTrace();
 									//Happens when task is being cycled; shouldn't be a problem
+								}
+								if (job != null) {
+									job.run();
 								}
 							}
 							else if (proccessingJobs.size() - curMoving.get() > 0) {
@@ -99,7 +104,7 @@ public class Processor {
 										first.processNext();
 									}
 									} catch (NoSuchElementException nsee) {
-										//nsee.printStackTrace();
+										nsee.printStackTrace();
 										//Happens when task is being cycled; shouldn't be a problem
 									}
 								}

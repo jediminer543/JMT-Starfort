@@ -6,6 +6,6 @@ package org.jmt.starfort.world.component;
  * @author Jediminer543
  *
  */
-public interface IComponentRandomTickable {
+public interface IComponentRandomTickable extends IComponent {
 
 }

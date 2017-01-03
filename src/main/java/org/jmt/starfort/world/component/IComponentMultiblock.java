@@ -1,6 +1,6 @@
 package org.jmt.starfort.world.component;
 
-public interface IComponentMultiblock {
+public interface IComponentMultiblock extends IComponent {
 	
 	public String getComponentMultiBlockType();
 	

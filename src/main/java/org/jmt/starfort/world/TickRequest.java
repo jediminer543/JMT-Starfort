@@ -1,15 +1,18 @@
 package org.jmt.starfort.world;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.jmt.starfort.game.event.EventBus;
+import org.jmt.starfort.game.event.EventBus.EventCallback;
+import org.jmt.starfort.game.event.IEvent;
+import org.jmt.starfort.game.event.events.EventMove;
 import org.jmt.starfort.processor.ComplexRunnable;
 import org.jmt.starfort.processor.requests.ReusableProcessingRequest;
 import org.jmt.starfort.util.Coord;
+import org.jmt.starfort.world.component.IComponentTickable;
 
 /**
  * Processes worlds
@@ -69,6 +72,24 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 		ticksCurr = (ConcurrentHashMap<Coord, ArrayList<ComplexRunnable>>) w.getTicks();
 	}
 	
+	{
+		EventBus.registerEventCallback(new EventCallback() {
+			
+			@Override
+			public void handleEvent(IEvent ev) {
+				if (ev instanceof EventMove && ((EventMove)ev).w == w && ((EventMove)ev).icomp instanceof IComponentTickable) {
+					move(((EventMove)ev).src, ((EventMove)ev).dst, ((IComponentTickable)((EventMove)ev).icomp).getTick());
+				}
+			}
+			
+			@SuppressWarnings("unchecked") // Cant fix because reasons
+			@Override
+			public Class<? extends IEvent>[] getProcessableEvents() {
+				return new Class[] {EventMove.class};
+			}
+		});
+	}
+	
 	public boolean move(Coord src, Coord dst, ComplexRunnable tgt) {
 		try {
 		if (ticksCurr.get(src) != null && ticksCurr.get(src).contains(tgt)) {
@@ -116,7 +137,15 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 		synchronized (ticksProc) {
 		ticksProc.put(task, execLoc);
 		}
-		task.run(w, execLoc, this);
+		
+		//Execute task, making certain that it doesn't kill the thread
+		try {
+			task.run(w, execLoc, this);
+		} catch (Exception e) {
+			System.err.println("ERROR: " + task.getClass().getName() + "threw an exception to the processing thread");
+			e.printStackTrace();
+		}
+		
 		boolean complete = false;
 		while (!complete) {
 			try {
@@ -129,14 +158,31 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 				ticksNext.get(ticksProc.get(task)).add(task);
 				complete = true;
 			}
-			} catch (NullPointerException npe) {/*concurrency error*/}
+			} catch (NullPointerException npe) {/*concurrency error*/ }
 		}
 		runningCount.decrementAndGet();
 		}
 	}
 
+	//TEST PLEASE IGNORE private volatile int completeCheckCount = 0;
+	
 	@Override
 	public boolean complete() {
+		if (runningCount.get() < 0) {
+			runningCount.set(0);
+			System.out.println("ERROR: running count lt 0");
+		}
+		/* TEST PLEASE IGNORE
+		if (completeCheckCount >= 10) {
+			completeCheckCount = 0;
+			if (runningCount.get() != ticksProc.size()) {
+				System.out.println("ERROR: running count desync, fixing");
+				runningCount.set(ticksProc.size());
+			}
+		}
+		completeCheckCount++;
+		*/
+		
 		return remaining() == 0 && runningCount.get() == 0;
 	}
 

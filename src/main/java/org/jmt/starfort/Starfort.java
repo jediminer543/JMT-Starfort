@@ -26,6 +26,7 @@ import org.jmt.starfort.game.components.ComponentStairs;
 import org.jmt.starfort.game.components.ComponentWall;
 import org.jmt.starfort.game.components.fluid.ComponentPipe;
 import org.jmt.starfort.game.entity.EntityDrone;
+import org.jmt.starfort.game.entity.human.EntityHuman;
 import org.jmt.starfort.game.registra.RenderRegistra;
 import org.jmt.starfort.game.renderer.DirectionBasedRenderer;
 import org.jmt.starfort.game.renderer.GenericRenderer;
@@ -48,6 +49,7 @@ import org.jmt.starfort.world.TickRequest;
 import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.component.IComponent;
 import org.jmt.starfort.world.component.IComponentUpDown;
+import org.jmt.starfort.world.controller.ControllerTask;
 import org.jmt.starfort.world.material.IMaterial;
 import org.jmt.starfort.world.material.IMaterialType;
 import org.jmt.starfort.world.material.MaterialRegistry;
@@ -62,6 +64,20 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL30;
 import org.reflections.vfs.CommonsVfs2UrlType.Dir;
 
+/**
+ * THIS SHOULD LIVE IN TEST, BUT LIVES HERE BECAUSE IT CAN
+ * 
+ * ALSO I'M TIRED SO I'M YELLING
+ * 
+ * HELLO FUTURE ME
+ * 
+ * PAST ME INFORMS YOU YOU HAVE OTHER MORE IMPORTANT WORK TO BE DOING
+ * 
+ * JUST A FRIENDLY HINT
+ * 
+ * @author Jediminer543
+ *
+ */
 public class Starfort {
 
 	public static long window;
@@ -196,6 +212,9 @@ public class Starfort {
 		w.getBlock(new Coord(0, 0, 0)).addComponent(new EntityDrone());
 		w.getBlock(new Coord(0, 0, 1)).addComponent(new EntityDrone());
 		w.getBlock(new Coord(5, 1, 0)).addComponent(new EntityDrone());
+		
+		w.getController(ControllerTask.class);
+		w.getBlock(new Coord()).addComponent(new EntityHuman("BOB"));
 		
 		makeRoom(w1, mat, new Coord(0,0,5), new Coord(3,1,8));
 		

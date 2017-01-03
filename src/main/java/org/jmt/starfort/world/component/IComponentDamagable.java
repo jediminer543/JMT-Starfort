@@ -11,7 +11,7 @@ package org.jmt.starfort.world.component;
  * @author Jediminer543
  *
  */
-public interface IComponentDamagable {
+public interface IComponentDamagable extends IComponent {
 
 	/**
 	 * Return the components current health

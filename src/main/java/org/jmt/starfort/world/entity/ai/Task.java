@@ -1,8 +1,11 @@
 package org.jmt.starfort.world.entity.ai;
 
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Deque;
 
+import org.jmt.starfort.util.Coord;
+import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.entity.IEntity;
 
 public class Task implements ITask {
@@ -17,6 +20,12 @@ public class Task implements ITask {
 		this.subtasks = subtasks; 
 	}
 	
+	public Task(String name, int priority, ITask[] subtasks) {
+		this.name = name;
+		this.priority = priority;
+		this.subtasks = new ArrayDeque<ITask>(Arrays.asList(subtasks)); 
+	}
+	
 	@Override
 	public String getTaskName() {
 		return name;
@@ -24,17 +33,17 @@ public class Task implements ITask {
 
 	@Override
 	public int getTaskPriority() {
-		return 0;
+		return priority;
 	}
 
 	@Override
-	public boolean tickTask(Object... args) {
+	public boolean tickTask(World w, IEntity e, Coord c, Object... args) {
 		if (subtasks.getFirst().getTaskState() == TaskState.COMPLETE) {
 			subtasks.pop();
 		}
 		if (subtasks.getFirst().getTaskState() != TaskState.WAITING &&
 				subtasks.getFirst().getTaskState() != TaskState.COMPLETE) {
-			subtasks.getFirst().tickTask(this, args);
+			subtasks.getFirst().tickTask(w, e, c, this, args);
 			return true;
 		}
 		return false;

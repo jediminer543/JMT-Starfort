@@ -1,5 +1,7 @@
 package org.jmt.starfort.world.entity.ai;
 
+import org.jmt.starfort.util.Coord;
+import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.entity.IEntity;
 
 public interface ITask {
@@ -18,10 +20,10 @@ public interface ITask {
 	
 	/**
 	 * Update the task state
-	 * @param args Input values being passed; First will be supertask
+	 * @param args Input values being passed;  supertask
 	 * @return true when the task is running (not waiting or completed)
 	 */
-	public boolean tickTask(Object... args);
+	public boolean tickTask(World w, IEntity e, Coord c, Object... args);
 	
 	/**
 	 * Get the state of the task

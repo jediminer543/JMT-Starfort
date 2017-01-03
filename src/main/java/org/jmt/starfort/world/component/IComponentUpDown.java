@@ -1,6 +1,6 @@
 package org.jmt.starfort.world.component;
 
-public interface IComponentUpDown {
+public interface IComponentUpDown extends IComponent {
 	
 	public boolean canUp();
 	

@@ -12,6 +12,7 @@ import org.jmt.starfort.game.components.fluid.ComponentPipe;
 import org.jmt.starfort.game.entity.EntityDrone;
 import org.jmt.starfort.game.renderer.DirectionBasedRenderer;
 import org.jmt.starfort.game.renderer.GenericRenderer;
+import org.jmt.starfort.game.renderer.HumanRenderer;
 import org.jmt.starfort.game.renderer.WallRenderer;
 import org.jmt.starfort.renderer.IRendererRule;
 import org.jmt.starfort.util.Direction;
@@ -190,6 +191,8 @@ public class RenderRegistra {
 				mapping, 
 				0,
 		false));
+		
+		ruleSet.add(new HumanRenderer());
 	}
 	
 }

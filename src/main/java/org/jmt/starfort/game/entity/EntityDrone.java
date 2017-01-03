@@ -4,7 +4,6 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -19,7 +18,6 @@ import org.jmt.starfort.util.Direction;
 import org.jmt.starfort.util.NavContext;
 import org.jmt.starfort.world.TickRequest;
 import org.jmt.starfort.world.World;
-import org.jmt.starfort.world.component.IComponent;
 import org.jmt.starfort.world.component.IComponentUpDown;
 import org.jmt.starfort.world.entity.IEntity;
 import org.jmt.starfort.world.entity.ai.ITask;
@@ -39,34 +37,34 @@ public class EntityDrone implements IEntity {
 			targets.addLast(new Coord(2, 0, 0));
 			targets.addLast(new Coord(6, 0, 6));
 		}
-		IPassageCallback pc = new IPassageCallback() {
-			
-			@Override
-			public boolean canPass(World w, Coord src, Direction dir) {
-				if (dir != Direction.YINC && dir != Direction.YDEC) {
-					if (w.getBlock(src.addR(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(dir.inverse()) || w.getBlock(src.addR(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(Direction.SELFFULL) 
-							|| w.getBlock(src.get()).getBlockedDirs(NavContext.Physical).contains(dir)) {
-							return false;
-					}
-					return true;
-				} else {
-					List<IComponent> UDCL = null;
-					if (!(UDCL = w.getBlock(src).getCompInstances(IComponentUpDown.class)).isEmpty()) {
-						for (IComponent c : UDCL) {
-							IComponentUpDown UDC = (IComponentUpDown) c;
-							if (UDC.canUp() && dir == Direction.YINC)
-								return true;
-							if (UDC.canDown() && dir == Direction.YDEC)
-								return true;
-						}
-					}
-				}
-				return false;
-			}
-		};
+		
 	}
 	
 	Dataset ds = new Dataset();
+	IPassageCallback pc = new IPassageCallback() {
+		
+		@Override
+		public boolean canPass(World w, Coord src, Direction dir) {
+			if (dir != Direction.YINC && dir != Direction.YDEC) {
+				if (w.getBlock(src.addR(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(dir.inverse()) || w.getBlock(src.addR(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(Direction.SELFFULL) 
+						|| w.getBlock(src.get()).getBlockedDirs(NavContext.Physical).contains(dir)) {
+						return false;
+				}
+				return true;
+			} else {
+				List<IComponentUpDown> UDCL = null;
+				if (!(UDCL = w.getBlock(src).getCompInstances(IComponentUpDown.class)).isEmpty()) {
+					for (IComponentUpDown UDC : UDCL) {
+						if (UDC.canUp() && dir == Direction.YINC)
+							return true;
+						if (UDC.canDown() && dir == Direction.YDEC)
+							return true;
+					}
+				}
+			}
+			return false;
+		}
+	};
 	
 	@Override
 	public String getComponentName() {
@@ -90,7 +88,7 @@ public class EntityDrone implements IEntity {
 				TickRequest tr = (TickRequest) args[2];
 				//System.out.println("Processing");
 				if (parent.ds.p == null && parent.ds.futurePath == null) {
-					parent.ds.futurePath = BruteforcePather.pathBetweenAsync(c, parent.ds.targets.getFirst(), w, parent.ds.pc);
+					parent.ds.futurePath = BruteforcePather.pathBetweenAsync(c, parent.ds.targets.getFirst(), w, pc);
 					Processor.addRequest(parent.ds.futurePath);
 					parent.ds.p = null;
 				}
@@ -109,7 +107,7 @@ public class EntityDrone implements IEntity {
 					}
 				}
 				if (parent.ds.p != null && parent.ds.p.remaining() <= 0 && parent.ds.futurePath == null) {
-					parent.ds.futurePath = BruteforcePather.pathBetweenAsync(c, parent.ds.targets.getFirst(), w, parent.ds.pc);
+					parent.ds.futurePath = BruteforcePather.pathBetweenAsync(c, parent.ds.targets.getFirst(), w, pc);
 					Processor.addRequest(parent.ds.futurePath);
 					parent.ds.p = null;
 				} else if (parent.ds.p != null && parent.ds.p.remaining() > 0) {
@@ -138,6 +136,11 @@ public class EntityDrone implements IEntity {
 	public ITask[] getEntityTaskList() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public IPassageCallback getEntityPassageCallback() {
+		return pc;
 	}
 
 }

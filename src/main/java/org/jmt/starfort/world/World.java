@@ -7,9 +7,12 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.jmt.starfort.game.event.EventBus;
+import org.jmt.starfort.game.event.events.EventMove;
 import org.jmt.starfort.processor.ComplexRunnable;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.world.block.Block;
+import org.jmt.starfort.world.component.IComponent;
 import org.jmt.starfort.world.controller.IController;
 
 /**
@@ -125,10 +128,12 @@ public class World {
 	 * @param controllerClass The class of controller to find/add
 	 * @return The controller, or null if it cannot be instantated
 	 */
-	public synchronized IController getController(Class<? extends IController> controllerClass) {
+	@SuppressWarnings("unchecked") // apparently class.isInstance isn't checking casting
+	public synchronized <T extends IController> T getController(Class<T> controllerClass) {
 		for (IController c : controllers) {
 			if (controllerClass.isInstance(c)) {
-				return c;
+				// apparently class.isInstance isn't checking casting
+				return (T) c;
 			}
 		}
 		IController i = null;
@@ -138,7 +143,7 @@ public class World {
 		} catch (InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
-		return i;
+		return (T) i;
 	}
 	
 	
@@ -169,6 +174,16 @@ public class World {
 //		return clone;
 //	}
 	
+	public void moveComponent(IComponent ic, Coord source, Coord dest) {
+		Block sb = getBlockNoAdd(source);
+		Block db = getBlockNoAdd(source);
+		if (sb != null && db != null && sb.getComponents().contains(ic)) {
+			sb.removeComponent(ic);
+			db.addComponent(ic);
+			EventBus.fireEvent(new EventMove(this, ic, source, dest));
+		}
+	}
+	
 	public void updateBounds() {
 		int xmin, xmax, ymin, ymax, zmin, zmax;
 		xmax = ymax = zmax = Integer.MIN_VALUE;
@@ -192,6 +207,12 @@ public class World {
 		bounds = new int[]{xmin, ymin, zmin, xmax, ymax, zmax};
 	}
 	
+	/**
+	 * Gets the bounds of the world
+	 * 
+	 * @param update Weather to recalculate the bounds
+	 * @return {xmin, ymin, zmin, xmax, ymax, zmax} 
+	 */
 	public int[] getBounds(boolean update) {
 		if (update)
 			updateBounds();

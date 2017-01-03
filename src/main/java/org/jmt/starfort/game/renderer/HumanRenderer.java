@@ -1,10 +1,6 @@
 package org.jmt.starfort.game.renderer;
 
-import static org.jmt.starfort.renderer.JMTGl.jglColor4f;
-import static org.jmt.starfort.renderer.JMTGl.jglGetAttribLocation;
-import static org.jmt.starfort.renderer.JMTGl.jglPushMatrix;
-import static org.jmt.starfort.renderer.JMTGl.jglTranslatef;
-import static org.jmt.starfort.renderer.JMTGl.jglUseProgram;
+import static org.jmt.starfort.renderer.JMTGl.*;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_COORD_ARRAY;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
@@ -18,22 +14,19 @@ import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
+import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
-import java.util.Arrays;
-
+import java.io.IOException;
 import org.jmt.starfort.game.entity.human.EntityHuman;
-import org.jmt.starfort.renderer.Colour;
 import org.jmt.starfort.renderer.IRendererRule;
 import org.jmt.starfort.renderer.Renderer;
 import org.jmt.starfort.renderer.Texture;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.util.InlineFunctions;
 import org.jmt.starfort.world.component.IComponent;
-import org.jmt.starfort.world.component.IComponentDirectioned;
 import org.joml.Vector2f;
 
 public class HumanRenderer implements IRendererRule {
@@ -48,7 +41,12 @@ public class HumanRenderer implements IRendererRule {
 	
 	@Override
 	public void init(Renderer r) {
-		
+		try {
+			shader = jglLoadShader(getClass().getClassLoader().getResourceAsStream("org/jmt/starfort/shader/entity/HumanShader.GLSL13.vert"), getClass().getClassLoader().getResourceAsStream("org/jmt/starfort/shader/entity/HumanShader.GLSL13.frag"));
+			tex = new Texture(getClass().getClassLoader().getResourceAsStream("org/jmt/starfort/texture/entity/humanoid/human/Human.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	int vaoId = 0, vboId = 0;
@@ -59,8 +57,6 @@ public class HumanRenderer implements IRendererRule {
 		Vector2f drawSrc = r.wtrCoord(compLoc, offset);
 		jglTranslatef(drawSrc.x, drawSrc.y, 0);
 		tex.bind();
-		IComponentDirectioned dirComp = (IComponentDirectioned) comp;
-		Arrays.sort(dirComp.getComponentDirections());
 		//Colour c;
 		//if (comp.getComponentMaterial() != null && (c = r.getMaterialColor(comp.getComponentMaterial())) != null) {
 		//	c.apply();
@@ -68,6 +64,8 @@ public class HumanRenderer implements IRendererRule {
 		//	jglColor4f(1f, 1f, 1f, 1f);
 		//}
 		jglUseProgram(shader);
+		glUniform4fv(jglGetUniformLocation("u_mapcol"), new float[] { (0x00)/255f, 0xff/255f,0x00/255f,1 });
+		glUniform4fv(jglGetUniformLocation("u_dstcol"), new float[] { 0xdb/255f, 0x94/255f,0x94/255f,1 });
 		if (vaoId == 0) {
 			glClientActiveTexture(GL_TEXTURE0);
         	glEnableClientState(GL_VERTEX_ARRAY);
@@ -102,6 +100,7 @@ public class HumanRenderer implements IRendererRule {
 		glBindVertexArray(vaoId);
     	glDrawArrays(GL_TRIANGLES, 0, 6);
     	glBindVertexArray(0);
+    	jglPopMatrix();
 	}
 
 	@Override

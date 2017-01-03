@@ -1,5 +1,6 @@
 package org.jmt.starfort.world.entity;
 
+import org.jmt.starfort.pathing.bruteforce.IPassageCallback;
 import org.jmt.starfort.world.component.IComponent;
 import org.jmt.starfort.world.component.IComponentTickable;
 import org.jmt.starfort.world.entity.ai.ITask;
@@ -46,4 +47,12 @@ public interface IEntity extends IComponent, IComponentTickable {
 	 */
 	public ITask[] getEntityTaskList();
 	
+	/**
+	 * Gets the passage callback for the entity
+	 * 
+	 * Required for task processing
+	 * 
+	 * @return Task list
+	 */
+	public IPassageCallback getEntityPassageCallback();
 }

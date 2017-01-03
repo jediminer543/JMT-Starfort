@@ -26,7 +26,9 @@ public class Block {
 		for (IComponent c: components) {
 			if (c instanceof IComponentTickable) {
 				IComponentTickable tickcomp = (IComponentTickable) c;
-				ticks.add(tickcomp.getTick());
+				ComplexRunnable tick = tickcomp.getTick();
+				if (tick != null)
+					ticks.add(tick);
 			}
 		}
 		return ticks;
@@ -75,10 +77,11 @@ public class Block {
 	 * @param clazz the class the component must implement
 	 * @return the first component found implementing the class, or null if none exists
 	 */
-	public synchronized IComponent getCompInstance(Class<?> clazz) {
+	@SuppressWarnings("unchecked") // clazz.isInstance != checking
+	public synchronized <T extends IComponent> T getCompInstance(Class<T> clazz) {
 		for (IComponent c : components) {
 			if (clazz.isInstance(c)) {
-				return c;
+				return (T) c;
 			}
 		}
 		return null;
@@ -89,11 +92,12 @@ public class Block {
 	 * @param clazz the class the component must implement
 	 * @return an array list of found components
 	 */
-	public synchronized ArrayList<IComponent> getCompInstances(Class<?> clazz) {
-		ArrayList<IComponent> found = new ArrayList<IComponent>();
+	@SuppressWarnings("unchecked") // clazz.isInstance != checking
+	public synchronized <T extends IComponent> ArrayList<T> getCompInstances(Class<T> clazz) {
+		ArrayList<T> found = new ArrayList<T>();
 		for (IComponent c : components) {
 			if (clazz.isInstance(c)) {
-				found.add(c);
+				found.add((T) c);
 			}
 		}
 		return found;
