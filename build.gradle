@@ -9,9 +9,9 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'application'
 
+mainClassName = "org.jmt.starfort.Starfort"
 
-
-sourceCompatibility = 1.7
+sourceCompatibility = 1.8
 version = '0.2.1'
 jar {
     manifest {
