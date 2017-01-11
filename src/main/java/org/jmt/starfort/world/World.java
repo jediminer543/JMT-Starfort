@@ -7,8 +7,8 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.jmt.starfort.game.event.EventBus;
-import org.jmt.starfort.game.event.events.EventMove;
+import org.jmt.starfort.event.EventBus;
+import org.jmt.starfort.event.events.EventMove;
 import org.jmt.starfort.processor.ComplexRunnable;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.world.block.Block;
@@ -176,11 +176,11 @@ public class World {
 	
 	public void moveComponent(IComponent ic, Coord source, Coord dest) {
 		Block sb = getBlockNoAdd(source);
-		Block db = getBlockNoAdd(source);
+		Block db = getBlockNoAdd(dest);
 		if (sb != null && db != null && sb.getComponents().contains(ic)) {
+			EventBus.fireEvent(new EventMove(this, ic, source, dest));
 			sb.removeComponent(ic);
 			db.addComponent(ic);
-			EventBus.fireEvent(new EventMove(this, ic, source, dest));
 		}
 	}
 	

@@ -18,7 +18,7 @@ public class Block {
 	
 	UUID id = UUID.randomUUID();
 	
-	ArrayList<IComponent> components = new ArrayList<>();
+	volatile ArrayList<IComponent> components = new ArrayList<>();
 	float damageTaken;
 	
 	public synchronized ArrayList<ComplexRunnable> getTicks() {
@@ -40,7 +40,8 @@ public class Block {
 	}
 	
 	public synchronized void removeComponent(IComponent c) {
-		components.remove(c);
+		//components.remove(c);
+		components.remove(components.indexOf(c));
 	}
 
 	public synchronized IComponent getComponent(int pos) {

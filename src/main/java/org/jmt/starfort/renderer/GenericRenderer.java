@@ -1,4 +1,4 @@
-package org.jmt.starfort.game.renderer;
+package org.jmt.starfort.renderer;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -7,10 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.jmt.starfort.renderer.Colour;
-import org.jmt.starfort.renderer.IRendererRule;
-import org.jmt.starfort.renderer.Renderer;
-import org.jmt.starfort.renderer.Texture;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.world.component.IComponent;
 import org.joml.Vector2f;

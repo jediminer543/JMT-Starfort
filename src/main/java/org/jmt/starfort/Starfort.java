@@ -15,25 +15,14 @@ import static org.lwjgl.opengl.GL32.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.jmt.starfort.renderer.JMTGl.*;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.jmt.starfort.game.components.ComponentStairs;
 import org.jmt.starfort.game.components.ComponentWall;
 import org.jmt.starfort.game.components.fluid.ComponentPipe;
 import org.jmt.starfort.game.entity.EntityDrone;
 import org.jmt.starfort.game.entity.human.EntityHuman;
 import org.jmt.starfort.game.registra.RenderRegistra;
-import org.jmt.starfort.game.renderer.DirectionBasedRenderer;
-import org.jmt.starfort.game.renderer.GenericRenderer;
-import org.jmt.starfort.game.renderer.WallRenderer;
-import org.jmt.starfort.pathing.bruteforce.BruteforcePather;
-import org.jmt.starfort.pathing.bruteforce.IPassageCallback;
-import org.jmt.starfort.pathing.bruteforce.Path;
 import org.jmt.starfort.processor.Processor;
 import org.jmt.starfort.renderer.Colour;
 import org.jmt.starfort.renderer.IRendererRule;
@@ -44,11 +33,8 @@ import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.util.Direction;
 import org.jmt.starfort.util.InlineFunctions;
 import org.jmt.starfort.util.NativePathModifier;
-import org.jmt.starfort.util.NavContext;
 import org.jmt.starfort.world.TickRequest;
 import org.jmt.starfort.world.World;
-import org.jmt.starfort.world.component.IComponent;
-import org.jmt.starfort.world.component.IComponentUpDown;
 import org.jmt.starfort.world.controller.ControllerTask;
 import org.jmt.starfort.world.material.IMaterial;
 import org.jmt.starfort.world.material.IMaterialType;
@@ -57,12 +43,8 @@ import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWKeyCallbackI;
-import org.lwjgl.nanovg.NanoVG;
-import org.lwjgl.nanovg.NanoVGGL3;
 import org.lwjgl.nuklear.NkContext;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL30;
-import org.reflections.vfs.CommonsVfs2UrlType.Dir;
 
 /**
  * THIS SHOULD LIVE IN TEST, BUT LIVES HERE BECAUSE IT CAN

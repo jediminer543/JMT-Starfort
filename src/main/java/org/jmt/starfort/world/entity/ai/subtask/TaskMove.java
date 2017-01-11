@@ -41,9 +41,6 @@ public class TaskMove implements ITask {
 			futurePath = BruteforcePather.pathBetweenAsync(c, dst, w, ie.getEntityPassageCallback());
 			Processor.addRequest(futurePath);
 		}
-		if (c.equals(dst)) {
-			state = TaskState.COMPLETE;
-		}
 		if (futurePath != null && futurePath.isDone()) {
 			try {
 				p = futurePath.get(100, TimeUnit.MICROSECONDS);
@@ -63,6 +60,12 @@ public class TaskMove implements ITask {
 			w.getBlockNoAdd(c).removeComponent(ie);
 			w.getBlock(dst).addComponent(ie);
 			*/
+		}
+		if (c.equals(dst) && p != null && p.remaining() == 0) {
+			state = TaskState.COMPLETE;
+		}
+		if (!c.equals(dst) && p != null && p.remaining() == 0 ) {
+			state = TaskState.ERROR;
 		}
 		return false;
 	}

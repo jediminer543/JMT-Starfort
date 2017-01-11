@@ -1,6 +1,6 @@
-package org.jmt.starfort.game.event.events;
+package org.jmt.starfort.event.events;
 
-import org.jmt.starfort.game.event.IEvent;
+import org.jmt.starfort.event.IEvent;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.component.IComponent;

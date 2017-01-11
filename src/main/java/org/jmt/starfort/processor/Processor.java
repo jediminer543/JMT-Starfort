@@ -42,7 +42,7 @@ public class Processor {
 	/**
 	 * Number of threads to run
 	 */
-	static int size = 1;
+	static int size = 128;
 	
 	public static void init() {
 		// Tells threads that they should run

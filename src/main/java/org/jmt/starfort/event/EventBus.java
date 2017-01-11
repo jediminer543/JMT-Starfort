@@ -1,4 +1,4 @@
-package org.jmt.starfort.game.event;
+package org.jmt.starfort.event;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -62,6 +62,7 @@ public class ControllerTask implements IController {
 									lastZ = z;
 									finished = false;
 								} else {
+									if (w.getBlockNoAdd(new Coord(x, y, z)) != null)
 									for (IComponentTasked c: w.getBlockNoAdd(new Coord(x, y, z)).getCompInstances(IComponentTasked.class)) {
 										worldTasks.addAll(Arrays.asList(c.getComponentTasks()));
 									}

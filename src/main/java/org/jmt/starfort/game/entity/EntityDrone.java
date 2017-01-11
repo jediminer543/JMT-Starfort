@@ -76,49 +76,49 @@ public class EntityDrone implements IEntity {
 		return null;
 	}
 
+	final EntityDrone parentt = this;
+	ComplexRunnable tick = new ComplexRunnable() {
+		EntityDrone parent = parentt;
+		@Override
+		public void run(Object... args) {
+			World w = (World) args[0];
+			Coord c = (Coord) args[1];
+			TickRequest tr = (TickRequest) args[2];
+			//System.out.println("Processing");
+			if (parent.ds.p == null && parent.ds.futurePath == null) {
+				parent.ds.futurePath = BruteforcePather.pathBetweenAsync(c, parent.ds.targets.getFirst(), w, pc);
+				Processor.addRequest(parent.ds.futurePath);
+				parent.ds.p = null;
+			}
+			if (c.equals(parent.ds.targets.getFirst())) {
+				parent.ds.targets.addLast(parent.ds.targets.pop());
+			}
+			if (parent.ds.futurePath != null && parent.ds.futurePath.isDone()) {
+				try {
+					parent.ds.p = parent.ds.futurePath.get(100, TimeUnit.MICROSECONDS);
+					parent.ds.futurePath = null;
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					e.printStackTrace();
+				} catch (TimeoutException e) {
+				}
+			}
+			if (parent.ds.p != null && parent.ds.p.remaining() <= 0 && parent.ds.futurePath == null) {
+				parent.ds.futurePath = BruteforcePather.pathBetweenAsync(c, parent.ds.targets.getFirst(), w, pc);
+				Processor.addRequest(parent.ds.futurePath);
+				parent.ds.p = null;
+			} else if (parent.ds.p != null && parent.ds.p.remaining() > 0) {
+				Coord dst = c.addR(parent.ds.p.pop().getDir());
+				w.moveComponent(parent, c, dst);
+			}
+			//System.out.println("Drone Proccecing cycle complete");
+		}
+	};
+	
 	@Override
 	public ComplexRunnable getTick() {
-		final EntityDrone parentt = this;
-		return new ComplexRunnable() {
-			EntityDrone parent = parentt;
-			@Override
-			public void run(Object... args) {
-				World w = (World) args[0];
-				Coord c = (Coord) args[1];
-				TickRequest tr = (TickRequest) args[2];
-				//System.out.println("Processing");
-				if (parent.ds.p == null && parent.ds.futurePath == null) {
-					parent.ds.futurePath = BruteforcePather.pathBetweenAsync(c, parent.ds.targets.getFirst(), w, pc);
-					Processor.addRequest(parent.ds.futurePath);
-					parent.ds.p = null;
-				}
-				if (c.equals(parent.ds.targets.getFirst())) {
-					parent.ds.targets.addLast(parent.ds.targets.pop());
-				}
-				if (parent.ds.futurePath != null && parent.ds.futurePath.isDone()) {
-					try {
-						parent.ds.p = parent.ds.futurePath.get(100, TimeUnit.MICROSECONDS);
-						parent.ds.futurePath = null;
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					} catch (ExecutionException e) {
-						e.printStackTrace();
-					} catch (TimeoutException e) {
-					}
-				}
-				if (parent.ds.p != null && parent.ds.p.remaining() <= 0 && parent.ds.futurePath == null) {
-					parent.ds.futurePath = BruteforcePather.pathBetweenAsync(c, parent.ds.targets.getFirst(), w, pc);
-					Processor.addRequest(parent.ds.futurePath);
-					parent.ds.p = null;
-				} else if (parent.ds.p != null && parent.ds.p.remaining() > 0) {
-					Coord dst = c.addR(parent.ds.p.pop().getDir());
-					tr.move(c, dst, this);
-					w.getBlockNoAdd(c).removeComponent(parent);
-					w.getBlock(dst).addComponent(parent);
-				}
-				//System.out.println("Drone Proccecing cycle complete");
-			}
-		};
+		return tick;
 	}
 
 	@Override

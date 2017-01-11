@@ -2,13 +2,14 @@ package org.jmt.starfort.world;
 
 import java.util.ArrayList;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.jmt.starfort.game.event.EventBus;
-import org.jmt.starfort.game.event.EventBus.EventCallback;
-import org.jmt.starfort.game.event.IEvent;
-import org.jmt.starfort.game.event.events.EventMove;
+import org.jmt.starfort.event.EventBus;
+import org.jmt.starfort.event.IEvent;
+import org.jmt.starfort.event.EventBus.EventCallback;
+import org.jmt.starfort.event.events.EventMove;
 import org.jmt.starfort.processor.ComplexRunnable;
 import org.jmt.starfort.processor.requests.ReusableProcessingRequest;
 import org.jmt.starfort.util.Coord;
@@ -42,7 +43,7 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	/**
 	 * Time until rerun
 	 */
-	long sleepTime = 10000000;
+	long sleepTime = 100000000;
 	
 	/**
 	 * Time sleep started
@@ -118,6 +119,7 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 		ComplexRunnable task = null;
 		Coord execLoc = null;
 		while (task == null) {
+			try {
 			if (ticksCurr.entrySet().size() == 0) {
 				return;
 			}
@@ -132,6 +134,10 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 					ticksCurr.remove(item.getKey());
 				}
 			}
+			}
+			} catch (NoSuchElementException nsee) {
+				//SYNC ERROR IGNORING
+				return;
 			}
 		}
 		synchronized (ticksProc) {

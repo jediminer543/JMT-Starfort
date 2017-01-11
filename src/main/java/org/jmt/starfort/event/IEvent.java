@@ -1,4 +1,4 @@
-package org.jmt.starfort.game.event;
+package org.jmt.starfort.event;
 
 public interface IEvent {
 	
