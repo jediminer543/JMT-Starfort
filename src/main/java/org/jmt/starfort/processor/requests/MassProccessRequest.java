@@ -3,7 +3,7 @@ package org.jmt.starfort.processor.requests;
 import java.util.ArrayList;
 
 /**
- * Executes a set of ComplexRunnables with a common set of arguments
+ * Executes a set of runnable(s) with a common set of arguments
  * 
  * @author Jediminer543
  *
@@ -28,10 +28,15 @@ public class MassProccessRequest implements Runnable, ReusableProcessingRequest<
 			return;
 		}
 		Runnable job = null;
-		synchronized (runnablesCurr) {
-			job = runnablesCurr.remove(0);
-			runnablesNext.add(job);
+		while (job == null) {
+			try {
+				job = runnablesCurr.remove(0);
+			} catch (IndexOutOfBoundsException e) { 
+				// SYNC ERROR; IGNORING 
+			}
 		}
+		runnablesNext.add(job);
+		
 		job.run();
 	}
 	
