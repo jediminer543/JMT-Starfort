@@ -1,7 +1,15 @@
+// Check Coverage with travis
+plugins {
+    id 'jacoco'
+    id 'com.github.kt3k.coveralls' version '2.6.3'
+}
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
-apply plugin: 'application'
+//apply plugin: 'application' NYI
+
+
 
 sourceCompatibility = 1.7
 version = '0.2.1'
@@ -58,4 +66,12 @@ distTar {
 		from '.'
 		include 'lib/natives/*'
 	}
+}
+
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true // coveralls plugin depends on xml format report
+        html.enabled = true
+    }
 }
