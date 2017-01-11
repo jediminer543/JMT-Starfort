@@ -43,6 +43,7 @@ public class HumanRenderer implements IRendererRule {
 	public void init(Renderer r) {
 		try {
 			shader = jglLoadShader(getClass().getClassLoader().getResourceAsStream("org/jmt/starfort/shader/entity/HumanShader.GLSL13.vert"), getClass().getClassLoader().getResourceAsStream("org/jmt/starfort/shader/entity/HumanShader.GLSL13.frag"));
+			glUniform4fv(jglGetUniformLocation("u_depthCol"), r.depthCol);
 			tex = new Texture(getClass().getClassLoader().getResourceAsStream("org/jmt/starfort/texture/entity/humanoid/human/Human.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -66,6 +67,7 @@ public class HumanRenderer implements IRendererRule {
 		jglUseProgram(shader);
 		glUniform4fv(jglGetUniformLocation("u_mapcol"), new float[] { (0x00)/255f, 0xff/255f,0x00/255f,1 });
 		glUniform4fv(jglGetUniformLocation("u_dstcol"), new float[] { 0xdb/255f, 0x94/255f,0x94/255f,1 });
+		glUniform1i(jglGetUniformLocation("u_depth"), r.renderDepth);
 		if (vaoId == 0) {
 			glClientActiveTexture(GL_TEXTURE0);
         	glEnableClientState(GL_VERTEX_ARRAY);

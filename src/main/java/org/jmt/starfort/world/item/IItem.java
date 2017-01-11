@@ -35,7 +35,7 @@ public interface IItem {
 	
 	/**
 	 * A value refering to the amount an item is worth for creation purposes, generaly where 100 is equal to one unit of stuff 
-	 * (e.g. An ingot of metal would be 100). Allows the fragmentation of items in construction, so an ingot may break down into
+	 * (e.g. An ingot or plate of metal would be 100). Allows the fragmentation of items in construction, so an ingot may break down into
 	 * say 3 chunks of 10 value each after 70 is used in crafting. Done with ints to avoid float math (especially since it is 
 	 * doubtful that less than 0.01 of an item will be needed). 
 	 * 

@@ -1,8 +1,6 @@
 package org.jmt.starfort.renderer;
 
 import java.nio.FloatBuffer;
-import java.util.Arrays;
-
 import org.lwjgl.BufferUtils;
 
 public class RenderUtil {

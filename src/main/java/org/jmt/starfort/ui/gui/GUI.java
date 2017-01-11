@@ -2,9 +2,6 @@ package org.jmt.starfort.ui.gui;
 
 import java.util.ArrayList;
 
-import org.jmt.starfort.renderer.JMTGl;
-import org.lwjgl.opengl.GL11;
-
 public class GUI {
 	
 	static ArrayList<IGUIWidget> children = new ArrayList<IGUIWidget>();

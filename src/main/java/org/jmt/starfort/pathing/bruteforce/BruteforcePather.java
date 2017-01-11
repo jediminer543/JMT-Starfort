@@ -3,12 +3,8 @@ package org.jmt.starfort.pathing.bruteforce;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RunnableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.util.Direction;
 import org.jmt.starfort.world.World;

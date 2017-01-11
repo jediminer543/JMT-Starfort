@@ -1,7 +1,6 @@
 package org.jmt.starfort.world.entity.stats;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 public class StatSheet {
@@ -21,6 +20,7 @@ public class StatSheet {
 			return null;
 	}
 	
+	@SuppressWarnings("unused") // because TODO
 	public void addStat(Stat<?> stat) {
 		Stat<?> toMerge = null;
 		if ((toMerge = getStat(stat)) != null) {

@@ -11,11 +11,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.block.Block;
@@ -32,6 +29,16 @@ public class Renderer {
 	float zoom = 0.25f;
 	// 1 world space = 16 render spaces
 	int renderSpacePerWorldSpace = 16;
+	
+	/**
+	 * Current render depth; placed here for custom shaders
+	 */
+	public int renderDepth = 0;
+	
+	/**
+	 * Depth colour for custom shaders
+	 */
+	public final float[] depthCol = new float[] {0.1f, 0.1f, 0.2f, 1f};
 	
 	Map<Class<? extends IComponent>, IRendererRule> renderSet = new HashMap<>();
 	
@@ -151,12 +158,14 @@ public class Renderer {
 		jglPopMatrix();
 		long endTime = System.nanoTime();
 		long frameTime = endTime - startTime;
+		@SuppressWarnings("unused")
 		float FPS = (1000000000/frameTime);
 		//System.out.println("FPS: " + FPS);
 		//glRotatef(-90, 0, 0, 1);
 	}
 	
 	private void drawLayer(World w, Coord offset, int[] bounds, int depth) {
+		renderDepth = depth;
 		jglUseProgram(program);
 		glUniform1i(jglGetUniformLocation("u_depth"), depth);
 		glUniform4fv(jglGetUniformLocation("u_depthCol"), new float[] {0.1f, 0.1f, 0.2f, 1f});

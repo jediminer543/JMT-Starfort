@@ -16,7 +16,7 @@ import org.jmt.starfort.processor.Processor;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.util.Direction;
 import org.jmt.starfort.util.NavContext;
-import org.jmt.starfort.world.TickRequest;
+//import org.jmt.starfort.world.TickRequest;
 import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.component.IComponentUpDown;
 import org.jmt.starfort.world.entity.IEntity;
@@ -83,7 +83,7 @@ public class EntityDrone implements IEntity {
 		public void run(Object... args) {
 			World w = (World) args[0];
 			Coord c = (Coord) args[1];
-			TickRequest tr = (TickRequest) args[2];
+			//TickRequest tr = (TickRequest) args[2];
 			//System.out.println("Processing");
 			if (parent.ds.p == null && parent.ds.futurePath == null) {
 				parent.ds.futurePath = BruteforcePather.pathBetweenAsync(c, parent.ds.targets.getFirst(), w, pc);

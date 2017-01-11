@@ -4,14 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.text.StyledEditorKit.StyledTextAction;
-
 import org.jmt.starfort.game.components.ComponentStairs;
 import org.jmt.starfort.game.components.ComponentWall;
 import org.jmt.starfort.game.components.fluid.ComponentPipe;
 import org.jmt.starfort.game.entity.EntityDrone;
 import org.jmt.starfort.game.renderer.HumanRenderer;
-import org.jmt.starfort.game.renderer.WallRenderer;
 import org.jmt.starfort.renderer.DirectionBasedRenderer;
 import org.jmt.starfort.renderer.GenericRenderer;
 import org.jmt.starfort.renderer.IRendererRule;

@@ -2,7 +2,7 @@ package org.jmt.starfort.renderer;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL30.*;
+//import static org.lwjgl.opengl.GL30.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,7 +14,7 @@ import org.joml.MatrixStack;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.stb.STBTruetype;
+//import org.lwjgl.stb.STBTruetype;
 
 /**
  * A wrapper for OpenGL, implemented during conversion between GL11 and
@@ -43,6 +43,10 @@ public class JMTGl {
 	public static final int JGL_PROJECTION = 0x1701;
 	public static final int JGL_MODELVIEW = 0x1700;
 	
+	/**
+	 * Equivelent of GLMatrixMode; 
+	 * @param mode One of JGL_PROJECTION or JGL MODELVIEW
+	 */
 	public static void jglMatrixMode(int mode) {
 		if (mode == JGL_PROJECTION) {
 			curMatStack = matProjectionStack;
@@ -53,34 +57,75 @@ public class JMTGl {
 		}
 	}
 	
+	/**
+	 * Pushes matrix to current stack; just like glPushMatrix
+	 */
 	public static void jglPushMatrix() {
 		curMatStack.pushMatrix();
 	}
 	
+	/**
+	 * Pops matrix from current stack just like glPopMatrix
+	 */
 	public static void jglPopMatrix() {
 		curMatStack.popMatrix();
 	}
 	
+	/**
+	 * Creates an orthographic projection matrix
+	 * @param l left
+	 * @param r right
+	 * @param b bottom
+	 * @param t top
+	 * @param n near-z
+	 * @param f far-z
+	 */
 	public static void jglOrtho(double l, double r, double b, double t, double n, double f) {
 		curMatStack.ortho((float) l, (float) r, (float) b, (float) t, (float) n, (float) f);
 	}
 	
+	/**
+	 * Loads identity of current matrix
+	 */
 	public static void jglLoadIdentity() {
 		curMatStack.loadIdentity();
 	}
 	
+	/**
+	 * Translates matrix by vector
+	 * @param translate vector to translate by
+	 */
 	public static void jglTranslatef(Vector3f translate) {
 		curMatStack.translate(translate);
 	}
 	
+	/**
+	 * Translates current matrix by values passed
+	 * @param x x translation
+	 * @param y y translation
+	 * @param z z translation
+	 */
 	public static void jglTranslatef(float x, float y, float z) {
 		curMatStack.translate(x, y, z);
 	}
-
+	
+	/**
+	 * Translates current matrix by values passed
+	 * @param x x translation
+	 * @param y y translation
+	 * @param z z translation
+	 */
 	public static void jglTranslated(double x, double y, double z) {
 		curMatStack.translate((float)x, (float)y, (float)z);
 	}
 	
+	/**
+	 * Translates current colour; which is auto-passed to shaders when they are loaded
+	 * @param red
+	 * @param green
+	 * @param blue
+	 * @param alpha
+	 */
 	public static void jglColor4f(float red, float green, float blue, float alpha) {
 		color.x = red;
 		color.y = green;
@@ -94,6 +139,7 @@ public class JMTGl {
 	
 	//VAO ADDR BEGIN
 	
+	//NYI TODO
 	public static final class JGLVAOPreGen {
 		//VertDat
 		int topx;
@@ -112,6 +158,7 @@ public class JMTGl {
 		int VBOID;
 	}
 	
+	// NYI TODO
 	public static int jglGenVAO() {
 		return 0;
 	}
@@ -119,6 +166,15 @@ public class JMTGl {
 	
 	//SHADER BEGIN
 	
+	/**
+	 * Loads and compiles a shader, so you don't have to; uses input streams so you can use ClassLoader.getResourceAsStream() to load
+	 * files from classpath
+	 * 
+	 * @param vertShaderStream vert buffer stream - compiles to vert shader
+	 * @param fragShaderStream frag buffer stream - compiles to frag shader
+	 * @return OpenGL shader program ID
+	 * @throws IOException When something goes wrong while reading files
+	 */
 	public static int jglLoadShader(InputStream vertShaderStream, InputStream fragShaderStream) throws IOException {
 		String vertShaderSrc = readFile(vertShaderStream);
 		String fragShaderSrc = readFile(fragShaderStream);
