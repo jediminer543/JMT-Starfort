@@ -42,5 +42,13 @@ public interface ReusableProcessingRequest<T> extends ProcessingRequest {
 	 */
 	public void remove(T item);
 	
-
+	/**
+	 * Whether the request should be autocycled by the processor
+	 * <br>
+	 * <code>if (remaining() < 0 && return) { reset(); } </code>
+	 * 
+	 * 
+	 * @return True if to automaticly cycled
+	 */
+	public boolean autoRepeat();
 }

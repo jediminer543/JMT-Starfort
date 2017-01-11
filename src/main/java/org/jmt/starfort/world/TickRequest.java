@@ -248,4 +248,9 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 		return count;
 	}
 
+	@Override
+	public boolean autoRepeat() {
+		return true;
+	}
+
 }

@@ -83,6 +83,12 @@ public class MassProccessRequest implements Runnable, ReusableProcessingRequest<
 	public int remaining() {
 		return runnablesCurr.size();
 	}
+
+	@Override
+	public boolean autoRepeat() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
 	
 	

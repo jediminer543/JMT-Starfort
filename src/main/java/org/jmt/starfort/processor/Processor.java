@@ -80,7 +80,7 @@ public class Processor {
 								} }
 								try {
 								if (first.complete()) {
-									if (first instanceof ReusableProcessingRequest<?>) {
+									if (first instanceof ReusableProcessingRequest<?> && ((ReusableProcessingRequest<?>)first).autoRepeat()) {
 										curMoving.incrementAndGet();
 										ProcessingRequest job = null;
 										while (job == null && online) {

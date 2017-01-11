@@ -83,6 +83,12 @@ public class ComplexMassProccessRequest implements Runnable, ReusableProcessingR
 	public int remaining() {
 		return runnablesCurr.size();
 	}
+
+	@Override
+	public boolean autoRepeat() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
 	
 	
