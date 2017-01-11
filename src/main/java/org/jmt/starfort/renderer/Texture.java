@@ -11,6 +11,13 @@ import java.nio.ByteBuffer;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
 
+/**
+ * 
+ * Ye olde GL texture class
+ * 
+ * @author jediminer543
+ *
+ */
 public class Texture
 {
 	private int target = GL_TEXTURE_2D;

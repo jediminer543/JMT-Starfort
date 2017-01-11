@@ -75,6 +75,7 @@ public class Starfort {
 		
 		//TODO do stuff
 		
+		// Initialise the library path
 		NativePathModifier.modLibraryPath("lib/native");
 		
 		preInit();

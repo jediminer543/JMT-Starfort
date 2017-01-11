@@ -63,6 +63,7 @@ public class World {
 	
 	/**
 	 * Get the location of a block in the world space
+	 * Returns null if block cannot be located
 	 * 
 	 * @param b The block to locate
 	 * @return
@@ -119,6 +120,14 @@ public class World {
 	 */
 	public synchronized Map<Coord, Block> getBlocks() {
 		return blocks;
+	}
+	
+	/**
+	 * Gets the worlds controller array
+	 * @return the worlds block controller
+	 */
+	public synchronized ArrayList<IController> getController() {
+		return controllers;
 	}
 	
 	/**
