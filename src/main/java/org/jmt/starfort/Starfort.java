@@ -22,6 +22,7 @@ import org.jmt.starfort.game.components.ComponentWall;
 import org.jmt.starfort.game.components.fluid.ComponentPipe;
 import org.jmt.starfort.game.entity.EntityDrone;
 import org.jmt.starfort.game.entity.human.EntityHuman;
+import org.jmt.starfort.game.registra.MaterialRegistra;
 import org.jmt.starfort.game.registra.RenderRegistra;
 import org.jmt.starfort.processor.Processor;
 import org.jmt.starfort.renderer.Colour;
@@ -37,7 +38,6 @@ import org.jmt.starfort.world.TickRequest;
 import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.controller.ControllerTask;
 import org.jmt.starfort.world.material.IMaterial;
-import org.jmt.starfort.world.material.IMaterialType;
 import org.jmt.starfort.world.material.MaterialRegistry;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
@@ -82,59 +82,12 @@ public class Starfort {
 		
 		init();
 		
-		IMaterialType stony = new IMaterialType() {
-			
-			@Override
-			public String getMaterialTypeName() {
-				return "Stone";
-			}
-			
-			@Override
-			public String getMaterialTypeDescriptor() {
-				// TODO Auto-generated method stub
-				return "A stonelike material";
-			}
-		};
-		
-		IMaterialType metal = new IMaterialType() {
-			
-			@Override
-			public String getMaterialTypeName() {
-				return "Metal";
-			}
-			
-			@Override
-			public String getMaterialTypeDescriptor() {
-				// TODO Auto-generated method stub
-				return "A metalic material";
-			}
-		};
-		
-		MaterialRegistry.registerMaterialType(metal);
-		MaterialRegistry.registerMaterialType(stony);
-		
 		//float[] colour = new float[] {0.5f, 0.2f, 0.5f, 1f};
-		IMaterial mat = new IMaterial() {
-			
-			@Override
-			public IMaterialType getMaterialType() {
-				return MaterialRegistry.getMaterialType("Metal");
-			}
-			
-			@Override
-			public String getMaterialName() {
-				return "jmt.starfort.mattmp.1";
-			}
-			
-			@Override
-			public float getMaterialHardness() {
-				return 1;
-			}
-		};
 		
 		World w = w1;
 		
-		int matID = MaterialRegistry.registerMaterial(mat);	
+		IMaterial mat = MaterialRegistry.getMaterial("Debug");
+		int matID = MaterialRegistry.getMaterialID(mat);	
 		r.materialRenderReg.put(matID, new Colour(0.5f, 0.2f, 0.5f, 1f));
 		
 		w.getBlock(new Coord(0, 0, 0)).addComponent(new ComponentStairs(mat, true, false));
@@ -373,7 +326,7 @@ public class Starfort {
 		worldNvgCtx = 0;//NanoVGGL3.nvgCreateGL3(NanoVGGL3.NVG_ANTIALIAS | NanoVGGL3.NVG_STENCIL_STROKES | NanoVGGL3.NVG_DEBUG);
 		//guiNukCtx = nk_gl
 		r = new Renderer();
-		preInitGenRenderRules();
+		preInitRegistas();
 		w1 = new World(); 
 	}
 	
@@ -406,17 +359,17 @@ public class Starfort {
 		return dirArr.toArray(new Direction[dirArr.size()]);
 	}
 	
-	public static void preInitGenRenderRules() {
-		//renderRules.add(new WallRenderer());
-
+	public static void preInitRegistas() {
 		RenderRegistra.register(renderRules);
-		
+		MaterialRegistra.register();
 		
 	}
+	
 	
 	public static void init() {
 		Processor.init();
 		r.init(renderRules);
+		
 	}
 	
 }

@@ -37,9 +37,7 @@ public class DirectionBasedRenderer implements IRendererRule {
 	
 	Map<List<Direction>, Integer> vaoCache = new HashMap<List<Direction>, Integer>();
 	Map<List<Direction>, Integer> vboCache = new HashMap<List<Direction>, Integer>();
-	
-	static final boolean GL30 = true;
-	
+		
 	public DirectionBasedRenderer(Class<? extends IComponent>[] comps, InputStream atlas, int atlasWidth, int atlasHeight, Map<Direction[], int[]> mapping, int priority, boolean multiSelfFull) {
 		this.comps = comps;
 		this.is = atlas;
@@ -80,6 +78,7 @@ public class DirectionBasedRenderer implements IRendererRule {
 
 	@Override
 	public void draw(Renderer r, Coord offset, IComponent comp, Coord compLoc) {
+		/* CULLING GL11 CODE
 		if (!GL30) {
 			glPushMatrix();
 			Vector2f drawSrc = r.wtrCoord(compLoc, offset);
@@ -114,7 +113,7 @@ public class DirectionBasedRenderer implements IRendererRule {
 			
 			} //else if (dirComp.getComponentDirections() && (target = mapping.get(dirComp.getComponentDirections())) != null) {
 			glPopMatrix();
-		} else {
+		} else {*/
 			jglPushMatrix();
 			Vector2f drawSrc = r.wtrCoord(compLoc, offset);
 			jglTranslatef(drawSrc.x, drawSrc.y, 0);
@@ -176,7 +175,7 @@ public class DirectionBasedRenderer implements IRendererRule {
 			}
 			jglUseProgram(0);
 			jglPopMatrix();
-		}
+		//}
 	}
 
 	@Override
