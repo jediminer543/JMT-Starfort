@@ -29,7 +29,6 @@ import org.jmt.starfort.renderer.Colour;
 import org.jmt.starfort.renderer.IRendererRule;
 import org.jmt.starfort.renderer.Renderer;
 import org.jmt.starfort.ui.gui.GUI;
-import org.jmt.starfort.ui.gui.widget.GUIWidgetPanel;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.util.Direction;
 import org.jmt.starfort.util.InlineFunctions;
@@ -152,69 +151,7 @@ public class Starfort {
 		w.getController(ControllerTask.class);
 		w.getBlock(new Coord()).addComponent(new EntityHuman("BOB"));
 		
-		makeRoom(w1, mat, new Coord(0,0,5), new Coord(3,1,8));
-		
-		/*
-		IMaterial mat2 = new IMaterial() {
-			
-			@Override
-			public IMaterialType getMaterialType() {
-				return MaterialRegistry.getMaterialType("Metal");
-			}
-			
-			@Override
-			public String getMaterialName() {
-				return "jmt.starfort.mattmp.2";
-			}
-			
-			@Override
-			public float getMaterialHardness() {
-				return 1;
-			}
-		};
-		
-		int mat2ID = MaterialRegistry.registerMaterial(mat2);	
-		System.out.println("Drawing wall with matId:" + mat2ID);
-		r.materialRenderReg.put(mat2ID, new Colour(0.5f, 0.7f, 0.5f, 0.5f));
-		
-		Coord src = new Coord(6, 0, 6);
-		
-		Path p = BruteforcePather.pathBetween(src, new Coord(0, 0, 3), w, new IPassageCallback() {
-			
-			@Override
-			public boolean canPass(World w, Coord src, Direction dir) {
-				if (dir != Direction.YINC && dir != Direction.YDEC) {
-					System.out.println(w.getBlock(src.addR(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(dir)  + " " + w.getBlock(src.addR(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(Direction.SELFFULL) 
-					+ " " + w.getBlock(src).getBlockedDirs(NavContext.Physical).contains(dir.inverse()));
-					if (w.getBlock(src.addR(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(dir.inverse()) || w.getBlock(src.addR(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(Direction.SELFFULL) 
-							|| w.getBlock(src.get()).getBlockedDirs(NavContext.Physical).contains(dir)) {
-							return false;
-					}
-					return true;
-				} else {
-					List<IComponent> UDCL = null;
-					if (!(UDCL = w.getBlock(src).getCompInstances(IComponentUpDown.class)).isEmpty()) {
-						for (IComponent c : UDCL) {
-							IComponentUpDown UDC = (IComponentUpDown) c;
-							if (UDC.canUp() && dir == Direction.YINC)
-								return true;
-							if (UDC.canDown() && dir == Direction.YDEC)
-								return true;
-						}
-					}
-				}
-				return false;
-			}
-		});
-		
-		while (p.remaining() > 0) {
-			src.addRM(p.pop().getDir());
-			//w.getBlock(new Coord(src.x, src.y, src.z)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XINC, Direction.XDEC, Direction.ZINC, Direction.ZDEC), mat2));
-			w.getBlock(src).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XINC, Direction.XDEC, Direction.ZINC, Direction.ZDEC), mat2));
-			System.out.println("Path to " + src + "");
-		}
-		*/
-		
+		DevUtil.makeRoom(w1, mat, new Coord(0,0,5), new Coord(3,1,8));
 		
 		final Coord displayOffset = new Coord(5, 0, 5);
 		
@@ -248,7 +185,6 @@ public class Starfort {
 		});
 		
 		Processor.addRequest(new TickRequest(w));
-		GUI.getGUIChildren().add(new GUIWidgetPanel(null, new Vector2f(), 50, 50));
 		
 		while (!GLFW.glfwWindowShouldClose(window)) {
 			GLFW.glfwPollEvents();
@@ -330,35 +266,6 @@ public class Starfort {
 		w1 = new World(); 
 	}
 	
-	public static void makeRoom(World w, IMaterial m, Coord minCorner, Coord maxCorner) {
-		for (int x = minCorner.x; x <= maxCorner.x; x++) {
-			boolean XDEC = x == minCorner.x;
-			boolean XINC = x == maxCorner.x;
-			for (int z = minCorner.z; z <= maxCorner.z; z++) {
-				boolean ZDEC = z == minCorner.z;
-				boolean ZINC = z == maxCorner.z;
-				for (int y = minCorner.y; y <= maxCorner.y; y++) {
-					boolean YDEC = y == minCorner.y;
-					boolean YINC = y == maxCorner.y;
-					
-					Direction[] wallConf = makeDirArray(XINC, XDEC, ZINC, ZDEC, YINC, YDEC);
-					w.getBlock(new Coord(x, y, z)).addComponent(new ComponentWall(wallConf, m));
-				}
-			}
-		}
-	}
-	
-	public static Direction[] makeDirArray(boolean XINC, boolean XDEC, boolean ZINC, boolean ZDEC, boolean YINC, boolean YDEC) {
-		ArrayList<Direction> dirArr = new ArrayList<>();
-		if (XINC) { dirArr.add(Direction.XINC); }
-		if (XDEC) { dirArr.add(Direction.XDEC); }
-		if (YINC) { dirArr.add(Direction.YINC); }
-		if (YDEC) { dirArr.add(Direction.YDEC); }
-		if (ZINC) { dirArr.add(Direction.ZINC); }
-		if (ZDEC) { dirArr.add(Direction.ZDEC); }
-		return dirArr.toArray(new Direction[dirArr.size()]);
-	}
-	
 	public static void preInitRegistas() {
 		RenderRegistra.register(renderRules);
 		MaterialRegistra.register();
@@ -368,6 +275,7 @@ public class Starfort {
 	
 	public static void init() {
 		Processor.init();
+		GUI.init();
 		r.init(renderRules);
 		
 	}

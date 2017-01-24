@@ -4,33 +4,15 @@ import java.util.ArrayList;
 
 public class GUI {
 	
-	static ArrayList<IGUIWidget> children = new ArrayList<IGUIWidget>();
-	static IGUIWidget selectedWidget = null; 
+	static NkCtxGLFW3 context = new NkCtxGLFW3();
 	
-	/**
-	 * Selects a widget to take inputs
-	 * @param widget
-	 */
-	public static void selectGUIWiget(IGUIWidget widget) {
-		//TODO
+	public static void init() {
+		NuklearUtil.nk_glfw3_device_create(context);
 	}
 
-	public static ArrayList<IGUIWidget> getGUIChildren() {
-		return children;
+	public static void draw() {
+		// TODO Auto-generated method stub
 		
 	}
 	
-	public static void draw() {
-		/*
-		GL11.glPushMatrix();
-		JMTGl.jglPushMatrix();
-		GL11.glLoadIdentity();
-		JMTGl.jglLoadIdentity();
-		for (IGUIWidget w : children) {
-			w.drawWidget();
-		}
-		GL11.glPopMatrix();
-		JMTGl.jglPopMatrix();
-		*/
-	}
 }

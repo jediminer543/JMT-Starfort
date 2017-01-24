@@ -10,19 +10,20 @@ JMT-StarFort
 [![Coverage Status](https://coveralls.io/repos/github/jediminer543/JMT-Starfort/badge.svg?branch=master)](https://coveralls.io/github/jediminer543/JMT-Starfort?branch=master) - Since I'm also making an engine, and wish to test it
 
 
-This is a student project, aiming to create an open source game similar to dwarf fortress. It is written in java using LWJGL.
+This is a student project, aiming to create an open source game similar to dwarf fortress, but in space, and with spaceships. And explosions. Don't forget the explosions...
 
-As yet incomplete.
+It is written in java using LWJGL. As yet incomplete (probably indefinitely)
 
 ##Plans
-* Modularised (and modding capacity)
+* Modularised (and modding capacity) - In, mostly (loading capacity, but modularised to n+1th degree)
 * Multi-threaded - Done
-* 3D - Done, ish
+* 3D world, segmented onto 2d planes - Done, ish
+* Depth, WITH THE POWER OF SHADER - Done
 * Multiple smaller worlds instead of a single larger one
 * Expandable worlds
 * Atmosphere (and depressurization)
 * Spaceships
-* People
-* GUI
+* People - In progress
+* GUI - 
 * Etc.
 
