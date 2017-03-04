@@ -16,6 +16,7 @@ public class EventBus {
 	static Map<Class<? extends IEvent>, ArrayList<EventCallback>> callbacks = new HashMap<Class<? extends IEvent>, ArrayList<EventCallback>>();
 	
 	public static void registerEventCallback(EventCallback ec) {
+		if (ec.getProcessableEvents() != null)
 		for (Class<? extends IEvent> ev : ec.getProcessableEvents()) {
 			if (!callbacks.containsKey(ev)) {
 				callbacks.put(ev, new ArrayList<EventCallback>());

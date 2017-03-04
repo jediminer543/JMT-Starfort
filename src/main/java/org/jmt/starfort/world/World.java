@@ -27,6 +27,8 @@ public class World {
 	ConcurrentHashMap<Coord, Block> blocks = new ConcurrentHashMap<>();
 	ArrayList<IController> controllers = new ArrayList<>();
 	
+	public World () {} 
+	
 	/**
 	 * Bounds of world
 	 * 

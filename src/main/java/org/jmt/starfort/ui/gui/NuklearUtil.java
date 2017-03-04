@@ -4,19 +4,25 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.nuklear.Nuklear.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.*;
-import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.opengl.GL14.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
+import static org.lwjgl.stb.STBTruetype.*;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+import java.util.ArrayList;
 
-import org.jmt.starfort.event.EventBus;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.nuklear.NkAllocator;
 import org.lwjgl.nuklear.NkBuffer;
 import org.lwjgl.nuklear.NkContext;
@@ -24,7 +30,15 @@ import org.lwjgl.nuklear.NkConvertConfig;
 import org.lwjgl.nuklear.NkDrawCommand;
 import org.lwjgl.nuklear.NkDrawVertexLayoutElement;
 import org.lwjgl.nuklear.NkMouse;
+import org.lwjgl.nuklear.NkUserFont;
+import org.lwjgl.nuklear.NkUserFontGlyph;
+import org.lwjgl.stb.STBTTAlignedQuad;
+import org.lwjgl.stb.STBTTFontinfo;
+import org.lwjgl.stb.STBTTPackContext;
+import org.lwjgl.stb.STBTTPackedchar;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
+import org.lwjgl.system.jemalloc.JEmalloc;
 
 /**
  * 
@@ -39,6 +53,9 @@ import org.lwjgl.system.MemoryStack;
 public class NuklearUtil {
 
 	private static final int NK_BUFFER_DEFAULT_INITIAL_SIZE = 4 * 1024;
+	
+	private static final int MAX_VERTEX_BUFFER  = 512 * 1024;
+	private static final int MAX_ELEMENT_BUFFER = 128 * 1024;
 
 	private static final NkAllocator ALLOCATOR;
 
@@ -160,11 +177,142 @@ public class NuklearUtil {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 	}
+	
+	//TODO Implement 
+	public static ByteBuffer StreamToByteBuffer(InputStream istream) throws IOException {
+		ByteBuffer outbuf = BufferUtils.createByteBuffer(1024 * 5);
+	    ReadableByteChannel rbc = Channels.newChannel(istream);
+	    while ( true ) {
+	    	int bytes = rbc.read(outbuf);
+	    	if (bytes == -1)
+	    		break;
+	    	if (outbuf.remaining() == 0) {
+	    		ByteBuffer newBuffer = BufferUtils.createByteBuffer(outbuf.capacity() * 2);
+	    		outbuf.flip();
+	    		newBuffer.put(outbuf);
+	    		outbuf = newBuffer;
+	    	}
+	    }
+	    outbuf.flip();
+	    return outbuf;
+	}
+	
+	// Stop stuff from being GC'D TODO FIX MEMORY LEAKS THAT WILL INEVITABLY OCCUR
+	static ArrayList<Object> list = new ArrayList<Object>();
+	
+	public static NkUserFont nk_jmt_loadfont(ByteBuffer ttf) {
+		int BITMAP_W = 1024;
+		int BITMAP_H = 1024;
+
+		int FONT_HEIGHT = 18;
+		int fontTexID = glGenTextures();
+		
+		STBTTFontinfo fontInfo = STBTTFontinfo.create();
+		STBTTPackedchar.Buffer cdata = STBTTPackedchar.create(120);
+		
+		list.add(ttf);
+		
+		float scale;
+		float descent;
+		
+		try ( MemoryStack stack = stackPush() ) {
+
+			stbtt_InitFont(fontInfo, ttf);
+			scale = stbtt_ScaleForPixelHeight(fontInfo, FONT_HEIGHT);
+
+			IntBuffer d = MemoryUtil.memAllocInt(1);
+			stbtt_GetFontVMetrics(fontInfo, null, d, null);
+			descent = d.get(0) * scale;
+
+			ByteBuffer bitmap = memAlloc(BITMAP_W * BITMAP_H);
+
+			STBTTPackContext pc = STBTTPackContext.malloc();
+			stbtt_PackBegin(pc, bitmap, BITMAP_W, BITMAP_H, 0, 1, 0);
+			stbtt_PackSetOversampling(pc, 4, 4);
+			stbtt_PackFontRange(pc, ttf, 0, FONT_HEIGHT, 32, cdata);
+			stbtt_PackEnd(pc);
+
+			// Convert R8 to RGBA8
+			ByteBuffer texture = memAlloc(BITMAP_W * BITMAP_H * 4);
+			for ( int i = 0; i < bitmap.capacity(); i++ )
+				texture.putInt((bitmap.get(i) << 24) | 0x00FFFFFF);
+			texture.flip();
+
+			glBindTexture(GL_TEXTURE_2D, fontTexID);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, BITMAP_W, BITMAP_H, 0, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8_REV, texture);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+			MemoryUtil.memFree(texture);
+			MemoryUtil.memFree(bitmap);
+
+		}
+
+		
+		NkUserFont font = NkUserFont.create();
+		font
+		.width((handle, h, text, len) -> {
+			float text_width = 0;
+			//try ( MemoryStack substack = stackPush() ) {
+				//MemoryStack substack = MemoryStack.stackGet();
+				IntBuffer unicode = memCallocInt(1);
+
+				int glyph_len = nnk_utf_decode(text, memAddress(unicode), len);
+				int text_len = glyph_len;
+
+				if ( glyph_len == 0 )
+					return 0;
+
+				IntBuffer advance = memCallocInt(1);
+				while ( text_len <= len && glyph_len != 0 ) {
+					if ( unicode.get(0) == NK_UTF_INVALID )
+						break;
+
+                    /* query currently drawn glyph information */
+					stbtt_GetCodepointHMetrics(fontInfo, unicode.get(0), advance, null);
+					text_width += advance.get(0) * scale;
+
+					/* offset next glyph */
+					glyph_len = nnk_utf_decode(text + text_len, memAddress(unicode), len - text_len);
+					text_len += glyph_len;
+				
+				//}
+				
+			}
+			return text_width;
+		})
+		.height(FONT_HEIGHT)
+		.query((handle, font_height, glyph, codepoint, next_codepoint) -> {
+			//try ( MemoryStack substack = stackPush() ) {
+				//MemoryStack substack = MemoryStack.stackGet();
+				FloatBuffer x = BufferUtils.createFloatBuffer(1);
+				FloatBuffer y = BufferUtils.createFloatBuffer(1);
+
+				STBTTAlignedQuad q = STBTTAlignedQuad.create();
+				IntBuffer advance = BufferUtils.createIntBuffer(1);
+
+				stbtt_GetPackedQuad(cdata, BITMAP_W, BITMAP_H, codepoint - 32, x, y, q, false);
+				stbtt_GetCodepointHMetrics(fontInfo, codepoint, advance, null);
+
+				NkUserFontGlyph ufg = NkUserFontGlyph.create(glyph);
+
+				ufg.width(q.x1() - q.x0());
+				ufg.height(q.y1() - q.y0());
+				ufg.offset().set(q.x0(), q.y0() + (FONT_HEIGHT + descent));
+				ufg.xadvance(advance.get(0) * scale);
+				ufg.uv(0).set(q.s0(), q.t0());
+				ufg.uv(1).set(q.s1(), q.t1());
+				
+				//q.free();
+				//MemoryUtil.memFree(advance);
+			//}
+		})
+		.texture().id(fontTexID);
+		return font;
+	}
 
 	/**
 	 * Initialises and binds to window
-	 * 
-	 * just set the value of glfw3ctx.win and pass a different binding if you don't wish to take control of the GLFW windows config
 	 * 
 	 * @param glfw3ctx
 	 * @param win
@@ -241,9 +389,8 @@ public class NuklearUtil {
 		});
 		glfwSetCursorPosCallback(win, (window, xpos, ypos) -> nk_input_motion(glfw3ctx.ctx, (int)xpos, (int)ypos));
 		glfwSetMouseButtonCallback(win, (window, button, action, mods) -> {
-			try ( MemoryStack stack = stackPush() ) {
-				DoubleBuffer cx = stack.mallocDouble(1);
-				DoubleBuffer cy = stack.mallocDouble(1);
+				DoubleBuffer cx = memCallocDouble(1);
+				DoubleBuffer cy = memCallocDouble(1);
 
 				glfwGetCursorPos(window, cx, cy);
 
@@ -262,7 +409,6 @@ public class NuklearUtil {
 						nkButton = NK_BUTTON_LEFT;
 				}
 				nk_input_button(glfw3ctx.ctx, nkButton, x, y, action == GLFW_PRESS);
-			}
 		});
 
 		nk_init(glfw3ctx.ctx, ALLOCATOR, null);
@@ -289,17 +435,15 @@ public class NuklearUtil {
 
 	/**
 	 * Initialises and binds to window
-	 * 
-	 * just set the value of glfw3ctx.win and pass a different binding if you don't wish to take control of the GLFW windows config
-	 * 
+	 *  
 	 * @param glfw3ctx
 	 * @param win
 	 * @return
 	 */
-	public static NkContext nk_jmtbus_init(NkCtxGLFW3 glfw3ctx, long win) {
+	public static NkContext nk_jmt_bus_init(NkCtxGLFW3 glfw3ctx, long win) {
 		glfw3ctx.win = win;
-		
 		nk_init(glfw3ctx.ctx, ALLOCATOR, null);
+		
 		glfw3ctx.ctx.clip().copy((handle, text, len) -> {
 			if ( len == 0 )
 				return;
@@ -353,28 +497,29 @@ public class NuklearUtil {
 		nk_input_end(glfw3ctx.ctx);
 	}
 
-	public static void nk_glfw3_render(NkCtxGLFW3 glfw3ctx, int AA, int max_vertex_buffer, int max_element_buffer) {
-		try ( MemoryStack stack = stackPush() ) {
+	public static void nk_glfw3_render(NkCtxGLFW3 glfw3ctx, int AA) {
+			try (MemoryStack stack = stackPush()) {
 			// setup global state
-			glEnable(GL_BLEND);
 			glBlendEquation(GL_FUNC_ADD);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glDisable(GL_CULL_FACE);
 			glDisable(GL_DEPTH_TEST);
-			glEnable(GL_SCISSOR_TEST);
-			glActiveTexture(GL_TEXTURE0);
 
 			// setup program
 			glUseProgram(glfw3ctx.prog);
 			glUniform1i(glfw3ctx.uniform_tex, 0);
-			glUniformMatrix4fv(glfw3ctx.uniform_proj, false, stack.floats(
-				2.0f / glfw3ctx.width, 0.0f, 0.0f, 0.0f,
-				0.0f, -2.0f / glfw3ctx.height, 0.0f, 0.0f,
-				0.0f, 0.0f, -1.0f, 0.0f,
-				-1.0f, 1.0f, 0.0f, 1.0f
-			));
+			FloatBuffer buf = stack.floats(
+			//buf.put(new float[] {
+					2.0f / glfw3ctx.width, 0.0f, 0.0f, 0.0f,
+					0.0f, -2.0f / glfw3ctx.height, 0.0f, 0.0f,
+					0.0f, 0.0f, -1.0f, 0.0f,
+					-1.0f, 1.0f, 0.0f, 1.0f
+			//});
+					);
+			glUniformMatrix4fv(glfw3ctx.uniform_proj, false, buf);
 			glViewport(0, 0, glfw3ctx.display_width, glfw3ctx.display_height);
-		}
+			}
+			
+			
 
 		{
 			// convert from command queue into draw list and draw to screen
@@ -384,15 +529,15 @@ public class NuklearUtil {
 			glBindBuffer(GL_ARRAY_BUFFER, glfw3ctx.vbo);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glfw3ctx.ebo);
 
-			glBufferData(GL_ARRAY_BUFFER, max_vertex_buffer, GL_STREAM_DRAW);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, max_element_buffer, GL_STREAM_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, MAX_VERTEX_BUFFER, GL_STREAM_DRAW);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, MAX_ELEMENT_BUFFER, GL_STREAM_DRAW);
 
 			// load draw vertices & elements directly into vertex + element buffer
-			ByteBuffer vertices = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY, max_vertex_buffer, null);
-			ByteBuffer elements = glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY, max_element_buffer, null);
+			ByteBuffer vertices = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY, MAX_VERTEX_BUFFER, null);
+			ByteBuffer elements = glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY, MAX_ELEMENT_BUFFER, null);
 			try ( MemoryStack stack = stackPush() ) {
 				// fill convert configuration
-				NkConvertConfig config = NkConvertConfig.callocStack(stack)
+				NkConvertConfig config = NkConvertConfig.mallocStack(stack)
 					.vertex_layout(VERTEX_LAYOUT)
 					.vertex_size(20)
 					.vertex_alignment(4)
@@ -440,8 +585,7 @@ public class NuklearUtil {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
-		glDisable(GL_BLEND);
-		glDisable(GL_SCISSOR_TEST);
+		glEnable(GL_DEPTH_TEST);
 	}
 
 	private static void nk_glfw3_device_destroy(NkCtxGLFW3 glfw3ctx) {

@@ -4,10 +4,13 @@ import org.lwjgl.nuklear.NkBuffer;
 import org.lwjgl.nuklear.NkContext;
 import org.lwjgl.nuklear.NkDrawNullTexture;
 import org.lwjgl.nuklear.NkUserFont;
+import org.lwjgl.system.MemoryStack;
 
 public class NkCtxGLFW3 {
 	public NkContext ctx = NkContext.create();
 	public NkUserFont default_font = NkUserFont.create();
+	
+	public MemoryStack stack;
 	
 	public long win;
 	

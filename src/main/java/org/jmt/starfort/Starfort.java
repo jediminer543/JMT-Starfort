@@ -13,10 +13,21 @@ import static org.lwjgl.opengl.GL31.*;
 import static org.lwjgl.opengl.GL32.*;
 */
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.nuklear.Nuklear.NK_WINDOW_BORDER;
+import static org.lwjgl.nuklear.Nuklear.NK_WINDOW_MOVABLE;
+import static org.lwjgl.nuklear.Nuklear.NK_WINDOW_NO_SCROLLBAR;
+import static org.lwjgl.nuklear.Nuklear.nk_rect;
 import static org.jmt.starfort.renderer.JMTGl.*;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import org.jmt.starfort.event.EventBus;
+import org.jmt.starfort.event.IEvent;
+import org.jmt.starfort.event.events.ui.EventKey;
 import org.jmt.starfort.game.components.ComponentStairs;
 import org.jmt.starfort.game.components.ComponentWall;
 import org.jmt.starfort.game.components.fluid.ComponentPipe;
@@ -24,11 +35,17 @@ import org.jmt.starfort.game.entity.EntityDrone;
 import org.jmt.starfort.game.entity.human.EntityHuman;
 import org.jmt.starfort.game.registra.MaterialRegistra;
 import org.jmt.starfort.game.registra.RenderRegistra;
+import org.jmt.starfort.processor.ComplexRunnable;
 import org.jmt.starfort.processor.Processor;
 import org.jmt.starfort.renderer.Colour;
 import org.jmt.starfort.renderer.IRendererRule;
 import org.jmt.starfort.renderer.Renderer;
+import org.jmt.starfort.ui.UserInterfacing;
 import org.jmt.starfort.ui.gui.GUI;
+import org.jmt.starfort.ui.gui.NkCtxGLFW3;
+import org.jmt.starfort.ui.gui.widget.IWidget;
+import org.jmt.starfort.ui.gui.widget.WidgetButton;
+import org.jmt.starfort.ui.gui.widget.WidgetWindow;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.util.Direction;
 import org.jmt.starfort.util.InlineFunctions;
@@ -38,11 +55,14 @@ import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.controller.ControllerTask;
 import org.jmt.starfort.world.material.IMaterial;
 import org.jmt.starfort.world.material.MaterialRegistry;
+import org.jmt.starfort.world.save.WorldSaver;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWKeyCallbackI;
 import org.lwjgl.nuklear.NkContext;
+import org.lwjgl.nuklear.NkRect;
+import org.lwjgl.nuklear.Nuklear;
 import org.lwjgl.opengl.GL;
 
 /**
@@ -77,6 +97,13 @@ public class Starfort {
 		// Initialise the library path
 		NativePathModifier.modLibraryPath("lib/native");
 		
+		//ENABLE DEBUG
+		//org.lwjgl.system.Configuration.DEBUG_STREAM.set(System.out);
+		//org.lwjgl.system.Configuration.DEBUG_STACK.set(true);
+		//org.lwjgl.system.Configuration.DEBUG.set(true);
+		//org.lwjgl.system.Configuration.DEBUG_FUNCTIONS.set(true);
+		//org.lwjgl.system.Configuration.DEBUG_MEMORY_ALLOCATOR.set(true);
+		
 		preInit();
 		
 		init();
@@ -89,6 +116,8 @@ public class Starfort {
 		int matID = MaterialRegistry.getMaterialID(mat);	
 		r.materialRenderReg.put(matID, new Colour(0.5f, 0.2f, 0.5f, 1f));
 		
+		boolean loadtest = false;
+		if (!loadtest) {
 		w.getBlock(new Coord(0, 0, 0)).addComponent(new ComponentStairs(mat, true, false));
 		w.getBlock(new Coord(0, 1, 0)).addComponent(new ComponentStairs(mat, false, true));
 		
@@ -151,37 +180,62 @@ public class Starfort {
 		w.getController(ControllerTask.class);
 		w.getBlock(new Coord()).addComponent(new EntityHuman("BOB"));
 		
+			File f = new File("saveTest.map");
+			if (!f.exists()) { f.createNewFile(); }
+			FileOutputStream fos = new FileOutputStream(f);
+			WorldSaver.saveWorld(w, fos);
+			fos.flush();
+			fos.close();
+			
+		} else {
+			File f = new File("saveTest.map");
+			if (!f.exists()) { f.createNewFile(); }
+			w1 = w = WorldSaver.loadWorld(new FileInputStream(f));
+		}
+		
 		DevUtil.makeRoom(w1, mat, new Coord(0,0,5), new Coord(3,1,8));
 		
 		final Coord displayOffset = new Coord(5, 0, 5);
 		
-		GLFW.glfwSetKeyCallback(window, new GLFWKeyCallbackI() {
-			
+		EventBus.registerEventCallback(new EventBus.EventCallback() {
+				
 			@Override
-			public void invoke(long window, int key, int scancode, int action, int mods) {
-				if (action == GLFW.GLFW_PRESS) {
-				switch (key) {
-				case (GLFW.GLFW_KEY_UP):
-					displayOffset.z += 1;
-					break;
-				case (GLFW.GLFW_KEY_DOWN):
-					displayOffset.z -= 1;
-					break;
-				case (GLFW.GLFW_KEY_LEFT):
-					displayOffset.x += 1;
-					break;
-				case (GLFW.GLFW_KEY_RIGHT):
-					displayOffset.x -= 1;
-					break;
-				case (GLFW.GLFW_KEY_LEFT_BRACKET):
-					displayOffset.y += 1;
-					break;
-				case (GLFW.GLFW_KEY_RIGHT_BRACKET):
-					displayOffset.y -= 1;
-					break;
+			public void handleEvent(IEvent ev) {
+				
+				if (ev instanceof EventKey) {
+					EventKey kev = (EventKey)(ev);
+				if (kev.getEventAction() == GLFW.GLFW_PRESS) {
+					switch (kev.getEventKey()) {
+					case (GLFW.GLFW_KEY_UP):
+						displayOffset.z += 1;
+						break;
+					case (GLFW.GLFW_KEY_DOWN):
+						displayOffset.z -= 1;
+						break;
+					case (GLFW.GLFW_KEY_LEFT):
+						displayOffset.x += 1;
+						break;
+					case (GLFW.GLFW_KEY_RIGHT):
+						displayOffset.x -= 1;
+						break;
+					case (GLFW.GLFW_KEY_LEFT_BRACKET):
+						displayOffset.y += 1;
+						break;
+					case (GLFW.GLFW_KEY_RIGHT_BRACKET):
+						displayOffset.y -= 1;
+						break;
+					}
+					}
 				}
-				}
+				
 			}
+			
+			@SuppressWarnings("unchecked") // Cant fix because reasons
+			@Override
+			public Class<? extends IEvent>[] getProcessableEvents() {
+				return new Class[] {EventKey.class};
+			}
+			
 		});
 		
 		Processor.addRequest(new TickRequest(w));
@@ -229,6 +283,8 @@ public class Starfort {
 		window = GLFW.glfwCreateWindow(1600, 900, "STARFORT - TEST", 0, 0);
 		GLFW.glfwMakeContextCurrent(window);
 		
+		GLFW.glfwSwapInterval(2);
+		
 		GL.createCapabilities();
 		
 		System.out.println("OpenGL version: " + glGetString(GL_VERSION));
@@ -260,7 +316,6 @@ public class Starfort {
 		//glTexEnvf(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE);
 		
 		worldNvgCtx = 0;//NanoVGGL3.nvgCreateGL3(NanoVGGL3.NVG_ANTIALIAS | NanoVGGL3.NVG_STENCIL_STROKES | NanoVGGL3.NVG_DEBUG);
-		//guiNukCtx = nk_gl
 		r = new Renderer();
 		preInitRegistas();
 		w1 = new World(); 
@@ -275,7 +330,25 @@ public class Starfort {
 	
 	public static void init() {
 		Processor.init();
-		GUI.init();
+		UserInterfacing.setupInterfacing(window);
+		GUI.init(window);
+		
+		IWidget ww = new IWidget() {
+			
+			@Override
+			protected void drawWidgetSelf(NkCtxGLFW3 jctx) {
+				NkRect bounds = NkRect.mallocStack(jctx.stack);
+				if (Nuklear.nk_begin(jctx.ctx, "TEST", nk_rect(50, 50, 200, 500, bounds), Nuklear.NK_WINDOW_BORDER | Nuklear.NK_WINDOW_NO_SCROLLBAR 
+						| Nuklear.NK_WINDOW_MOVABLE | Nuklear.NK_WINDOW_TITLE | Nuklear.NK_WINDOW_MINIMIZABLE )) {
+					Nuklear.nk_layout_row_dynamic(jctx.ctx, 35, 1);
+					Nuklear.nk_button_text(jctx.ctx, "MOAR TEST");
+				}
+				Nuklear.nk_end(jctx.ctx);
+			}
+		};
+		
+		//IWidget ww = new WidgetWindow("Test", 0, 0, 200, 500);
+		GUI.addWidget(ww);
 		r.init(renderRules);
 		
 	}

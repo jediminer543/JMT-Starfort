@@ -45,7 +45,9 @@ public class JMTGl {
 	
 	/**
 	 * Equivelent of GLMatrixMode; 
-	 * @param mode One of JGL_PROJECTION or JGL MODELVIEW
+	 * Please note that the projection matrix stack is smaller than the Modelview one
+	 * 
+	 * @param mode One of JGL_PROJECTION or JGL_MODELVIEW
 	 */
 	public static void jglMatrixMode(int mode) {
 		if (mode == JGL_PROJECTION) {

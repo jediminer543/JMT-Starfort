@@ -29,6 +29,9 @@ repositories {
 dependencies {
   compile fileTree(dir: 'lib', include: '*.jar')
   compile "org.lwjgl:lwjgl:+"
+  compile "org.lwjgl:lwjgl:+:natives-windows"
+  compile "org.lwjgl:lwjgl:+:natives-linux"
+  compile "org.lwjgl:lwjgl:+:natives-macos"
   compile "org.lwjgl:lwjgl-glfw:+"
   compile "org.lwjgl:lwjgl-glfw:+:natives-windows"
   compile "org.lwjgl:lwjgl-glfw:+:natives-linux"
@@ -38,6 +41,9 @@ dependencies {
   compile "org.lwjgl:lwjgl-opengl:+:natives-linux"
   compile "org.lwjgl:lwjgl-opengl:+:natives-macos"
   compile "org.lwjgl:lwjgl-jemalloc:+"
+  compile "org.lwjgl:lwjgl-jemalloc:+:natives-windows"
+  compile "org.lwjgl:lwjgl-jemalloc:+:natives-linux"
+  compile "org.lwjgl:lwjgl-jemalloc:+:natives-macos"
   compile "org.lwjgl:lwjgl-nanovg:+"
   compile "org.lwjgl:lwjgl-nanovg:+:natives-windows"
   compile "org.lwjgl:lwjgl-nanovg:+:natives-linux"
@@ -47,11 +53,15 @@ dependencies {
   compile "org.lwjgl:lwjgl-stb:+:natives-linux"
   compile "org.lwjgl:lwjgl-stb:+:natives-macos"
   compile "org.lwjgl:lwjgl-nuklear:+"
+  compile "org.lwjgl:lwjgl-nuklear:+:natives-windows"
+  compile "org.lwjgl:lwjgl-nuklear:+:natives-linux"
+  compile "org.lwjgl:lwjgl-nuklear:+:natives-macos"
   compile "org.lwjgl:lwjgl-vulkan:+"
-  compile "org.lwjgl:lwjgl:+:natives-windows"
-  compile "org.lwjgl:lwjgl:+:natives-linux"
-  compile "org.lwjgl:lwjgl:+:natives-macos"
+  compile "org.lwjgl:lwjgl-vulkan:+:natives-windows"
+  compile "org.lwjgl:lwjgl-vulkan:+:natives-linux"
+  compile "org.lwjgl:lwjgl-vulkan:+:natives-macos"
   compile 'uk.com.robust-it:cloning:1.9.2'
+  compile "com.esotericsoftware:kryo:4.0.0"
   compile group: 'org.joml', name: 'joml', version: '1.6.6'
   compile group: 'org.reflections', name: 'reflections', version: '0.9.10'
   testCompile group: 'junit', name: 'junit', version: '4.+'

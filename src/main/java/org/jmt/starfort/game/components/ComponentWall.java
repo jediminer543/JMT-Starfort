@@ -17,6 +17,8 @@ public class ComponentWall implements IComponent, IComponentBlocking, IComponent
 	int wallHealth, wallMaxHealth;
 	IMaterial mat;
 	
+	protected ComponentWall() {}
+	
 	public ComponentWall(Direction[] blockedDirs, IMaterial mat) {
 		this.blockedDirs = blockedDirs;
 		this.mat = mat;

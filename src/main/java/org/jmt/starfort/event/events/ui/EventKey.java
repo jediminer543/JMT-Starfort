@@ -1,14 +1,15 @@
-package org.jmt.starfort.event.events;
+package org.jmt.starfort.event.events.ui;
 
 import org.jmt.starfort.event.IEventUI;
 
-public class EventKeyPress implements IEventUI {
+public class EventKey implements IEventUI {
 
 	boolean consumed = false;
-	public long window;
-	public int key, scancode, action, mods;
 	
-	public EventKeyPress(long window, int key, int scancode, int action, int mods) {
+	long window;
+	int key, scancode, action, mods;
+	
+	public EventKey(long window, int key, int scancode, int action, int mods) {
 		this.window = window;
 		this.key = key;
 		this.scancode = scancode;
@@ -27,7 +28,7 @@ public class EventKeyPress implements IEventUI {
 	}
 
 	@Override
-	public long getEventUIWindow() {
+	public long getEventWindow() {
 		return window;
 	}
 
@@ -46,7 +47,5 @@ public class EventKeyPress implements IEventUI {
 	public int getEventMods() {
 		return mods;
 	}
-	
-	
 
 }

@@ -160,7 +160,7 @@ public class Renderer {
 		long frameTime = endTime - startTime;
 		@SuppressWarnings("unused")
 		float FPS = (1000000000/frameTime);
-		//System.out.println("FPS: " + FPS);
+		System.out.println("FPS: " + FPS);
 		//glRotatef(-90, 0, 0, 1);
 	}
 	

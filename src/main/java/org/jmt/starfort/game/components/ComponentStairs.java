@@ -12,6 +12,8 @@ public class ComponentStairs implements IComponent, IComponentDirectioned, IComp
 	boolean up, down;
 	IMaterial mat;
 	
+	protected ComponentStairs() {}
+	
 	public ComponentStairs(IMaterial mat, boolean up, boolean down) {
 		this.up = up;
 		this.down = down;
