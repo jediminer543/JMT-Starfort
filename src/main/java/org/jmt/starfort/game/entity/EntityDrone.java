@@ -41,30 +41,6 @@ public class EntityDrone implements IEntity {
 	}
 	
 	Dataset ds = new Dataset();
-	IPassageCallback pc = new IPassageCallback() {
-		
-		@Override
-		public boolean canPass(World w, Coord src, Direction dir) {
-			if (dir != Direction.YINC && dir != Direction.YDEC) {
-				if (w.getBlock(src.addR(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(dir.inverse()) || w.getBlock(src.addR(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(Direction.SELFFULL) 
-						|| w.getBlock(src.get()).getBlockedDirs(NavContext.Physical).contains(dir)) {
-						return false;
-				}
-				return true;
-			} else {
-				List<IComponentUpDown> UDCL = null;
-				if (!(UDCL = w.getBlock(src).getCompInstances(IComponentUpDown.class)).isEmpty()) {
-					for (IComponentUpDown UDC : UDCL) {
-						if (UDC.canUp() && dir == Direction.YINC)
-							return true;
-						if (UDC.canDown() && dir == Direction.YDEC)
-							return true;
-					}
-				}
-			}
-			return false;
-		}
-	};
 	
 	@Override
 	public String getComponentName() {
@@ -76,17 +52,14 @@ public class EntityDrone implements IEntity {
 		return null;
 	}
 
-	final EntityDrone parentt = this;
-	ComplexRunnable tick = new ComplexRunnable() {
-		EntityDrone parent = parentt;
-		@Override
-		public void run(Object... args) {
+	ComplexRunnable tick = (Object... args) -> {
+			EntityDrone parent = this;
 			World w = (World) args[0];
 			Coord c = (Coord) args[1];
 			//TickRequest tr = (TickRequest) args[2];
 			//System.out.println("Processing");
 			if (parent.ds.p == null && parent.ds.futurePath == null) {
-				parent.ds.futurePath = BruteforcePather.pathBetweenAsync(c, parent.ds.targets.getFirst(), w, pc);
+				parent.ds.futurePath = BruteforcePather.pathBetweenAsync(c, parent.ds.targets.getFirst(), w, parent.getEntityPassageCallback());
 				Processor.addRequest(parent.ds.futurePath);
 				parent.ds.p = null;
 			}
@@ -105,15 +78,13 @@ public class EntityDrone implements IEntity {
 				}
 			}
 			if (parent.ds.p != null && parent.ds.p.remaining() <= 0 && parent.ds.futurePath == null) {
-				parent.ds.futurePath = BruteforcePather.pathBetweenAsync(c, parent.ds.targets.getFirst(), w, pc);
+				parent.ds.futurePath = BruteforcePather.pathBetweenAsync(c, parent.ds.targets.getFirst(), w, parent.getEntityPassageCallback());
 				Processor.addRequest(parent.ds.futurePath);
 				parent.ds.p = null;
 			} else if (parent.ds.p != null && parent.ds.p.remaining() > 0) {
 				Coord dst = c.addR(parent.ds.p.pop().getDir());
 				w.moveComponent(parent, c, dst);
 			}
-			//System.out.println("Drone Proccecing cycle complete");
-		}
 	};
 	
 	@Override
@@ -138,9 +109,31 @@ public class EntityDrone implements IEntity {
 		return null;
 	}
 
+	public boolean passageCallback(World w, Coord src, Direction dir) {
+		if (dir != Direction.YINC && dir != Direction.YDEC) {
+			if (w.getBlock(src.addR(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(dir.inverse()) || w.getBlock(src.addR(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(Direction.SELFFULL) 
+					|| w.getBlock(src.get()).getBlockedDirs(NavContext.Physical).contains(dir)) {
+					return false;
+			}
+			return true;
+		} else {
+			List<IComponentUpDown> UDCL = null;
+			if (!(UDCL = w.getBlock(src).getCompInstances(IComponentUpDown.class)).isEmpty()) {
+				for (IComponentUpDown UDC : UDCL) {
+					if (UDC.canUp() && dir == Direction.YINC)
+						return true;
+					if (UDC.canDown() && dir == Direction.YDEC)
+						return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	@Override
 	public IPassageCallback getEntityPassageCallback() {
-		return pc;
+		//return pc;
+		return this::passageCallback;
 	}
 
 }

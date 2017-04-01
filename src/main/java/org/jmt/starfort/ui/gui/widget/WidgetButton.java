@@ -6,7 +6,7 @@ import org.jmt.starfort.ui.gui.NkCtxGLFW3;
 public class WidgetButton extends IWidget {
 	
 	@FunctionalInterface
-	static interface ButtonCallback {
+	public static interface ButtonCallback {
 		public void call(boolean b);
 	}
 	

@@ -57,9 +57,11 @@ public class World {
 	 * @return The block at that coord
 	 */
 	public Block getBlockNoAdd(Coord c) {
-			if (!blocks.containsKey(c)) {
-				return null;
-			}
+			// READ THE DOCS; get returns null if not contained. no need to duplicate function
+			// TODO CLEANUP, ONCE REMINED THAT I AM IDIOT
+			//if (!blocks.containsKey(c)) {
+			//	return null;
+			//} 
 			return blocks.get(c);
 	}
 	

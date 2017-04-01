@@ -49,7 +49,7 @@ public class Processor {
 	/**
 	 * Number of threads to run
 	 */
-	static int size = 128;
+	static int size = 2;
 	
 	/**
 	 * Initialises and starts the processor
@@ -111,7 +111,7 @@ public class Processor {
 								} else {
 									try {
 									if (first.remaining() > 0) {
-										first.processNext();
+										if (!first.processNext()) { idleTicks++; }
 									}
 									} catch (NoSuchElementException nsee) {
 										nsee.printStackTrace();

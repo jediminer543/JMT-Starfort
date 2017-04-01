@@ -1,6 +1,8 @@
 package org.jmt.starfort.world.component.conduits;
 
-public interface IComponentConduit {
+import org.jmt.starfort.world.component.IComponent;
+
+public interface IComponentConduit extends IComponent {
 
 	
 	

@@ -28,9 +28,9 @@ public class ComplexMassProccessRequest implements Runnable, ReusableProcessingR
 	}
 	
 	@Override
-	public void processNext() {
+	public boolean processNext() {
 		if (complete()) {
-			return;
+			return false;
 		}
 		ComplexRunnable job = null;
 		synchronized (runnablesCurr) {
@@ -38,6 +38,7 @@ public class ComplexMassProccessRequest implements Runnable, ReusableProcessingR
 			runnablesNext.add(job);
 		}
 		job.run(args);
+		return true;
 	}
 	
 	@Override

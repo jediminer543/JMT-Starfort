@@ -23,9 +23,9 @@ public class MassProccessRequest implements Runnable, ReusableProcessingRequest<
 	}
 	
 	@Override
-	public void processNext() {
+	public boolean processNext() {
 		if (complete()) {
-			return;
+			return false;
 		}
 		Runnable job = null;
 		while (job == null) {
@@ -38,6 +38,7 @@ public class MassProccessRequest implements Runnable, ReusableProcessingRequest<
 		runnablesNext.add(job);
 		
 		job.run();
+		return true;
 	}
 	
 	@Override

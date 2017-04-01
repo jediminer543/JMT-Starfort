@@ -22,6 +22,16 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 
+import org.jmt.starfort.event.EventBus;
+import org.jmt.starfort.event.EventBus.EventCallback;
+import org.jmt.starfort.event.IEvent;
+import org.jmt.starfort.event.IEventUI;
+import org.jmt.starfort.event.events.EventMove;
+import org.jmt.starfort.event.events.ui.EventChar;
+import org.jmt.starfort.event.events.ui.EventCursorPos;
+import org.jmt.starfort.event.events.ui.EventKey;
+import org.jmt.starfort.event.events.ui.EventMouseButton;
+import org.jmt.starfort.event.events.ui.EventScroll;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.nuklear.NkAllocator;
 import org.lwjgl.nuklear.NkBuffer;
@@ -226,7 +236,7 @@ public class NuklearUtil {
 
 			ByteBuffer bitmap = memAlloc(BITMAP_W * BITMAP_H);
 
-			STBTTPackContext pc = STBTTPackContext.malloc();
+			STBTTPackContext pc = STBTTPackContext.mallocStack(stack);
 			stbtt_PackBegin(pc, bitmap, BITMAP_W, BITMAP_H, 0, 1, 0);
 			stbtt_PackSetOversampling(pc, 4, 4);
 			stbtt_PackFontRange(pc, ttf, 0, FONT_HEIGHT, 32, cdata);
@@ -442,6 +452,115 @@ public class NuklearUtil {
 	 */
 	public static NkContext nk_jmt_bus_init(NkCtxGLFW3 glfw3ctx, long win) {
 		glfw3ctx.win = win;
+		EventBus.registerEventCallback(new EventCallback() {
+			
+			@Override
+			public void handleEvent(IEvent ev) {
+				if (ev instanceof IEventUI && ((IEventUI)ev).getEventWindow() == glfw3ctx.win) {
+				if (ev instanceof EventScroll) {
+					EventScroll cev = (EventScroll) ev;
+					nk_input_scroll(glfw3ctx.ctx, (float)cev.getEventYoffset());
+				} else if (ev instanceof EventChar) {
+					EventChar cev = (EventChar) ev;
+					nk_input_unicode(glfw3ctx.ctx, cev.getEventCodepoint());
+				} else if (ev instanceof EventCursorPos) {
+					EventCursorPos cev = (EventCursorPos) ev;
+					nk_input_motion(glfw3ctx.ctx, (int)cev.getEventXPos(), (int)cev.getEventYPos());
+				} else if (ev instanceof EventMouseButton) {
+					EventMouseButton cev = (EventMouseButton) ev;
+					DoubleBuffer cx = memCallocDouble(1);
+					DoubleBuffer cy = memCallocDouble(1);
+
+					glfwGetCursorPos(cev.getEventWindow(), cx, cy);
+
+					int x = (int)cx.get(0);
+					int y = (int)cy.get(0);
+
+					int nkButton;
+					switch ( cev.getEventButton() ) {
+						case GLFW_MOUSE_BUTTON_RIGHT:
+							nkButton = NK_BUTTON_RIGHT;
+							break;
+						case GLFW_MOUSE_BUTTON_MIDDLE:
+							nkButton = NK_BUTTON_MIDDLE;
+							break;
+						default:
+							nkButton = NK_BUTTON_LEFT;
+					}
+					nk_input_button(glfw3ctx.ctx, nkButton, x, y, cev.getEventAction() == GLFW_PRESS);
+				} else if (ev instanceof EventKey) {
+					EventKey cev = (EventKey) ev;
+					long window = cev.getEventWindow();
+					boolean press = cev.getEventAction() == GLFW_PRESS;
+					switch ( cev.getEventKey() ) {
+						case GLFW_KEY_DELETE:
+							nk_input_key(glfw3ctx.ctx, NK_KEY_DEL, press);
+							break;
+						case GLFW_KEY_ENTER:
+							nk_input_key(glfw3ctx.ctx, NK_KEY_ENTER, press);
+							break;
+						case GLFW_KEY_TAB:
+							nk_input_key(glfw3ctx.ctx, NK_KEY_TAB, press);
+							break;
+						case GLFW_KEY_BACKSPACE:
+							nk_input_key(glfw3ctx.ctx, NK_KEY_BACKSPACE, press);
+							break;
+						case GLFW_KEY_UP:
+							nk_input_key(glfw3ctx.ctx, NK_KEY_UP, press);
+							break;
+						case GLFW_KEY_DOWN:
+							nk_input_key(glfw3ctx.ctx, NK_KEY_DOWN, press);
+							break;
+						case GLFW_KEY_HOME:
+							nk_input_key(glfw3ctx.ctx, NK_KEY_TEXT_START, press);
+							nk_input_key(glfw3ctx.ctx, NK_KEY_SCROLL_START, press);
+							break;
+						case GLFW_KEY_END:
+							nk_input_key(glfw3ctx.ctx, NK_KEY_TEXT_END, press);
+							nk_input_key(glfw3ctx.ctx, NK_KEY_SCROLL_END, press);
+							break;
+						case GLFW_KEY_PAGE_DOWN:
+							nk_input_key(glfw3ctx.ctx, NK_KEY_SCROLL_DOWN, press);
+							break;
+						case GLFW_KEY_PAGE_UP:
+							nk_input_key(glfw3ctx.ctx, NK_KEY_SCROLL_UP, press);
+							break;
+						case GLFW_KEY_LEFT_SHIFT:
+						case GLFW_KEY_RIGHT_SHIFT:
+							nk_input_key(glfw3ctx.ctx, NK_KEY_SHIFT, press);
+							break;
+						case GLFW_KEY_LEFT_CONTROL:
+						case GLFW_KEY_RIGHT_CONTROL:
+							if ( press ) {
+								nk_input_key(glfw3ctx.ctx, NK_KEY_COPY, glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS);
+								nk_input_key(glfw3ctx.ctx, NK_KEY_PASTE, glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS);
+								nk_input_key(glfw3ctx.ctx, NK_KEY_CUT, glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS);
+								nk_input_key(glfw3ctx.ctx, NK_KEY_TEXT_UNDO, glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS);
+								nk_input_key(glfw3ctx.ctx, NK_KEY_TEXT_REDO, glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS);
+								nk_input_key(glfw3ctx.ctx, NK_KEY_TEXT_WORD_LEFT, glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS);
+								nk_input_key(glfw3ctx.ctx, NK_KEY_TEXT_WORD_RIGHT, glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS);
+								nk_input_key(glfw3ctx.ctx, NK_KEY_TEXT_LINE_START, glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS);
+								nk_input_key(glfw3ctx.ctx, NK_KEY_TEXT_LINE_END, glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS);
+							} else {
+								nk_input_key(glfw3ctx.ctx, NK_KEY_LEFT, glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS);
+								nk_input_key(glfw3ctx.ctx, NK_KEY_RIGHT, glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS);
+								nk_input_key(glfw3ctx.ctx, NK_KEY_COPY, false);
+								nk_input_key(glfw3ctx.ctx, NK_KEY_PASTE, false);
+								nk_input_key(glfw3ctx.ctx, NK_KEY_CUT, false);
+								nk_input_key(glfw3ctx.ctx, NK_KEY_SHIFT, false);
+							}
+							break;
+					} 
+				}
+				}
+			}
+			
+			@SuppressWarnings("unchecked")
+			@Override
+			public Class<? extends IEvent>[] getProcessableEvents() {
+				return new Class[] {EventChar.class, EventCursorPos.class, EventKey.class, EventMouseButton.class, EventScroll.class};
+			}
+		});
 		nk_init(glfw3ctx.ctx, ALLOCATOR, null);
 		
 		glfw3ctx.ctx.clip().copy((handle, text, len) -> {

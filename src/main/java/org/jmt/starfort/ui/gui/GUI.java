@@ -22,7 +22,8 @@ public class GUI {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		NuklearUtil.nk_glfw3_init(context, window);
+		//NuklearUtil.nk_glfw3_init(context, window);
+		NuklearUtil.nk_jmt_bus_init(context, window);
 		context.default_font = default_font;
 		Nuklear.nk_style_set_font(context.ctx, context.default_font);
 	}

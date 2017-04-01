@@ -192,7 +192,10 @@ public class Renderer {
 				}
 				} catch (ConcurrentModificationException cme) {
 					System.err.println("Rendering concurrent modification exception - Not a problem - Skipping tile - WARN");
-					cme.printStackTrace();
+					//cme.printStackTrace();
+				} catch (NullPointerException npe) {
+					System.err.println("Rendering NPE - POSSIBLY a problem - Skipping tile - WARN");
+					npe.printStackTrace();
 				}
 				Collections.sort(rra, RRC.INSTANCE);
 				for (RenderPair rp : rra) {

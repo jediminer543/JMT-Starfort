@@ -7,6 +7,8 @@ import static org.lwjgl.opengl.GL20.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.FloatBuffer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 import org.joml.Matrix4f;
@@ -135,6 +137,31 @@ public class JMTGl {
 		color.w = alpha;
 	}
 	
+	static Map<Integer, Map<CharSequence, Integer>> uniformLocations = new HashMap<Integer, Map<CharSequence, Integer>>();
+	
+	/**
+	 * Direct mapping for glGetUniformLocation, but implements caching
+	 * 
+	 * TODO make cache recalculate (uniforms can be moved using some function)
+	 * 
+	 * @param program OGL shader pointer
+	 * @param name Name of uniform
+	 * @return Location of uniform
+	 */
+	public static int jglGetUniformLocation(Integer program, CharSequence name) {
+		Map<CharSequence, Integer> progMap;
+		if ((progMap = uniformLocations.get(program)) == null) {
+			progMap = new HashMap<CharSequence, Integer>();
+		}
+		Integer out;
+		if ((out = progMap.get(name)) == null) {
+			out = glGetUniformLocation(program, name);
+			progMap.put(name, out);
+			uniformLocations.put(program, progMap);
+		}
+		return out;
+	}
+	
 	//OpenGL END
 	
 	//CUSTOM GL BEGIN
@@ -224,7 +251,7 @@ public class JMTGl {
 	public static void jglUseProgram(int program) {
 		glUseProgram(program);
 		
-		int projLoc = glGetUniformLocation(program, "u_projection");
+		int projLoc = jglGetUniformLocation(program, "u_projection");
 		//System.out.println("u_projection:" + projLoc);
 		if (projLoc >=0 ) {
 			FloatBuffer buf = BufferUtils.createFloatBuffer(16);
@@ -232,7 +259,7 @@ public class JMTGl {
 			glUniformMatrix4fv(projLoc, false, buf);
 		}
 		
-		int modlLoc = glGetUniformLocation(program, "u_modelview");
+		int modlLoc = jglGetUniformLocation(program, "u_modelview");
 		//System.out.println("u_modelview:" + modlLoc);
 		if (modlLoc >=0 ) {
 			FloatBuffer buf = BufferUtils.createFloatBuffer(16);
@@ -241,7 +268,7 @@ public class JMTGl {
 		}
 		
 		// If shaders use single matrix instead of two
-		int matLoc = glGetUniformLocation(program, "u_matrix");
+		int matLoc = jglGetUniformLocation(program, "u_matrix");
 		//System.out.println("u_matrix:" + matLoc);
 		if (matLoc >=0 ) {
 			FloatBuffer buf = BufferUtils.createFloatBuffer(16);
@@ -250,7 +277,7 @@ public class JMTGl {
 		}
 		
 		//ColorMapping
-		int colLoc = glGetUniformLocation(program, "u_col");
+		int colLoc = jglGetUniformLocation(program, "u_col");
 		//System.out.println("u_col:" + colLoc);
 		if (colLoc >=0 ) {
 			FloatBuffer buf = BufferUtils.createFloatBuffer(4);
@@ -259,7 +286,7 @@ public class JMTGl {
 		}
 		
 		//TextureMapping
-		int texLoc = glGetUniformLocation(program, "u_tex");
+		int texLoc = jglGetUniformLocation(program, "u_tex");
 		//System.out.println("u_tex:" + texLoc);
 		if (texLoc >=0 ) {
 			glUniform1i(texLoc, 0);;

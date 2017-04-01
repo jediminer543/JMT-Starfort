@@ -1,6 +1,6 @@
 package org.jmt.starfort.world.component.designator;
 
-public interface IComponentDesignatorWorked {
+public interface IComponentDesignatorWorked extends IComponentDesignator {
 	
 	public int getDesignatorWorkNeeded();
 	

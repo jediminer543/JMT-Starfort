@@ -10,9 +10,9 @@ public interface ProcessingRequest {
 
 	/**
 	 * Processes the next request
-	 * @return 
+	 * @return false if no processing occured, true if 
 	 */
-	public void processNext();
+	public boolean processNext();
 	
 	/**
 	 * Checks if the processing request has completed

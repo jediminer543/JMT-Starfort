@@ -1,6 +1,7 @@
 package org.jmt.starfort.world;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,7 +44,8 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	/**
 	 * Time until rerun
 	 */
-	long sleepTime = 100000000;
+	//long sleepTime = 100000000;
+	long sleepTime = 0;
 	
 	/**
 	 * Time sleep started
@@ -114,14 +116,14 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	}
 	
 	@Override
-	public void processNext() {
+	public boolean processNext() {
 		if (sleepTime + sleepStart <= System.nanoTime()) {
 		ComplexRunnable task = null;
 		Coord execLoc = null;
 		while (task == null) {
 			try {
 			if (ticksCurr.entrySet().size() == 0) {
-				return;
+				return false;
 			}
 			Entry<Coord, ArrayList<ComplexRunnable>> item = ticksCurr.entrySet().iterator().next();
 			synchronized (item.getValue()) {
@@ -137,7 +139,7 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 			}
 			} catch (NoSuchElementException nsee) {
 				//SYNC ERROR IGNORING
-				return;
+				return false;
 			}
 		}
 		synchronized (ticksProc) {
@@ -167,6 +169,9 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 			} catch (NullPointerException npe) {/*concurrency error*/ }
 		}
 		runningCount.decrementAndGet();
+		return true;
+		} else {
+			return false;
 		}
 	}
 
@@ -194,6 +199,12 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 
 	@Override
 	public void reset() {
+		long endTime = System.nanoTime();
+		long frameTime = endTime - sleepStart;
+		@SuppressWarnings("unused")
+		float TPS = (1000000000/frameTime);
+		System.out.println("TPS: " + TPS);
+		//glRotatef(-90, 0, 0, 1);
 		loopCount++;
 		if (!(loopCount % reload == 0)) {
 			synchronized (ticksCurr) {
@@ -246,6 +257,10 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 			count += entry.getValue().size();
 		}
 		return count;
+		
+		//Source: http://stackoverflow.com/questions/5496944/java-count-the-total-number-of-items-in-a-hashmapstring-arrayliststring
+		// For science; since this method has been being slow
+		//return ticksCurr.values().stream().mapToInt(List::size).sum();
 	}
 
 	@Override

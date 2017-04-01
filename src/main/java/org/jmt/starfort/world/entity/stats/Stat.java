@@ -32,8 +32,7 @@ public class Stat<T> implements Comparable<Stat<?>> {
 	public static enum StatType {
 		Value,
 		PercentageMod,
-		MultMod,
-		SumMod;
+		MultMod;
 	}
 
 }
