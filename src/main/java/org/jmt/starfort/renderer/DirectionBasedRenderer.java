@@ -185,7 +185,7 @@ public class DirectionBasedRenderer implements IRendererRule {
 
 	@Override
 	public boolean disabled(Renderer r) {
-		return true;
+		return false;
 	}
 
 }

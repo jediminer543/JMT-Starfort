@@ -10,10 +10,11 @@ import org.jmt.starfort.util.Direction;
 import org.jmt.starfort.util.NavContext;
 import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.component.IComponentUpDown;
-import org.jmt.starfort.world.entity.ai.EntityAI;
-import org.jmt.starfort.world.entity.ai.ITask;
-import org.jmt.starfort.world.entity.ai.Task;
-import org.jmt.starfort.world.entity.ai.subtask.TaskMove;
+import org.jmt.starfort.world.entity.IEntityAI;
+import org.jmt.starfort.world.entity.aiold.EntityAI;
+import org.jmt.starfort.world.entity.aiold.ITask;
+import org.jmt.starfort.world.entity.aiold.Task;
+import org.jmt.starfort.world.entity.aiold.subtask.TaskMove;
 import org.jmt.starfort.world.entity.organs.IOrgan;
 import org.jmt.starfort.world.material.IMaterial;
 
@@ -102,6 +103,12 @@ public class EntityHuman extends EntityHumanoid {
 	@Override
 	public IPassageCallback getEntityPassageCallback() {
 		return pc;
+	}
+
+	@Override
+	public IEntityAI getEntityAI() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

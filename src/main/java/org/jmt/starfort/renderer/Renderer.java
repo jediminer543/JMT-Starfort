@@ -13,6 +13,7 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.jmt.starfort.event.EventBus;
 import org.jmt.starfort.event.EventBus.EventCallback;
@@ -225,6 +226,8 @@ public class Renderer {
 		}
 	}
 	
+	Map<Class<? extends IComponent>, IRendererRule> currentRenderSet = new HashMap<>();
+	
 	/**
 	 * Draws a world
 	 * 
@@ -236,6 +239,12 @@ public class Renderer {
 	public void draw(World w, Coord offset) {
 		worldOffsetMap.put(w, offset);
 		lastRenderedWorld = w;
+		currentRenderSet.clear();
+		for (Entry<Class<? extends IComponent>, IRendererRule> e : renderSet.entrySet()) {
+			if (!e.getValue().disabled(this)) {
+				currentRenderSet.put(e.getKey(), e.getValue());
+			}
+		}
 		//glRotatef(90, 0, 0, 1);
 		long startTime = System.nanoTime();
 		int[] bounds = w.getBounds(true);
@@ -276,7 +285,7 @@ public class Renderer {
 				List<RenderPair> rra = new ArrayList<>();
 				try {
 				for (IComponent comp : b.getComponents()) {
-					IRendererRule rr = renderSet.get(comp.getClass());
+					IRendererRule rr = currentRenderSet.get(comp.getClass());
 					if (rr != null)
 						rra.add(new RenderPair(rr, comp));
 					

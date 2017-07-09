@@ -1,8 +1,7 @@
-package org.jmt.starfort.world.controller;
+package org.jmt.starfort.world.entity.aiold;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.FutureTask;
@@ -11,8 +10,8 @@ import org.jmt.starfort.processor.ComplexRunnable;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.component.IComponentTasked;
+import org.jmt.starfort.world.controller.IController;
 import org.jmt.starfort.world.entity.IEntity;
-import org.jmt.starfort.world.entity.ai.ITask;
 
 public class ControllerTask implements IController {
 

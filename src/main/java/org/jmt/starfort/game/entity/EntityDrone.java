@@ -20,7 +20,8 @@ import org.jmt.starfort.util.NavContext;
 import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.component.IComponentUpDown;
 import org.jmt.starfort.world.entity.IEntity;
-import org.jmt.starfort.world.entity.ai.ITask;
+import org.jmt.starfort.world.entity.IEntityAI;
+import org.jmt.starfort.world.entity.aiold.ITask;
 import org.jmt.starfort.world.entity.organs.IOrgan;
 import org.jmt.starfort.world.material.IMaterial;
 
@@ -129,6 +130,12 @@ public class EntityDrone implements IEntity {
 	public IPassageCallback getEntityPassageCallback() {
 		//return pc;
 		return this::passageCallback;
+	}
+
+	@Override
+	public IEntityAI getEntityAI() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

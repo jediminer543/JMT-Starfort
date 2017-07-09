@@ -1,4 +1,4 @@
-package org.jmt.starfort.world.entity.ai;
+package org.jmt.starfort.world.entity.aiold;
 
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.world.World;

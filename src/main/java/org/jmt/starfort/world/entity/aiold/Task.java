@@ -1,4 +1,4 @@
-package org.jmt.starfort.world.entity.ai;
+package org.jmt.starfort.world.entity.aiold;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;

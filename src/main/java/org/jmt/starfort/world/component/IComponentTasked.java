@@ -1,6 +1,6 @@
 package org.jmt.starfort.world.component;
 
-import org.jmt.starfort.world.entity.ai.ITask;
+import org.jmt.starfort.world.entity.aiold.ITask;
 
 /**
  * A component that allocates tasks

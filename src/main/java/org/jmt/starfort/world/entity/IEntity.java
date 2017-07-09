@@ -3,7 +3,7 @@ package org.jmt.starfort.world.entity;
 import org.jmt.starfort.pathing.bruteforce.IPassageCallback;
 import org.jmt.starfort.world.component.IComponent;
 import org.jmt.starfort.world.component.IComponentTickable;
-import org.jmt.starfort.world.entity.ai.ITask;
+import org.jmt.starfort.world.entity.aiold.ITask;
 import org.jmt.starfort.world.entity.organs.IOrgan;
 
 /**
@@ -44,6 +44,7 @@ public interface IEntity extends IComponent, IComponentTickable {
 	 * sleeping, etc.
 	 * 
 	 * @return Override task list
+	 * @deprecated Moved to EntityAI
 	 */
 	public ITask[] getEntityTaskList();
 	
@@ -53,6 +54,14 @@ public interface IEntity extends IComponent, IComponentTickable {
 	 * Required for task processing
 	 * 
 	 * @return Task list
+	 * @deprecated Moved to EntityAI
 	 */
 	public IPassageCallback getEntityPassageCallback();
+	
+	/**
+	 * Gets the Entities AI, which is effectively its mental abilities.
+	 * 
+	 * @return This entities Entity AI.
+	 */
+	public IEntityAI getEntityAI();
 }

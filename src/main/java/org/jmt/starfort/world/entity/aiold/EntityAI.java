@@ -1,4 +1,4 @@
-package org.jmt.starfort.world.entity.ai;
+package org.jmt.starfort.world.entity.aiold;
 
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
@@ -8,9 +8,8 @@ import java.util.concurrent.ExecutionException;
 import org.jmt.starfort.processor.Processor;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.world.World;
-import org.jmt.starfort.world.controller.ControllerTask;
 import org.jmt.starfort.world.entity.IEntity;
-import org.jmt.starfort.world.entity.ai.ITask.TaskState;
+import org.jmt.starfort.world.entity.aiold.ITask.TaskState;
 
 /**
  * The AI for an entity

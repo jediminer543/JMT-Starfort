@@ -1,4 +1,4 @@
-package org.jmt.starfort.world.entity.ai.subtask;
+package org.jmt.starfort.world.entity.aiold.subtask;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
@@ -12,7 +12,7 @@ import org.jmt.starfort.processor.Processor;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.entity.IEntity;
-import org.jmt.starfort.world.entity.ai.ITask;
+import org.jmt.starfort.world.entity.aiold.ITask;
 
 public class TaskMove implements ITask {
 
