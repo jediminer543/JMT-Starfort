@@ -57,9 +57,10 @@ dependencies {
   compile "org.lwjgl:lwjgl-nuklear:+:natives-linux"
   compile "org.lwjgl:lwjgl-nuklear:+:natives-macos"
   compile "org.lwjgl:lwjgl-vulkan:+"
-  compile "org.lwjgl:lwjgl-vulkan:+:natives-windows"
-  compile "org.lwjgl:lwjgl-vulkan:+:natives-linux"
-  compile "org.lwjgl:lwjgl-vulkan:+:natives-macos"
+  //Y HAST VULCAN BEEN PURGED OF NATIVES?
+  //compile "org.lwjgl:lwjgl-vulkan:+:natives-windows"
+  //compile "org.lwjgl:lwjgl-vulkan:+:natives-linux"
+  //compile "org.lwjgl:lwjgl-vulkan:+:natives-macos"
   compile 'uk.com.robust-it:cloning:1.9.2'
   compile "com.esotericsoftware:kryo:4.0.0"
   compile group: 'org.joml', name: 'joml', version: '1.6.6'
