@@ -42,6 +42,7 @@ import org.lwjgl.nuklear.NkDrawVertexLayoutElement;
 import org.lwjgl.nuklear.NkMouse;
 import org.lwjgl.nuklear.NkUserFont;
 import org.lwjgl.nuklear.NkUserFontGlyph;
+import org.lwjgl.nuklear.NkVec2;
 import org.lwjgl.stb.STBTTAlignedQuad;
 import org.lwjgl.stb.STBTTFontinfo;
 import org.lwjgl.stb.STBTTPackContext;
@@ -330,7 +331,11 @@ public class NuklearUtil {
 	 */
 	public static NkContext nk_glfw3_init(NkCtxGLFW3 glfw3ctx, long win) {
 		glfw3ctx.win = win;
-		glfwSetScrollCallback(win, (window, xoffset, yoffset) -> nk_input_scroll(glfw3ctx.ctx, (float)yoffset));
+		glfwSetScrollCallback(win, (window, xoffset, yoffset) -> {
+			NkVec2 vec = NkVec2.create();
+			nk_vec2v(new float[] {(float) xoffset, (float)yoffset}, vec);
+			nk_input_scroll(glfw3ctx.ctx, vec);
+		});
 		glfwSetCharCallback(win, (window, codepoint) -> nk_input_unicode(glfw3ctx.ctx, codepoint));
 		glfwSetKeyCallback(win, (window, key, scancode, action, mods) -> {
 			boolean press = action == GLFW_PRESS;
@@ -459,7 +464,9 @@ public class NuklearUtil {
 				if (ev instanceof IEventUI && ((IEventUI)ev).getEventWindow() == glfw3ctx.win && !ev.getEventConsumed()) {
 				if (ev instanceof EventScroll) {
 					EventScroll cev = (EventScroll) ev;
-					nk_input_scroll(glfw3ctx.ctx, (float)cev.getEventYoffset());
+					NkVec2 vec = NkVec2.create();
+					nk_vec2v(new float[] {(float) cev.getEventXoffset(), (float) cev.getEventYoffset()}, vec);
+					nk_input_scroll(glfw3ctx.ctx, vec);
 				} else if (ev instanceof EventChar) {
 					EventChar cev = (EventChar) ev;
 					nk_input_unicode(glfw3ctx.ctx, cev.getEventCodepoint());
