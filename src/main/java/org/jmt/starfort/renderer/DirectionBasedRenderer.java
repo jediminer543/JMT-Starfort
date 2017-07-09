@@ -183,4 +183,9 @@ public class DirectionBasedRenderer implements IRendererRule {
 		return priority;
 	}
 
+	@Override
+	public boolean disabled(Renderer r) {
+		return true;
+	}
+
 }

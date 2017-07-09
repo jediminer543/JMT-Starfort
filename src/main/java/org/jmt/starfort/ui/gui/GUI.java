@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import org.jmt.starfort.ui.gui.widget.IWidget;
+import org.jmt.starfort.ui.gui.widget.IWidgetTree;
 import org.lwjgl.nuklear.NkUserFont;
 import org.lwjgl.nuklear.Nuklear;
 import org.lwjgl.system.MemoryStack;

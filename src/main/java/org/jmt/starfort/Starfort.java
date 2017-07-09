@@ -32,6 +32,7 @@ import java.util.ArrayList;
 
 import org.jmt.starfort.event.EventBus;
 import org.jmt.starfort.event.IEvent;
+import org.jmt.starfort.event.events.EventWorldClick;
 import org.jmt.starfort.event.events.ui.EventKey;
 import org.jmt.starfort.game.components.ComponentStairs;
 import org.jmt.starfort.game.components.ComponentWall;
@@ -48,9 +49,10 @@ import org.jmt.starfort.renderer.Renderer;
 import org.jmt.starfort.ui.UserInterfacing;
 import org.jmt.starfort.ui.gui.GUI;
 import org.jmt.starfort.ui.gui.NkCtxGLFW3;
-import org.jmt.starfort.ui.gui.widget.IWidget;
+import org.jmt.starfort.ui.gui.widget.IWidgetTree;
 import org.jmt.starfort.ui.gui.widget.WidgetButton;
 import org.jmt.starfort.ui.gui.widget.WidgetWindow;
+import org.jmt.starfort.ui.gui.window.WindowContext;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.util.Direction;
 import org.jmt.starfort.util.InlineFunctions;
@@ -58,6 +60,10 @@ import org.jmt.starfort.util.NativePathModifier;
 import org.jmt.starfort.world.TickRequest;
 import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.controller.ControllerTask;
+import org.jmt.starfort.world.entity.IEntity;
+import org.jmt.starfort.world.entity.ai.ITask;
+import org.jmt.starfort.world.entity.ai.Task;
+import org.jmt.starfort.world.entity.ai.subtask.TaskMove;
 import org.jmt.starfort.world.material.IMaterial;
 import org.jmt.starfort.world.material.MaterialRegistry;
 import org.jmt.starfort.world.save.WorldSaver;
@@ -90,6 +96,9 @@ public class Starfort {
 	public static long worldNvgCtx;
 	public static long guiNvgCtx;
 	public static NkContext guiNukCtx = NkContext.create();
+	
+	public static int winWidth, winHeight;
+	
 	public static ArrayList<IRendererRule> renderRules = new ArrayList<>();
 	static Renderer r;
 	
@@ -206,33 +215,33 @@ public class Starfort {
 				
 			@Override
 			public void handleEvent(IEvent ev) {
-				
+				if (!ev.getEventConsumed()) {
 				if (ev instanceof EventKey) {
 					EventKey kev = (EventKey)(ev);
-				if (kev.getEventAction() == GLFW.GLFW_PRESS) {
-					switch (kev.getEventKey()) {
-					case (GLFW.GLFW_KEY_UP):
-						displayOffset.z += 1;
+					if (kev.getEventAction() == GLFW.GLFW_PRESS) {
+						switch (kev.getEventKey()) {
+						case (GLFW.GLFW_KEY_UP):
+							displayOffset.z += 1;
 						break;
-					case (GLFW.GLFW_KEY_DOWN):
-						displayOffset.z -= 1;
+						case (GLFW.GLFW_KEY_DOWN):
+							displayOffset.z -= 1;
 						break;
-					case (GLFW.GLFW_KEY_LEFT):
-						displayOffset.x += 1;
+						case (GLFW.GLFW_KEY_LEFT):
+							displayOffset.x += 1;
 						break;
-					case (GLFW.GLFW_KEY_RIGHT):
-						displayOffset.x -= 1;
+						case (GLFW.GLFW_KEY_RIGHT):
+							displayOffset.x -= 1;
 						break;
-					case (GLFW.GLFW_KEY_LEFT_BRACKET):
-						displayOffset.y += 1;
+						case (GLFW.GLFW_KEY_LEFT_BRACKET):
+							displayOffset.y += 1;
 						break;
-					case (GLFW.GLFW_KEY_RIGHT_BRACKET):
-						displayOffset.y -= 1;
+						case (GLFW.GLFW_KEY_RIGHT_BRACKET):
+							displayOffset.y -= 1;
 						break;
+						}
 					}
-					}
-				}
-				
+				} 
+				}	
 			}
 			
 			@SuppressWarnings("unchecked") // Cant fix because reasons
@@ -240,6 +249,12 @@ public class Starfort {
 			public Class<? extends IEvent>[] getProcessableEvents() {
 				return new Class[] {EventKey.class};
 			}
+
+			@Override
+			public int getPriority() {
+				return 0;
+			}
+			
 			
 		});
 		
@@ -285,7 +300,9 @@ public class Starfort {
 		//glfwWindowHint(GLFW_DEPTH_BITS, 0);
 	    //glfwWindowHint(GLFW_STENCIL_BITS, 8);
 		
-		window = GLFW.glfwCreateWindow(1600, 900, "STARFORT - TEST", 0, 0);
+	    winWidth = 1600;
+	    winHeight = 900;
+		window = GLFW.glfwCreateWindow(winWidth, winHeight, "STARFORT - TEST", 0, 0);
 		GLFW.glfwMakeContextCurrent(window);
 		
 		GLFW.glfwSwapInterval(2);
@@ -334,31 +351,14 @@ public class Starfort {
 		Processor.init();
 		UserInterfacing.setupInterfacing(window);
 		GUI.init(window);
-		//IWidget wwindow = new WidgetWindow("Test", 0, 0, 200, 500);
-		//IWidget wbutton = new WidgetButton("TEST BUTTON", (bool) -> {
-		//	System.out.println("Button changed to:" + bool);
-		//});
-		//wwindow.getWidgetChildren().add(wbutton);
-		IWidget wwindow = new IWidget() {
-			
-			boolean state;
-			
-			String label = "Test Button", title = "Test Window";
-			int xpos = 10, ypos=10, width=800, height=800;
-			
-			@Override
-			protected void drawWidgetSelf(NkCtxGLFW3 jctx) {
-				NkRect bounds = NkRect.mallocStack(jctx.stack);
-				nk_begin(jctx.ctx, title, nk_rect(xpos, ypos, width, height, bounds), NK_WINDOW_BORDER | NK_WINDOW_TITLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_MOVABLE);
-				boolean lastState = state;
-				state = nk_button_label(jctx.ctx, label);
-				if (state != lastState) {
-					System.out.println("Test");
-				}
-				nk_end(jctx.ctx);
-			}
-		};
-		GUI.addWidget(wwindow);
+		IWidgetTree wwindow = new WidgetWindow("Test", 0, 0, 200, 500);
+		IWidgetTree wbutton = new WidgetButton("TEST BUTTON", (bool) -> {
+			System.out.println("Button changed to:" + bool);
+		});
+		wwindow.getWidgetChildren().add(wbutton);
+		//GUI.addWidget(wwindow);
+		WindowContext winctx = new WindowContext();
+		GUI.addWidget(winctx);
 		r.init(renderRules);
 		
 	}

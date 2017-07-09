@@ -3,7 +3,7 @@ package org.jmt.starfort.ui.gui.widget;
 import static org.lwjgl.nuklear.Nuklear.*;
 import org.jmt.starfort.ui.gui.NkCtxGLFW3;
 
-public class WidgetButton extends IWidget {
+public class WidgetButton extends IWidgetTree {
 	
 	@FunctionalInterface
 	public static interface ButtonCallback {

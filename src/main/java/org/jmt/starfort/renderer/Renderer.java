@@ -13,6 +13,12 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.jmt.starfort.event.EventBus;
+import org.jmt.starfort.event.EventBus.EventCallback;
+import org.jmt.starfort.event.events.EventWorldClick;
+import org.jmt.starfort.event.events.ui.EventMouseButton;
+import org.jmt.starfort.event.IEvent;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.block.Block;
@@ -20,6 +26,7 @@ import org.jmt.starfort.world.component.IComponent;
 import org.jmt.starfort.world.material.IMaterial;
 import org.jmt.starfort.world.material.MaterialRegistry;
 import org.joml.Vector2f;
+import org.lwjgl.glfw.GLFW;
 
 public class Renderer {
 	
@@ -44,6 +51,48 @@ public class Renderer {
 	
 	public HashMap<Integer, Colour> materialRenderReg = new HashMap<>();
 	
+	public HashMap<World, Coord> worldOffsetMap = new HashMap<>();
+	
+	/**
+	 * The last world rendered; will be null no world has been rendered.
+	 * If accesed during rendering will be the current world being rendered.
+	 */
+	public World lastRenderedWorld;
+	
+	{
+		EventBus.registerEventCallback(new EventCallback() {
+			
+			@Override
+			public void handleEvent(IEvent ev) {
+				if (!ev.getEventConsumed()) {
+					EventMouseButton emb = (EventMouseButton) ev;
+					if (emb.getEventAction() == GLFW.GLFW_RELEASE) {
+						double[] xa = new double[1], ya = new double[1];
+						GLFW.glfwGetCursorPos(emb.getEventWindow(), xa, ya);
+						Coord offset = worldOffsetMap.get(lastRenderedWorld);
+						Coord point = new Coord((int)Math.floor(rtwLen((float)xa[0]))-offset.x, offset.y, (int)Math.floor(rtwLen((float)ya[0]))-offset.z);
+						//System.out.println("Click at X:" + xa[0] + ", Y:" + ya[0] + " " + (point).toString());
+						IEvent oev = new EventWorldClick(emb.getEventWindow(), lastRenderedWorld, point);
+						EventBus.fireEvent(oev);
+						if (oev.getEventConsumed()) {
+							ev.consumeEvent();
+						}
+					}
+				}
+			}
+			
+			@SuppressWarnings("unchecked")
+			@Override
+			public Class<? extends IEvent>[] getProcessableEvents() {
+				return new Class[] {EventMouseButton.class};
+			}
+
+			@Override
+			public int getPriority() {
+				return 90;
+			}
+		});
+	}
 	
 	/**
 	 * Returns a render coord space of the world coord; only do on a 
@@ -64,6 +113,16 @@ public class Renderer {
 	 */
 	public float wtrLen(float frac) {
 		return (frac) * 1/zoom * renderSpacePerWorldSpace ;
+	}
+	
+	/**
+	 * Returns a world coord space of the render coord; only do on a 
+	 * @param worldC
+	 * @param offset
+	 * @return
+	 */
+	public float rtwLen(float frac) {
+		return (frac) / (1/zoom * renderSpacePerWorldSpace);
 	}
 	
 	/**
@@ -90,6 +149,36 @@ public class Renderer {
 	 * The component shader
 	 */
 	public int program;
+	
+	/**
+	 * Map of render settings, doesn't need to be syncd 
+	 * as rendering is all done in the main thread
+	 */
+	Map<String, String> settings = new HashMap<>();
+	
+	/**
+	 * Sets a config option for this renderer
+	 * 
+	 * @param key Key to find
+	 * @param val Value of the setting; should be serialised if necesary
+	 */
+	public void setRenderSetting(String key, String val) {
+		if (val != null) {
+			settings.put(key, val);
+		} else {
+			// Don't store null keys
+			settings.remove(key);
+		}
+	}
+	
+	/**
+	 * Gets renderer setting for a given key
+	 * @param key The setting to look up
+	 * @return Serialised value of the key, or null if the option doesn't exist
+	 */
+	public String getRenderSetting(String key) {
+		return settings.get(key);
+	}
 	
 	/**
 	 * Initialize the renderer
@@ -145,6 +234,8 @@ public class Renderer {
 	 * @param offset Offset to draw to
 	 */
 	public void draw(World w, Coord offset) {
+		worldOffsetMap.put(w, offset);
+		lastRenderedWorld = w;
 		//glRotatef(90, 0, 0, 1);
 		long startTime = System.nanoTime();
 		int[] bounds = w.getBounds(true);
@@ -160,7 +251,7 @@ public class Renderer {
 		long frameTime = endTime - startTime;
 		@SuppressWarnings("unused")
 		float FPS = (1000000000/frameTime);
-		System.out.println("FPS: " + FPS);
+		//System.out.println("FPS: " + FPS);
 		//glRotatef(-90, 0, 0, 1);
 	}
 	
@@ -191,7 +282,7 @@ public class Renderer {
 					
 				}
 				} catch (ConcurrentModificationException cme) {
-					System.err.println("Rendering concurrent modification exception - Not a problem - Skipping tile - WARN");
+					//System.err.println("Rendering concurrent modification exception - Not a problem - Skipping tile - WARN");
 					//cme.printStackTrace();
 				} catch (NullPointerException npe) {
 					System.err.println("Rendering NPE - POSSIBLY a problem - Skipping tile - WARN");

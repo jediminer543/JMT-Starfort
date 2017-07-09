@@ -140,4 +140,9 @@ public class GenericRenderer implements IRendererRule {
 	public int getPriority() {
 		return priority;
 	}
+
+	@Override
+	public boolean disabled(Renderer r) {
+		return true;
+	}
 }

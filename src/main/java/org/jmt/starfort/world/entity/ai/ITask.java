@@ -39,7 +39,13 @@ public interface ITask {
 	public String getTaskStateString();
 	
 	/**
-	 * Check if the task can be performed
+	 * Check if the task can be performed, will be called per tick; 
+	 * in the event that an entity becomes incapable of performing it
+	 * 
+	 * I.e. pathfinding becomes blocked; entity SHOULD dispose of task and reaquire
+	 * new task (May be the same task with different values; but it is recommended 
+	 * to save processing by just resetting locally instead of reaquiring a new task);
+	 * 
 	 * @return Whether the task can be performed
 	 */
 	public boolean canTaskPerform(IEntity entity);

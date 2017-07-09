@@ -110,4 +110,9 @@ public class HumanRenderer implements IRendererRule {
 		return 200;
 	}
 
+	@Override
+	public boolean disabled(Renderer r) {
+		return false;
+	}
+
 }

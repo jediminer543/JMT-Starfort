@@ -456,7 +456,7 @@ public class NuklearUtil {
 			
 			@Override
 			public void handleEvent(IEvent ev) {
-				if (ev instanceof IEventUI && ((IEventUI)ev).getEventWindow() == glfw3ctx.win) {
+				if (ev instanceof IEventUI && ((IEventUI)ev).getEventWindow() == glfw3ctx.win && !ev.getEventConsumed()) {
 				if (ev instanceof EventScroll) {
 					EventScroll cev = (EventScroll) ev;
 					nk_input_scroll(glfw3ctx.ctx, (float)cev.getEventYoffset());
@@ -553,12 +553,21 @@ public class NuklearUtil {
 					} 
 				}
 				}
+				if (nk_item_is_any_active(glfw3ctx.ctx)) {
+					//Flag the event as being consumed if inside the windos
+					ev.consumeEvent();
+				}
 			}
 			
 			@SuppressWarnings("unchecked")
 			@Override
 			public Class<? extends IEvent>[] getProcessableEvents() {
 				return new Class[] {EventChar.class, EventCursorPos.class, EventKey.class, EventMouseButton.class, EventScroll.class};
+			}
+
+			@Override
+			public int getPriority() {
+				return 100;
 			}
 		});
 		nk_init(glfw3ctx.ctx, ALLOCATOR, null);

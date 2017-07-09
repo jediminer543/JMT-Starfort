@@ -11,8 +11,6 @@ import org.jmt.starfort.world.component.IComponentTickable;
  */
 public interface IComponentDesignator extends IComponent, IComponentTickable {
 	
-	public void designatorTask(Object... args);
-	
 	public boolean isDesignatorComplete();
 	
 }

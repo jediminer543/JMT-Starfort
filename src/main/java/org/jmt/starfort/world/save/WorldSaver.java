@@ -46,13 +46,13 @@ public class WorldSaver {
 	public static World loadWorld(InputStream in) {
 		//Kryo kryo = new Kryo();
 		kryo.setRegistrationRequired(false);
-		kryo.setInstantiatorStrategy(new InstantiatorStrategy() {
-			
-			@Override
-			public <T> ObjectInstantiator<T> newInstantiatorOf(Class<T> type) {
-				return generator.getInstantiatorOf(type);
-			}
-		});
+		//kryo.setInstantiatorStrategy(new InstantiatorStrategy() {
+		//	
+		//	@Override
+		//	public <T> ObjectInstantiator<T> newInstantiatorOf(Class<T> type) {
+		//		return generator.getInstantiatorOf(type);
+		//	}
+		//});
 		try (Input input = new Input(in)) {
 			return kryo.readObject(input, World.class);
 		}

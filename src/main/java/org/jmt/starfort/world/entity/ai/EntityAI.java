@@ -37,13 +37,15 @@ public class EntityAI {
 			try {
 				t = futureT.get(100, TimeUnit.MICROSECONDS);
 				futureT = null;
+				//System.out.println("Aqired New Task");
 			} catch (InterruptedException | ExecutionException
 					| TimeoutException e) {
 				e.printStackTrace();
 			}
 		}
 		if (t != null) {
-			if (t.getTaskState() == TaskState.COMPLETE) {
+			if (t.getTaskState() == TaskState.COMPLETE || !t.canTaskPerform(ie)) {
+				//System.out.println("Task NOPE/Complete");
 				t = null;
 			} else {
 				t.tickTask(w, ie, c);

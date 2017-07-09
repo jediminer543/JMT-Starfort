@@ -21,4 +21,8 @@ public class UserInterfacing {
 		glfwSetCursorPosCallback(win, (window, xpos, ypos) -> EventBus.fireEvent(new EventCursorPos(window, xpos, ypos)));
 		glfwSetMouseButtonCallback(win, (window, button, action, mods) -> EventBus.fireEvent(new EventMouseButton(window, button, action, mods)));
 	}
+	
+	public static void clickToWorld() {
+		
+	}
 }

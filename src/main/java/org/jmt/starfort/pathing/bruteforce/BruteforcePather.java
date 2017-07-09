@@ -32,8 +32,9 @@ public class BruteforcePather {
 		
 		@Override
 		public Path call() throws Exception {
+			//System.out.println("Calculating Path");
 			Path out = pathBetween(src, dst, NodeSet, passController);
-			//System.out.println("Path calculated");
+			//System.out.println("Path calculated; ISNULL:" + (out == null));
 			return out;
 		}
 		

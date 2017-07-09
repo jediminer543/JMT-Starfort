@@ -2,7 +2,9 @@ package org.jmt.starfort.world.controller;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RunnableFuture;
 import org.jmt.starfort.processor.ComplexRunnable;
@@ -15,6 +17,7 @@ import org.jmt.starfort.world.entity.ai.ITask;
 public class ControllerTask implements IController {
 
 	ArrayList<ITask> worldTasks = new ArrayList<>();
+	CopyOnWriteArrayList<ITask> commandTasks = new CopyOnWriteArrayList<>();
 	
 	long maxLen = 50000;
 	int lastX, lastY, lastZ; 
@@ -23,7 +26,12 @@ public class ControllerTask implements IController {
 	@Override
 	public ComplexRunnable getTick() {
 		return new ComplexRunnable() {
-			
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -1939983941083200800L;
+
 			@Override
 			public void run(Object... args) {
 				World w = (World)args[0];
@@ -67,9 +75,19 @@ public class ControllerTask implements IController {
 						}
 					}
 				}
-				
+				if (commandTasks != null) {
+					for (ITask task : commandTasks) {
+						if (task.getTaskState() == ITask.TaskState.COMPLETE) {
+							commandTasks.remove(task);
+						}
+					}
+				}
 			}
 		};
+	}
+	
+	public void addCommandTask(ITask t) {
+		commandTasks.add(t);
 	}
 	
 	public RunnableFuture<ITask> getPerformableTask(final IEntity e) {
@@ -89,6 +107,16 @@ public class ControllerTask implements IController {
 						highestPerformableTask = task;
 					}
 				}}
+				// FIRST RULE OF CONCURRENCY: NEVER TRUST CONCURRENCY
+				// IT NEVER CONCENTRATES ON A SINGLE TASK
+				if (commandTasks != null) {
+				for (ITask task : commandTasks) {
+					if (task.getTaskPriority() > highestTaskScore && task.canTaskPerform(e)) {
+						highestTaskScore = task.getTaskPriority();
+						highestPerformableTask = task;
+					}
+				}
+				}
 				// FIRST RULE OF CONCURRENCY: NEVER TRUST CONCURRENCY
 				// IT NEVER CONCENTRATES ON A SINGLE TASK
 				if (worldTasks != null) {

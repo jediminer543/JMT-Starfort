@@ -26,21 +26,16 @@ import org.jmt.starfort.world.material.IMaterial;
 
 public class EntityDrone implements IEntity {
 
-	public final class Dataset {
-		Path p;
-		RunnableFuture<Path> futurePath;
-		Deque<Coord> targets = new ArrayDeque<Coord>();
-		{
-			targets.addLast(new Coord(0, 0, 3));
-			targets.addLast(new Coord(-1, 0, 0));
-			targets.addLast(new Coord(0, 0, -1));
-			targets.addLast(new Coord(2, 0, 0));
-			targets.addLast(new Coord(6, 0, 6));
-		}
-		
+	Path p;
+	RunnableFuture<Path> futurePath;
+	Deque<Coord> targets = new ArrayDeque<Coord>();
+	{
+		targets.addLast(new Coord(0, 0, 3));
+		targets.addLast(new Coord(-1, 0, 0));
+		targets.addLast(new Coord(0, 0, -1));
+		targets.addLast(new Coord(2, 0, 0));
+		targets.addLast(new Coord(6, 0, 6));
 	}
-	
-	Dataset ds = new Dataset();
 	
 	@Override
 	public String getComponentName() {
@@ -58,18 +53,18 @@ public class EntityDrone implements IEntity {
 			Coord c = (Coord) args[1];
 			//TickRequest tr = (TickRequest) args[2];
 			//System.out.println("Processing");
-			if (parent.ds.p == null && parent.ds.futurePath == null) {
-				parent.ds.futurePath = BruteforcePather.pathBetweenAsync(c, parent.ds.targets.getFirst(), w, parent.getEntityPassageCallback());
-				Processor.addRequest(parent.ds.futurePath);
-				parent.ds.p = null;
+			if (parent.p == null && parent.futurePath == null) {
+				parent.futurePath = BruteforcePather.pathBetweenAsync(c, parent.targets.getFirst(), w, parent.getEntityPassageCallback());
+				Processor.addRequest(parent.futurePath);
+				parent.p = null;
 			}
-			if (c.equals(parent.ds.targets.getFirst())) {
-				parent.ds.targets.addLast(parent.ds.targets.pop());
+			if (c.equals(parent.targets.getFirst())) {
+				parent.targets.addLast(parent.targets.pop());
 			}
-			if (parent.ds.futurePath != null && parent.ds.futurePath.isDone()) {
+			if (parent.futurePath != null && parent.futurePath.isDone()) {
 				try {
-					parent.ds.p = parent.ds.futurePath.get(100, TimeUnit.MICROSECONDS);
-					parent.ds.futurePath = null;
+					parent.p = parent.futurePath.get(100, TimeUnit.MICROSECONDS);
+					parent.futurePath = null;
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				} catch (ExecutionException e) {
@@ -77,12 +72,12 @@ public class EntityDrone implements IEntity {
 				} catch (TimeoutException e) {
 				}
 			}
-			if (parent.ds.p != null && parent.ds.p.remaining() <= 0 && parent.ds.futurePath == null) {
-				parent.ds.futurePath = BruteforcePather.pathBetweenAsync(c, parent.ds.targets.getFirst(), w, parent.getEntityPassageCallback());
-				Processor.addRequest(parent.ds.futurePath);
-				parent.ds.p = null;
-			} else if (parent.ds.p != null && parent.ds.p.remaining() > 0) {
-				Coord dst = c.addR(parent.ds.p.pop().getDir());
+			if (parent.p != null && parent.p.remaining() <= 0 && parent.futurePath == null) {
+				parent.futurePath = BruteforcePather.pathBetweenAsync(c, parent.targets.getFirst(), w, parent.getEntityPassageCallback());
+				Processor.addRequest(parent.futurePath);
+				parent.p = null;
+			} else if (parent.p != null && parent.p.remaining() > 0) {
+				Coord dst = c.addR(parent.p.pop().getDir());
 				w.moveComponent(parent, c, dst);
 			}
 	};

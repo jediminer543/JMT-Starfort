@@ -63,6 +63,11 @@ public class EntityHuman extends EntityHumanoid {
 	final EntityHuman parent = this;
 	ComplexRunnable tick = new ComplexRunnable() {
 			
+			/**
+		 * 
+		 */
+		private static final long serialVersionUID = 6525438261145656859L;
+
 			@Override
 			public void run(Object... args) {
 				World w = (World) args[0];

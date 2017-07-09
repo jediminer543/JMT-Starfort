@@ -1,7 +1,6 @@
 package org.jmt.starfort.world;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,9 +42,10 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	
 	/**
 	 * Time until rerun
+	 * IN NANOS (IS IMPORTANT)
 	 */
-	//long sleepTime = 100000000;
-	long sleepTime = 0;
+	long sleepTime = 100000000;
+	//long sleepTime = 0;
 	
 	/**
 	 * Time sleep started
@@ -90,6 +90,11 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 			public Class<? extends IEvent>[] getProcessableEvents() {
 				return new Class[] {EventMove.class};
 			}
+
+			@Override
+			public int getPriority() {
+				return 0;
+			}
 		});
 	}
 	
@@ -118,58 +123,58 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	@Override
 	public boolean processNext() {
 		if (sleepTime + sleepStart <= System.nanoTime()) {
-		ComplexRunnable task = null;
-		Coord execLoc = null;
-		while (task == null) {
-			try {
-			if (ticksCurr.entrySet().size() == 0) {
-				return false;
-			}
-			Entry<Coord, ArrayList<ComplexRunnable>> item = ticksCurr.entrySet().iterator().next();
-			synchronized (item.getValue()) {
-			if (item.getValue().size() > 0) {
-				runningCount.incrementAndGet();
-				task = item.getValue().remove(0);
-				execLoc = item.getKey();
-			} else {
-				synchronized (ticksCurr) {
-					ticksCurr.remove(item.getKey());
+			ComplexRunnable task = null;
+			Coord execLoc = null;
+			while (task == null) {
+				try {
+					if (ticksCurr.entrySet().size() == 0) {
+						return false;
+					}
+					Entry<Coord, ArrayList<ComplexRunnable>> item = ticksCurr.entrySet().iterator().next();
+					synchronized (item.getValue()) {
+						if (item.getValue().size() > 0) {
+							runningCount.incrementAndGet();
+							task = item.getValue().remove(0);
+							execLoc = item.getKey();
+						} else {
+							synchronized (ticksCurr) {
+								ticksCurr.remove(item.getKey());
+							}
+						}
+					}
+				} catch (NoSuchElementException nsee) {
+					//SYNC ERROR IGNORING
+					return false;
 				}
 			}
+			synchronized (ticksProc) {
+				ticksProc.put(task, execLoc);
 			}
-			} catch (NoSuchElementException nsee) {
-				//SYNC ERROR IGNORING
-				return false;
-			}
-		}
-		synchronized (ticksProc) {
-		ticksProc.put(task, execLoc);
-		}
-		
-		//Execute task, making certain that it doesn't kill the thread
-		try {
-			task.run(w, execLoc, this);
-		} catch (Exception e) {
-			System.err.println("ERROR: " + task.getClass().getName() + "threw an exception to the processing thread");
-			e.printStackTrace();
-		}
-		
-		boolean complete = false;
-		while (!complete) {
+
+			//Execute task, making certain that it doesn't kill the thread
 			try {
-			if (ticksNext.get(ticksProc.get(task)) == null) {
-				ArrayList<ComplexRunnable> dsta = new ArrayList<ComplexRunnable>();
-				dsta.add(task);
-				ticksNext.put(ticksProc.get(task), dsta);
-				complete = true;
-			} else {
-				ticksNext.get(ticksProc.get(task)).add(task);
-				complete = true;
+				task.run(w, execLoc, this);
+			} catch (Exception e) {
+				System.err.println("ERROR: " + task.getClass().getName() + "threw an exception to the processing thread");
+				e.printStackTrace();
 			}
-			} catch (NullPointerException npe) {/*concurrency error*/ }
-		}
-		runningCount.decrementAndGet();
-		return true;
+
+			boolean complete = false;
+			while (!complete) {
+				try {
+					if (ticksNext.get(ticksProc.get(task)) == null) {
+						ArrayList<ComplexRunnable> dsta = new ArrayList<ComplexRunnable>();
+						dsta.add(task);
+						ticksNext.put(ticksProc.get(task), dsta);
+						complete = true;
+					} else {
+						ticksNext.get(ticksProc.get(task)).add(task);
+						complete = true;
+					}
+				} catch (NullPointerException npe) {/*concurrency error*/ }
+			}
+			runningCount.decrementAndGet();
+			return true;
 		} else {
 			return false;
 		}
@@ -199,11 +204,14 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 
 	@Override
 	public void reset() {
+		try {
 		long endTime = System.nanoTime();
 		long frameTime = endTime - sleepStart;
 		@SuppressWarnings("unused")
 		float TPS = (1000000000/frameTime);
-		System.out.println("TPS: " + TPS);
+		//Occasionally throws Div zero exception
+		} catch (ArithmeticException e) {}
+		//System.out.println("TPS: " + TPS);
 		//glRotatef(-90, 0, 0, 1);
 		loopCount++;
 		if (!(loopCount % reload == 0)) {
