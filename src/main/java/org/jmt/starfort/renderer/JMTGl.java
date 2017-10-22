@@ -24,6 +24,10 @@ import org.lwjgl.BufferUtils;
  * dev laptop) can run it and it is the base for intel graphics, but
  * means no GLSL >1.3 and no GL>30 :( May be changed later.
  * 
+ * On the plus side, this means that by using GL30, we can run starfort
+ * on ANY device that Mesa3D can be targeted at, meaning Almost all linux
+ * and most windows (possibly mac, but who cares about Mac?)
+ * 
  * @author Jediminer543
  *
  */

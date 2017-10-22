@@ -6,6 +6,8 @@ package org.jmt.starfort.localizer;
  * 
  * currently sits here doing nothing
  * 
+ * Further delayed as per "Localisation is hard" revision
+ * 
  * @author Jediminer543
  *
  */

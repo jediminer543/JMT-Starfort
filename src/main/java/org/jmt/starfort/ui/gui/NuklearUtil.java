@@ -26,7 +26,6 @@ import org.jmt.starfort.event.EventBus;
 import org.jmt.starfort.event.EventBus.EventCallback;
 import org.jmt.starfort.event.IEvent;
 import org.jmt.starfort.event.IEventUI;
-import org.jmt.starfort.event.events.EventMove;
 import org.jmt.starfort.event.events.ui.EventChar;
 import org.jmt.starfort.event.events.ui.EventCursorPos;
 import org.jmt.starfort.event.events.ui.EventKey;
@@ -49,7 +48,6 @@ import org.lwjgl.stb.STBTTPackContext;
 import org.lwjgl.stb.STBTTPackedchar;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
-import org.lwjgl.system.jemalloc.JEmalloc;
 
 /**
  * 
@@ -57,6 +55,10 @@ import org.lwjgl.system.jemalloc.JEmalloc;
  * 
  * Copyright LWJGL. All rights reserved.
  * License terms: https://www.lwjgl.org/license
+ * 
+ * I just modified it to work slightly more with my code. All code made by me
+ * is obvious by the massive change in coding style. And the fact it contains
+ * jmt in the name generally.
  * 
  * @author LWJGL, jediminer543
  *
@@ -191,14 +193,16 @@ public class NuklearUtil {
 	
 	//TODO Implement 
 	public static ByteBuffer StreamToByteBuffer(InputStream istream) throws IOException {
-		ByteBuffer outbuf = BufferUtils.createByteBuffer(1024 * 5);
+		ByteBuffer outbuf = BufferUtils.createByteBuffer(istream.available());
 	    ReadableByteChannel rbc = Channels.newChannel(istream);
 	    while ( true ) {
 	    	int bytes = rbc.read(outbuf);
 	    	if (bytes == -1)
 	    		break;
 	    	if (outbuf.remaining() == 0) {
-	    		ByteBuffer newBuffer = BufferUtils.createByteBuffer(outbuf.capacity() * 2);
+	    		//Changed to use istream.available() as it should read currently remaining bytes
+	    		//ByteBuffer newBuffer = BufferUtils.createByteBuffer(outbuf.capacity() + istream.available());
+	    		ByteBuffer newBuffer = BufferUtils.createByteBuffer(outbuf.capacity() + 256);
 	    		outbuf.flip();
 	    		newBuffer.put(outbuf);
 	    		outbuf = newBuffer;

@@ -22,13 +22,11 @@ public class ComponentStairs implements IComponent, IComponentDirectioned, IComp
 	
 	@Override
 	public boolean canUp() {
-		// TODO Auto-generated method stub
 		return up;
 	}
 
 	@Override
 	public boolean canDown() {
-		// TODO Auto-generated method stub
 		return down;
 	}
 
@@ -44,7 +42,6 @@ public class ComponentStairs implements IComponent, IComponentDirectioned, IComp
 
 	@Override
 	public IMaterial getComponentMaterial() {
-		// TODO Auto-generated method stub
 		return mat;
 	}
 

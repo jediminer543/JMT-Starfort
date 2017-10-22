@@ -53,7 +53,7 @@ public class EntityDrone implements IEntity {
 			World w = (World) args[0];
 			Coord c = (Coord) args[1];
 			//TickRequest tr = (TickRequest) args[2];
-			//System.out.println("Processing");
+			System.out.println("Processing");
 			if (parent.p == null && parent.futurePath == null) {
 				parent.futurePath = BruteforcePather.pathBetweenAsync(c, parent.targets.getFirst(), w, parent.getEntityPassageCallback());
 				Processor.addRequest(parent.futurePath);
@@ -128,7 +128,6 @@ public class EntityDrone implements IEntity {
 	
 	@Override
 	public IPassageCallback getEntityPassageCallback() {
-		//return pc;
 		return this::passageCallback;
 	}
 

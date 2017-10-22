@@ -61,7 +61,8 @@ dependencies {
   //compile "org.lwjgl:lwjgl-vulkan:+:natives-windows"
   //compile "org.lwjgl:lwjgl-vulkan:+:natives-linux"
   //compile "org.lwjgl:lwjgl-vulkan:+:natives-macos"
-  compile 'uk.com.robust-it:cloning:1.9.2'
+  //compile 'uk.com.robust-it:cloning:1.9.2'
+  compile "com.fasterxml.jackson.core:jackson-core:2.9.+"
   compile "com.esotericsoftware:kryo:4.0.0"
   compile group: 'org.joml', name: 'joml', version: '1.6.6'
   compile group: 'org.reflections', name: 'reflections', version: '0.9.10'

@@ -71,7 +71,7 @@ public class Processor {
 							if (simpleJobs.size() > 0) {
 								Runnable job = null;
 								try {
-									job = simpleJobs.pollFirst(100, TimeUnit.MICROSECONDS);
+									job = simpleJobs.pollFirst(10, TimeUnit.MICROSECONDS);
 								} catch (InterruptedException nsee) {
 									//nsee.printStackTrace();
 									//Happens when task is being cycled; shouldn't be a problem
@@ -114,7 +114,7 @@ public class Processor {
 										if (!first.processNext()) { idleTicks++; }
 									}
 									} catch (NoSuchElementException nsee) {
-										nsee.printStackTrace();
+										//nsee.printStackTrace();
 										//Happens when task is being cycled; shouldn't be a problem
 									}
 								}

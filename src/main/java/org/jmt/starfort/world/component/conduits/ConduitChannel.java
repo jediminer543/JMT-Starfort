@@ -1,19 +1,28 @@
 package org.jmt.starfort.world.component.conduits;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ConduitChannel {
-
+	
 	ArrayList<IComponentConduitDevice> devices = new ArrayList<>();
 	IConduitChannelType type;
 	
-	public IComponentConduitDevice[] getConduitChannelDevices() {
-		return (IComponentConduitDevice[]) devices.toArray(new IComponentConduitDevice[devices.size()]);
+	public ConduitChannel(IConduitChannelType type) {
+		this.type = type;
+	}
+	
+	public List<IComponentConduitDevice> getConduitChannelDevices() {
+		return devices;
 	}
 	
 	
 	public IConduitChannelType getConduitChennelType() {
 		return type;
+	}
+	
+	public void addDevice(IComponentConduitDevice ccd) {
+		devices.add(ccd);
 	}
 	
 	public void pushRequest(ConduitMessage request) {

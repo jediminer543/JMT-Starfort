@@ -13,26 +13,14 @@ import static org.lwjgl.opengl.GL31.*;
 import static org.lwjgl.opengl.GL32.*;
 */
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.nuklear.Nuklear.NK_WINDOW_BORDER;
-import static org.lwjgl.nuklear.Nuklear.NK_WINDOW_MINIMIZABLE;
-import static org.lwjgl.nuklear.Nuklear.NK_WINDOW_MOVABLE;
-import static org.lwjgl.nuklear.Nuklear.NK_WINDOW_NO_SCROLLBAR;
-import static org.lwjgl.nuklear.Nuklear.NK_WINDOW_TITLE;
-import static org.lwjgl.nuklear.Nuklear.nk_begin;
-import static org.lwjgl.nuklear.Nuklear.nk_button_label;
-import static org.lwjgl.nuklear.Nuklear.nk_end;
-import static org.lwjgl.nuklear.Nuklear.nk_rect;
 import static org.jmt.starfort.renderer.JMTGl.*;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 import org.jmt.starfort.event.EventBus;
 import org.jmt.starfort.event.IEvent;
-import org.jmt.starfort.event.events.EventWorldClick;
 import org.jmt.starfort.event.events.ui.EventKey;
 import org.jmt.starfort.game.components.ComponentStairs;
 import org.jmt.starfort.game.components.ComponentWall;
@@ -41,14 +29,12 @@ import org.jmt.starfort.game.entity.EntityDrone;
 import org.jmt.starfort.game.entity.human.EntityHuman;
 import org.jmt.starfort.game.registra.MaterialRegistra;
 import org.jmt.starfort.game.registra.RenderRegistra;
-import org.jmt.starfort.processor.ComplexRunnable;
 import org.jmt.starfort.processor.Processor;
 import org.jmt.starfort.renderer.Colour;
 import org.jmt.starfort.renderer.IRendererRule;
 import org.jmt.starfort.renderer.Renderer;
 import org.jmt.starfort.ui.UserInterfacing;
 import org.jmt.starfort.ui.gui.GUI;
-import org.jmt.starfort.ui.gui.NkCtxGLFW3;
 import org.jmt.starfort.ui.gui.widget.IWidgetTree;
 import org.jmt.starfort.ui.gui.widget.WidgetButton;
 import org.jmt.starfort.ui.gui.widget.WidgetWindow;
@@ -59,22 +45,15 @@ import org.jmt.starfort.util.InlineFunctions;
 import org.jmt.starfort.util.NativePathModifier;
 import org.jmt.starfort.world.TickRequest;
 import org.jmt.starfort.world.World;
-import org.jmt.starfort.world.entity.IEntity;
 import org.jmt.starfort.world.entity.aiold.ControllerTask;
-import org.jmt.starfort.world.entity.aiold.ITask;
-import org.jmt.starfort.world.entity.aiold.Task;
-import org.jmt.starfort.world.entity.aiold.subtask.TaskMove;
 import org.jmt.starfort.world.material.IMaterial;
 import org.jmt.starfort.world.material.MaterialRegistry;
-import org.jmt.starfort.world.save.WorldSaver;
-import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.glfw.GLFWKeyCallbackI;
 import org.lwjgl.nuklear.NkContext;
-import org.lwjgl.nuklear.NkRect;
-import org.lwjgl.nuklear.Nuklear;
 import org.lwjgl.opengl.GL;
+
+import com.fasterxml.jackson.core.JsonFactory;
 
 /**
  * THIS SHOULD LIVE IN TEST, BUT LIVES HERE BECAUSE IT CAN
@@ -104,6 +83,8 @@ public class Starfort {
 	
 	static World w1;
 	
+	static int target = 0;
+	
 	public static void main(String[] args) throws Exception {
 		
 		//TODO do stuff
@@ -130,8 +111,8 @@ public class Starfort {
 		int matID = MaterialRegistry.getMaterialID(mat);	
 		r.materialRenderReg.put(matID, new Colour(0.5f, 0.2f, 0.5f, 1f));
 		
-		boolean loadtest = false;
-		if (!loadtest) {
+		//boolean loadtest = false;
+		//if (!loadtest) {
 		w.getBlock(new Coord(0, 0, 0)).addComponent(new ComponentStairs(mat, true, false));
 		w.getBlock(new Coord(0, 1, 0)).addComponent(new ComponentStairs(mat, false, true));
 		
@@ -194,18 +175,84 @@ public class Starfort {
 		w.getController(ControllerTask.class);
 		w.getBlock(new Coord()).addComponent(new EntityHuman("BOB"));
 		
-			File f = new File("saveTest.map");
-			if (!f.exists()) { f.createNewFile(); }
-			FileOutputStream fos = new FileOutputStream(f);
-			WorldSaver.saveWorld(w, fos);
-			fos.flush();
-			fos.close();
-			
-		} else {
-			File f = new File("saveTest.map");
-			if (!f.exists()) { f.createNewFile(); }
-			w1 = w = WorldSaver.loadWorld(new FileInputStream(f));
-		}
+		//JsonFactory factory = new JsonFactory();
+		//factory.createGenerator();
+		
+		//World w2 = Jack
+		
+		World w2 = new World();
+		
+		w2.getBlock(new Coord(0, 0, 0)).addComponent(new ComponentStairs(mat, true, false));
+		w2.getBlock(new Coord(0, 1, 0)).addComponent(new ComponentStairs(mat, false, true));
+		
+		w2.getBlock(new Coord(9, 0, 2)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XINC, Direction.XDEC, Direction.ZINC, Direction.ZDEC), mat));
+		
+		w2.getBlock(new Coord(0, 0, -1)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XINC, Direction.XDEC, Direction.ZDEC), mat));
+		w2.getBlock(new Coord(0, 0, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC), mat));
+		w2.getBlock(new Coord(1, 0, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.ZDEC, Direction.ZINC), mat));
+		w2.getBlock(new Coord(2, 0, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XINC, Direction.ZDEC, Direction.ZINC), mat));
+		w2.getBlock(new Coord(-1, 0, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XDEC, Direction.ZDEC, Direction.ZINC), mat));
+		w2.getBlock(new Coord(0, 0, 1)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XDEC, Direction.XINC), mat));
+		w2.getBlock(new Coord(0, 0, 2)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XDEC, Direction.XINC), mat));
+		w2.getBlock(new Coord(0, 0, 3)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XDEC, Direction.XINC, Direction.ZINC), mat));
+		
+		w2.getBlock(new Coord(5, 0, 5)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XDEC, Direction.ZDEC), mat));
+		w2.getBlock(new Coord(5, 0, 6)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XDEC, Direction.ZINC), mat));
+		w2.getBlock(new Coord(6, 0, 5)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XINC, Direction.ZDEC), mat));
+		w2.getBlock(new Coord(6, 0, 6)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XINC, Direction.ZINC), mat));
+		
+		w2.getBlock(new Coord(7, 0, 5)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XDEC), mat));
+		w2.getBlock(new Coord(4, 0, 6)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XINC), mat));
+		w2.getBlock(new Coord(5, 0, 4)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.ZINC), mat));
+		w2.getBlock(new Coord(6, 0, 7)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.ZDEC), mat));
+		
+		w2.getBlock(new Coord(-1, 0, -1)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.SELFFULL), mat));
+		
+		w2.getBlock(new Coord(-2, 0, -2)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XDEC, Direction.ZDEC), mat));
+		w2.getBlock(new Coord(-1, 0, -2)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XINC, Direction.XDEC, Direction.ZDEC), mat));
+		w2.getBlock(new Coord(0, 0, -2)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XINC, Direction.ZDEC), mat));
+		
+		w2.getBlock(new Coord(-2, 0, -3)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.ZDEC, Direction.ZINC, Direction.XINC), mat));
+		w2.getBlock(new Coord(-1, 0, -3)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XINC, Direction.XDEC, Direction.ZINC, Direction.ZDEC), mat));
+		w2.getBlock(new Coord(0, 0, -3)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.ZINC, Direction.ZDEC, Direction.XDEC), mat));
+		
+		w2.getBlock(new Coord(-2, 0, -4)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XDEC, Direction.ZINC), mat));
+		w2.getBlock(new Coord(-1, 0, -4)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XINC, Direction.XDEC, Direction.ZINC), mat));
+		w2.getBlock(new Coord(0, 0, -4)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XINC, Direction.ZINC), mat));
+		
+		w2.getBlock(new Coord(0, 1, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XDEC, Direction.ZDEC, Direction.ZINC), mat));
+		w2.getBlock(new Coord(1, 1, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.ZDEC, Direction.ZINC), mat));
+		w2.getBlock(new Coord(2, 1, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.ZDEC, Direction.ZINC), mat));
+		w2.getBlock(new Coord(3, 1, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.ZDEC, Direction.ZINC), mat));
+		w2.getBlock(new Coord(4, 1, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.ZDEC, Direction.ZINC), mat));
+		w2.getBlock(new Coord(5, 1, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.ZDEC, Direction.XINC), mat));
+		
+		w2.getBlock(new Coord(5, 1, 1)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XDEC, Direction.XINC), mat));
+		w2.getBlock(new Coord(5, 1, 2)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XDEC, Direction.XINC), mat));
+		w2.getBlock(new Coord(5, 1, 3)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XDEC, Direction.XINC), mat));
+		w2.getBlock(new Coord(5, 1, 4)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XDEC, Direction.XINC), mat));
+		w2.getBlock(new Coord(5, 1, 5)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XDEC, Direction.XINC, Direction.ZINC), mat));		
+		
+		w2.getBlock(new Coord(5, 0, 5)).addComponent(new ComponentStairs(mat, true, false));
+		w2.getBlock(new Coord(5, 1, 5)).addComponent(new ComponentStairs(mat, false, true));
+		
+		w2.getBlock(new Coord(6, 0, 6)).addComponent(new EntityDrone());
+		w2.getBlock(new Coord(0, 0, 0)).addComponent(new EntityDrone());
+		w2.getBlock(new Coord(0, 0, 1)).addComponent(new EntityDrone());
+		w2.getBlock(new Coord(5, 1, 0)).addComponent(new EntityDrone());
+		
+		//	File f = new File("saveTest.map");
+		//	if (!f.exists()) { f.createNewFile(); }
+		//	FileOutputStream fos = new FileOutputStream(f);
+		//	WorldSaver.saveWorld(w, fos);
+		//	fos.flush();
+		//	fos.close();
+		//	
+		//} else {
+		//	File f = new File("saveTest.map");
+		//	if (!f.exists()) { f.createNewFile(); }
+		//	w1 = w = WorldSaver.loadWorld(new FileInputStream(f));
+		//}
 		
 		DevUtil.makeRoom(w1, mat, new Coord(0,0,5), new Coord(3,1,8));
 		
@@ -238,6 +285,12 @@ public class Starfort {
 						case (GLFW.GLFW_KEY_RIGHT_BRACKET):
 							displayOffset.y -= 1;
 						break;
+						case (GLFW.GLFW_KEY_0):
+							target = 0;
+						break;
+						case (GLFW.GLFW_KEY_1):
+							target = 1;
+						break;
 						}
 					}
 				} 
@@ -258,7 +311,10 @@ public class Starfort {
 			
 		});
 		
+		
+		
 		Processor.addRequest(new TickRequest(w));
+		Processor.addRequest(new TickRequest(w2));
 		
 		while (!GLFW.glfwWindowShouldClose(window)) {
 			GLFW.glfwPollEvents();
@@ -268,7 +324,11 @@ public class Starfort {
 			
 			//NanoVG.nvgBeginFrame(worldNvgCtx, 1600, 900, 1);
 			//NanoVG.nvgStrokeWidth(worldNvgCtx, 1f);
-			r.draw(w, displayOffset);
+			if (target == 0) {
+				r.draw(w, displayOffset);
+			} else {
+				r.draw(w2, displayOffset);
+			}
 			
 			GUI.draw();
 			//NanoVG.nvgEndFrame(worldNvgCtx);

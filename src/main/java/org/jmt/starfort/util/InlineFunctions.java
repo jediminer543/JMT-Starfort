@@ -10,6 +10,8 @@ import java.util.Map.Entry;
  * This class does stuff that needs to be done in line. I.e. during a return call.
  * <br>
  * There is probably a proper java way to do some of this, but this is here for those who can't remember.
+ * <br>
+ * Or can't be bothered to fight with java to get it to work.
  * 
  * @author Jediminer543
  *

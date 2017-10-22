@@ -7,7 +7,8 @@ import org.jmt.starfort.util.Coord;
 
 public class NodePather {
 
-	//TODO
+	//TODO ANYTHING AT ALL
+	
 	
 	public NodePath pathBetween(PathingNode src, PathingNode dst, ArrayList<PathingNode> NodeSet) {
 		ArrayList<PathingNode> closedSet = new ArrayList<>();

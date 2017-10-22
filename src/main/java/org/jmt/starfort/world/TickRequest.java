@@ -50,7 +50,7 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	/**
 	 * Time sleep started
 	 */
-	long sleepStart;
+	long sleepStart = System.nanoTime();
 	
 	/**
 	 * Current ticks to process
@@ -69,6 +69,8 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 
 	
 	AtomicInteger runningCount = new AtomicInteger(0);
+
+	private boolean wasDone = false;
 	
 	public TickRequest(World w) {
 		this.w = w;
@@ -122,7 +124,7 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	
 	@Override
 	public boolean processNext() {
-		if (sleepTime + sleepStart <= System.nanoTime()) {
+		//if (!wasDone && sleepTime + sleepStart <= System.nanoTime()) {
 			ComplexRunnable task = null;
 			Coord execLoc = null;
 			while (task == null) {
@@ -175,19 +177,20 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 			}
 			runningCount.decrementAndGet();
 			return true;
-		} else {
-			return false;
-		}
+		//} else {
+		//	return false;
+		//}
 	}
 
 	//TEST PLEASE IGNORE private volatile int completeCheckCount = 0;
 	
 	@Override
 	public boolean complete() {
-		if (runningCount.get() < 0) {
-			runningCount.set(0);
-			System.out.println("ERROR: running count lt 0");
-		}
+		if (!wasDone && sleepTime + sleepStart <= System.nanoTime()) {
+			if (runningCount.get() < 0) {
+				runningCount.set(0);
+				System.out.println("ERROR: running count lt 0");
+			}
 		/* TEST PLEASE IGNORE
 		if (completeCheckCount >= 10) {
 			completeCheckCount = 0;
@@ -198,34 +201,40 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 		}
 		completeCheckCount++;
 		*/
-		
-		return remaining() == 0 && runningCount.get() == 0;
+			
+			return wasDone = (remaining() == 0 && runningCount.get() == 0);
+		} else {
+			return true;
+		}
 	}
 
 	@Override
 	public void reset() {
-		try {
-		long endTime = System.nanoTime();
-		long frameTime = endTime - sleepStart;
-		@SuppressWarnings("unused")
-		float TPS = (1000000000/frameTime);
-		//Occasionally throws Div zero exception
-		} catch (ArithmeticException e) {}
-		//System.out.println("TPS: " + TPS);
-		//glRotatef(-90, 0, 0, 1);
-		loopCount++;
-		if (!(loopCount % reload == 0)) {
-			synchronized (ticksCurr) {
-				ticksCurr = ticksNext;
+		if (wasDone && sleepTime + sleepStart <= System.nanoTime()) {
+			try {
+			long endTime = System.nanoTime();
+			long frameTime = endTime - sleepStart;
+			@SuppressWarnings("unused")
+			float TPS = (1000000000/frameTime);
+			//Occasionally throws Div zero exception
+			} catch (ArithmeticException e) {}
+			//System.out.println("TPS: " + TPS);
+			//glRotatef(-90, 0, 0, 1);
+			loopCount++;
+			if (!(loopCount % reload == 0)) {
+				synchronized (ticksCurr) {
+					ticksCurr = ticksNext;
+				}
+			} else {
+				synchronized (ticksCurr) {
+					ticksCurr = (ConcurrentHashMap<Coord, ArrayList<ComplexRunnable>>) w.getTicks();
+				}
 			}
-		} else {
-			synchronized (ticksCurr) {
-				ticksCurr = (ConcurrentHashMap<Coord, ArrayList<ComplexRunnable>>) w.getTicks();
+			sleepStart = System.nanoTime();
+			synchronized (ticksNext) {
+				ticksNext = new ConcurrentHashMap <Coord, ArrayList<ComplexRunnable>>();
 			}
-		}
-		sleepStart = System.nanoTime();
-		synchronized (ticksNext) {
-			ticksNext = new ConcurrentHashMap <Coord, ArrayList<ComplexRunnable>>();
+			wasDone = false;
 		}
 	}
 
@@ -260,11 +269,16 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 
 	@Override
 	public int remaining() {
-		int count = 0;
-		for (Entry<Coord, ArrayList<ComplexRunnable>> entry : ticksCurr.entrySet()) {
-			count += entry.getValue().size();
+		if (!wasDone && sleepTime + sleepStart <= System.nanoTime()) {
+			int count = 0;
+			for (Entry<Coord, ArrayList<ComplexRunnable>> entry : ticksCurr.entrySet()) {
+				count += entry.getValue().size();
+			}
+			return count;
+		} else {
+			//No tasks to process effectively
+			return 0;
 		}
-		return count;
 		
 		//Source: http://stackoverflow.com/questions/5496944/java-count-the-total-number-of-items-in-a-hashmapstring-arrayliststring
 		// For science; since this method has been being slow

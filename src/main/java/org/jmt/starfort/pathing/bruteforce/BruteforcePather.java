@@ -9,7 +9,7 @@ import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.util.Direction;
 import org.jmt.starfort.world.World;
 
-//TODO kill
+//TODO ~~kill~~ replave with a better impl
 public class BruteforcePather {
 
 	public static RunnableFuture<Path> pathBetweenAsync(Coord src, Coord dst, World NodeSet, IPassageCallback passController) {

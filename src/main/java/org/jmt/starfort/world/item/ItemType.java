@@ -4,7 +4,10 @@ public enum ItemType implements IItemType {
 
 	//TODO localize
 	Ingot("Ingot"),
-	Chunk("");
+	Chunk("Chunk"),
+	Nugget("Nugget"),
+	Log("Log"),
+	Plank("Plank");
 	
 	String typeName;
 	

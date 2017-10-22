@@ -24,51 +24,59 @@ public class ProcessorTest {
 	}
 	
 	int var = 0;
-	boolean complete = false;
+	int complete = 0;
+	
 	@Test
 	public void simpleProcessingTest() {
+		var = 0;
+		complete = 0;
 		Runnable r = new Runnable() {
 			
 			@Override
 			public void run() {
 				var = 10;
-				complete = true;
+				complete = 1;
 			}
 		};
 		Processor.addRequest(r);
-		while (!complete) {
+		while (complete != 1) {
 			
 		}
 		assertEquals("Processor Runnable Test", var, 10);
 	}
 	
-	//@Test TODO FIX THIS TEST
+	//@Test TODO: MORE FIX PLS
 	public void massProcessingTest() {
+		var = 0;
+		complete = 0;
 		ArrayList<Runnable> runnables = new ArrayList<Runnable>();
 		runnables.add(new Runnable() {
 			@Override
 			public void run() {
 				var += 20;
+				complete++;
 			}
 		});
 		runnables.add(new Runnable() {
 			@Override
 			public void run() {
 				var += 30;
+				complete++;
 			}
 		});
 		runnables.add(new Runnable() {
 			@Override
 			public void run() {
 				var += 40;
+				complete++;
 			}
 		});
 		MassProccessRequest r = new MassProccessRequest(runnables);
 		Processor.addRequest((ProcessingRequest) r);
-		while (!r.complete()) {
+		while (complete != 3) {
 			
 		}
-		assertEquals("Processor Runnable Test", var, 100);
+		assertEquals("Processor Runnable Test", 90, var);
 	}
 
 	

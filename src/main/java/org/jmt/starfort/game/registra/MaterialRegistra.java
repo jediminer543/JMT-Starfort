@@ -39,7 +39,6 @@ public class MaterialRegistra {
 			
 			@Override
 			public String getMaterialTypeDescriptor() {
-				// TODO Auto-generated method stub
 				return "A metalic material";
 			}
 		};
