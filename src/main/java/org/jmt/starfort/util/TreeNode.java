@@ -8,9 +8,10 @@ import java.util.List;
 /**
  * Based upon: http://stackoverflow.com/questions/3522454/java-tree-data-structure
  * 
- * A data tree structure used for 
+ * A data tree structure used for SOMETHING. The word past me
+ * was looking for was something.
  * 
- * @author Jediminer543, Stack overflow
+ * @author Jediminer543, StackOverflow
  *
  * @param <T> The source of the tree
  */

@@ -7,6 +7,8 @@ import org.jmt.starfort.world.World;
 /**
  * Passes the world coord of a click event
  * 
+ * Usefull for world level interaction.
+ * 
  * @author jediminer543
  *
  */

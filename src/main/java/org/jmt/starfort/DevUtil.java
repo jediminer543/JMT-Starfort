@@ -8,6 +8,16 @@ import org.jmt.starfort.util.Direction;
 import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.material.IMaterial;
 
+/**
+ * A class for creating interesting and usefull stuff for dev/test scenarios
+ * 
+ * Probably should be somewhere more usefull
+ * 
+ * But future me can deal with that
+ * 
+ * @author jediminer543
+ *
+ */
 public class DevUtil {
 
 	public static void makeRoom(World w, IMaterial m, Coord minCorner, Coord maxCorner) {

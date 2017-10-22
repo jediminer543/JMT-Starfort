@@ -3,6 +3,15 @@ package org.jmt.starfort.util;
 import java.io.File;
 import java.lang.reflect.Field;
 
+/**
+ * A more advanced weapon of a more civilised age. /s
+ * But seriously, this is old and unnecessary for LWJGL.
+ * May be useful for other native-dependent stuff though,
+ * so it stays.
+ * 
+ * @author jediminer543
+ *
+ */
 public class NativePathModifier {
 
 	

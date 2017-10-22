@@ -2,6 +2,13 @@ package org.jmt.starfort.util;
 
 import java.util.UUID;
 
+/**
+ * A coordinate tied to a world, which allows for the
+ * traversal of the universe, more easily. 'Nuf said.
+ * 
+ * @author jediminer543
+ * @see Coord
+ */
 public class WorldCoord extends Coord {
 
 	/**

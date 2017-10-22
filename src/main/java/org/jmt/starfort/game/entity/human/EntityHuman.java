@@ -21,8 +21,8 @@ import org.jmt.starfort.world.material.IMaterial;
 public class EntityHuman extends EntityHumanoid {
 
 	String name;
-	EntityAI entityAI = new EntityAI();
-	IPassageCallback pc = new IPassageCallback() {
+	transient EntityAI entityAI = new EntityAI();
+	transient IPassageCallback pc = new IPassageCallback() {
 		
 		@Override
 		public boolean canPass(World w, Coord src, Direction dir) {
@@ -62,7 +62,7 @@ public class EntityHuman extends EntityHumanoid {
 	}
 
 	final EntityHuman parent = this;
-	ComplexRunnable tick = new ComplexRunnable() {
+	transient ComplexRunnable tick = new ComplexRunnable() {
 			
 			/**
 		 * 

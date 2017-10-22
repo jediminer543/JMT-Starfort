@@ -28,6 +28,8 @@ public class Component3DP implements IComponentConduitDevice {
 	String name;
 	IMaterial material;
 	
+	int eBuffer = 0;
+	
 	List<ConduitMessage> messages = new ArrayList<ConduitMessage>();
 	List<ConduitChannel> channels = new ArrayList<ConduitChannel>();
 	
@@ -43,8 +45,8 @@ public class Component3DP implements IComponentConduitDevice {
 
 	@Override
 	public ComplexRunnable getTick() {
-		return (Object[] stuff) -> {
-			//TODO
+		return (Object... stuff) -> {
+			
 		};
 	}
 

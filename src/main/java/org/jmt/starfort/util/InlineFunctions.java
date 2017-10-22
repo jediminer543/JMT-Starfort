@@ -18,11 +18,25 @@ import java.util.Map.Entry;
  */
 public class InlineFunctions {
 
+	/**
+	 * Creates an inline array, thus: <br>
+	 * <code> T[] = inlineArray(FOO, BAR, ALICE, BOB); </code><br>
+	 * Is the equvelent of doing:<br>
+	 * <code> T[] = new T[] {FOO, BAR, ALICE, BOB}; </code><br>
+	 * 
+	 * @param args The elements to put into the array
+	 * @return The array itself
+	 */
 	@SafeVarargs
 	public static <T> T[] inlineArray(T... args) {
 		return args;
 	}
 	
+	/**
+	 * 
+	 * @param args
+	 * @return
+	 */
 	@SafeVarargs
 	public static <T> List<T> inlineArrayList(T... args) {
 		return Arrays.asList(args);

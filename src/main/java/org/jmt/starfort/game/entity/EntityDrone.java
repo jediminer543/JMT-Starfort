@@ -28,7 +28,7 @@ import org.jmt.starfort.world.material.IMaterial;
 public class EntityDrone implements IEntity {
 
 	Path p;
-	RunnableFuture<Path> futurePath;
+	transient RunnableFuture<Path> futurePath;
 	Deque<Coord> targets = new ArrayDeque<Coord>();
 	{
 		targets.addLast(new Coord(0, 0, 3));
@@ -48,7 +48,7 @@ public class EntityDrone implements IEntity {
 		return null;
 	}
 
-	ComplexRunnable tick = (Object... args) -> {
+	transient ComplexRunnable tick = (Object... args) -> {
 			EntityDrone parent = this;
 			World w = (World) args[0];
 			Coord c = (Coord) args[1];

@@ -453,11 +453,11 @@ public class NuklearUtil {
 	}
 
 	/**
-	 * Initialises and binds to window
+	 * Initialises GUI and creates EventBus bindings for the window.
 	 *  
-	 * @param glfw3ctx
-	 * @param win
-	 * @return
+	 * @param glfw3ctx GLFW Nuklear Context to process with
+	 * @param win GLFW Window to attach events to
+	 * @return A NkContext that is configured to work with the EventBus
 	 */
 	public static NkContext nk_jmt_bus_init(NkCtxGLFW3 glfw3ctx, long win) {
 		glfw3ctx.win = win;

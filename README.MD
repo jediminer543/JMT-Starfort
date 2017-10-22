@@ -14,16 +14,16 @@ This is a student project, aiming to create an open source game similar to dwarf
 
 It is written in java using LWJGL. As yet incomplete (probably indefinitely)
 
-##Plans
+## Plans
 * Modularised (and modding capacity) - In, mostly (no direct loading capacity, but modularised to n+1th degree)
 * Multi-threaded - Done
-* 3D world, segmented onto 2d planes - Done, ish
+* 3D world, segmented onto 2d planes - Done
 * Depth, WITH THE POWER OF SHADER - Done
-* Multiple smaller worlds instead of a single larger one
-* Expandable worlds
+* Multiple smaller worlds instead of a single larger one - Done, ISH (no parent universe)
+* Expandable worlds - Done
 * Atmosphere (and depressurization)
-* Spaceships
+* Spaceships - Multiple worlds do work. No parent universe for them to co-exist in yet though.
 * People - In progress
-* GUI - 
-* Etc.
+* GUI - Vaugely; can create windows, with interactable buttons. No actual GUI though.
+* Etc. - WIP
 
