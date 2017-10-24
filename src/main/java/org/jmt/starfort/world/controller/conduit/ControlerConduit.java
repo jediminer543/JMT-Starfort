@@ -71,12 +71,19 @@ public class ControlerConduit implements IController {
 					
 					while (openSet.size() > 0) {
 						Coord current = openSet.remove(0);
+						boolean configConduit = conduits.get(current).getConduitConnectedDirections() != null;
+						if (configConduit) {
+							conduits.get(current).getConduitConnectedDirections().clear();
+						}
 						for (Direction dir : new Direction[] {Direction.XDEC, Direction.ZDEC, Direction.YDEC, Direction.XINC, Direction.YINC, Direction.ZINC}) {
 							if (conduits.containsKey(current.addR(dir.getDir()))) {
 								openSet.add(current.addR(dir.getDir()));
 							}
 							if (devices.containsKey(current.addR(dir.getDir()))) {
 								network.add(current.addR(dir.getDir()));
+							}
+							if (configConduit && ((conduits.containsKey(current.addR(dir.getDir()))) || (devices.containsKey(current.addR(dir.getDir()))))) {
+								conduits.get(current).getConduitConnectedDirections().add(dir);
 							}
 						}
 						network.add(current);

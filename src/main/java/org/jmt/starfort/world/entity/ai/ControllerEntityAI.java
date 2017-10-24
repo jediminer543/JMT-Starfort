@@ -1,4 +1,4 @@
-package org.jmt.starfort.world.entity;
+package org.jmt.starfort.world.entity.ai;
 
 import org.jmt.starfort.processor.ComplexRunnable;
 import org.jmt.starfort.world.controller.IController;

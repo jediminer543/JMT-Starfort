@@ -1,6 +1,6 @@
 package org.jmt.starfort.world.entity.organs;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.jmt.starfort.world.material.IMaterial;
 
@@ -13,8 +13,6 @@ import org.jmt.starfort.world.material.IMaterial;
  *
  */
 public interface IOrgan {
-
-	ArrayList<IOrgan> organs = new ArrayList<>();
 	
 	/**
 	 * Get the name of the organ
@@ -33,4 +31,18 @@ public interface IOrgan {
 	 * @return Material of organ
 	 */
 	public IMaterial getOrganMaterial();
+	
+	/**
+	 * Get the child organs of the current organs
+	 * 
+	 * @return Child organs of this organ
+	 */
+	public List<IOrgan> getOrganChildren();
+	
+	/**
+	 * Gets the type of this organ
+	 * 
+	 * @return
+	 */
+	public IOrganType getOrganType();
 }
