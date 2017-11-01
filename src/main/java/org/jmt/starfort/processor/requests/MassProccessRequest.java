@@ -5,6 +5,8 @@ import java.util.ArrayList;
 /**
  * Executes a set of runnable(s) with a common set of arguments
  * 
+ * Needs to be manually cycled.
+ * 
  * @author Jediminer543
  *
  */
@@ -87,7 +89,11 @@ public class MassProccessRequest implements Runnable, ReusableProcessingRequest<
 
 	@Override
 	public boolean autoRepeat() {
-		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean suspended() {
 		return false;
 	}
 	

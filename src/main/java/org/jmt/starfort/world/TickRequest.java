@@ -53,6 +53,12 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	long sleepStart = System.nanoTime();
 	
 	/**
+	 * Last time process was run
+	 * Used to stop locking
+	 */
+	long lastProc = System.nanoTime();
+	
+	/**
 	 * Current ticks to process
 	 */
 	volatile ConcurrentHashMap <Coord, ArrayList<ComplexRunnable>> ticksCurr= new ConcurrentHashMap <Coord, ArrayList<ComplexRunnable>>();;
@@ -70,7 +76,7 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	
 	AtomicInteger runningCount = new AtomicInteger(0);
 
-	private boolean wasDone = false;
+	private volatile boolean wasDone = false;
 	
 	public TickRequest(World w) {
 		this.w = w;
@@ -124,7 +130,8 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	
 	@Override
 	public boolean processNext() {
-		//if (!wasDone && sleepTime + sleepStart <= System.nanoTime()) {
+		if (!suspended()) {
+			lastProc = System.nanoTime();
 			ComplexRunnable task = null;
 			Coord execLoc = null;
 			while (task == null) {
@@ -177,16 +184,16 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 			}
 			runningCount.decrementAndGet();
 			return true;
-		//} else {
-		//	return false;
-		//}
+		} else {
+			return false;
+		}
 	}
 
 	//TEST PLEASE IGNORE private volatile int completeCheckCount = 0;
 	
 	@Override
 	public boolean complete() {
-		if (!wasDone && sleepTime + sleepStart <= System.nanoTime()) {
+		//if (!wasDone && (sleepTime + sleepStart <= System.nanoTime())) {
 			if (runningCount.get() < 0) {
 				runningCount.set(0);
 				System.out.println("ERROR: running count lt 0");
@@ -201,16 +208,17 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 		}
 		completeCheckCount++;
 		*/
-			
+			//if (suspended()) {
+			//	return true;
+			//}
 			return wasDone = (remaining() == 0 && runningCount.get() == 0);
-		} else {
-			return true;
-		}
+		//} else {
+		//	return true;
+		//}
 	}
 
 	@Override
 	public void reset() {
-		if (wasDone && sleepTime + sleepStart <= System.nanoTime()) {
 			try {
 			long endTime = System.nanoTime();
 			long frameTime = endTime - sleepStart;
@@ -230,12 +238,12 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 					ticksCurr = (ConcurrentHashMap<Coord, ArrayList<ComplexRunnable>>) w.getTicks();
 				}
 			}
+			if (lastProc + sleepTime > System.nanoTime())
 			sleepStart = System.nanoTime();
 			synchronized (ticksNext) {
 				ticksNext = new ConcurrentHashMap <Coord, ArrayList<ComplexRunnable>>();
 			}
 			wasDone = false;
-		}
 	}
 
 	@Override
@@ -269,16 +277,15 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 
 	@Override
 	public int remaining() {
-		if (!wasDone && sleepTime + sleepStart <= System.nanoTime()) {
+			if (suspended()) {
+				return 0;
+			}
 			int count = 0;
 			for (Entry<Coord, ArrayList<ComplexRunnable>> entry : ticksCurr.entrySet()) {
 				count += entry.getValue().size();
 			}
 			return count;
-		} else {
 			//No tasks to process effectively
-			return 0;
-		}
 		
 		//Source: http://stackoverflow.com/questions/5496944/java-count-the-total-number-of-items-in-a-hashmapstring-arrayliststring
 		// For science; since this method has been being slow
@@ -288,6 +295,12 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	@Override
 	public boolean autoRepeat() {
 		return true;
+	}
+
+	@Override
+	public boolean suspended() {
+		//return false;
+		return (sleepTime + sleepStart > System.nanoTime());
 	}
 
 }

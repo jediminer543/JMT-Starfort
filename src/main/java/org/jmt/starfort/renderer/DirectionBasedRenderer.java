@@ -114,11 +114,12 @@ public class DirectionBasedRenderer implements IRendererRule {
 			} //else if (dirComp.getComponentDirections() && (target = mapping.get(dirComp.getComponentDirections())) != null) {
 			glPopMatrix();
 		} else {*/
+		IComponentDirectioned dirComp = (IComponentDirectioned) comp;
+		if (dirComp.getComponentDirections() != null) {
 			jglPushMatrix();
 			Vector2f drawSrc = r.wtrCoord(compLoc, offset);
 			jglTranslatef(drawSrc.x, drawSrc.y, 0);
 			t.bind();
-			IComponentDirectioned dirComp = (IComponentDirectioned) comp;
 			Arrays.sort(dirComp.getComponentDirections());
 			Colour c;
 			if (comp.getComponentMaterial() != null && (c = r.getMaterialColor(comp.getComponentMaterial())) != null) {
@@ -175,6 +176,7 @@ public class DirectionBasedRenderer implements IRendererRule {
 			}
 			jglUseProgram(0);
 			jglPopMatrix();
+		}
 		//}
 	}
 

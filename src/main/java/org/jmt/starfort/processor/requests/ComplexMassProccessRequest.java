@@ -8,6 +8,8 @@ import org.jmt.starfort.processor.ComplexRunnable;
 /**
  * Executes a set of ComplexRunnables with a common set of arguments
  * 
+ * Needs to be manually cycled.
+ * 
  * @author Jediminer543
  *
  */
@@ -87,7 +89,11 @@ public class ComplexMassProccessRequest implements Runnable, ReusableProcessingR
 
 	@Override
 	public boolean autoRepeat() {
-		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean suspended() {
 		return false;
 	}
 	

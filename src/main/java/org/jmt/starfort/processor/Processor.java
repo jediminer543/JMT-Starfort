@@ -49,7 +49,7 @@ public class Processor {
 	/**
 	 * Number of threads to run
 	 */
-	static int size = 2;
+	static int size = 1;
 	
 	/**
 	 * Initialises and starts the processor
@@ -65,19 +65,19 @@ public class Processor {
 				cores.add(new Thread(new Runnable() {
 
 					@Override
-					public void run() {
-						while (online) {
-							totalTicks++;
-							if (simpleJobs.size() > 0) {
-								Runnable job = null;
+					public void run() {						//Main Processing Core operation definiton
+						while (online) {					//Check the processor is up
+							totalTicks++;					//Increment tick count for satatistics
+							if (simpleJobs.size() > 0) { 	//Code for handling normal runables
+								Runnable job = null;		//GET norm runable job
 								try {
 									job = simpleJobs.pollFirst(10, TimeUnit.MICROSECONDS);
 								} catch (InterruptedException nsee) {
 									//nsee.printStackTrace();
 									//Happens when task is being cycled; shouldn't be a problem
 								}
-								if (job != null) {
-									job.run();
+								if (job != null) {			//Check if we aquired a task
+									job.run(); 				//Process normal runable job
 								}
 							}
 							else if (proccessingJobs.size() - curMoving.get() > 0) {
@@ -88,7 +88,8 @@ public class Processor {
 									} catch (NoSuchElementException nsee) {
 									//nsee.printStackTrace();
 									//Happens when task is being cycled; shouldn't be a problem
-								} }
+									} 
+								}
 								try {
 								if (first.complete()) {
 									if (first instanceof ReusableProcessingRequest<?> && ((ReusableProcessingRequest<?>)first).autoRepeat()) {
@@ -101,7 +102,9 @@ public class Processor {
 										//nsee.printStackTrace();
 										//Happens when task is being cycled; shouldn't be a problem
 										} }
-										((ReusableProcessingRequest<?>) job).reset();
+										if (!((ReusableProcessingRequest<?>) job).suspended()) {
+											((ReusableProcessingRequest<?>) job).reset();
+										}
 										proccessingJobs.addLast(job);
 										curMoving.decrementAndGet();
 									} else {

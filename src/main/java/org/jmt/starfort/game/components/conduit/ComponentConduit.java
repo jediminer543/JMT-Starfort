@@ -11,15 +11,21 @@ import org.jmt.starfort.world.material.IMaterial;
 public class ComponentConduit implements IComponentConduit, IComponentDirectioned {
 
 	List<Direction> connected = new ArrayList<Direction>();
+	IMaterial mat;
+	
+	public ComponentConduit(IMaterial mat) {
+		this.mat = mat;
+	}
+	
 	
 	@Override
 	public String getComponentName() {
-		return null;
+		return "Conduit";
 	}
 
 	@Override
 	public IMaterial getComponentMaterial() {
-		return null;
+		return mat;
 	}
 
 	@Override

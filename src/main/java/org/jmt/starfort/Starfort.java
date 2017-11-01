@@ -23,6 +23,7 @@ import org.jmt.starfort.event.IEvent;
 import org.jmt.starfort.event.events.ui.EventKey;
 import org.jmt.starfort.game.components.ComponentStairs;
 import org.jmt.starfort.game.components.ComponentWall;
+import org.jmt.starfort.game.components.conduit.ComponentConduit;
 import org.jmt.starfort.game.components.fluid.ComponentPipe;
 import org.jmt.starfort.game.entity.EntityDrone;
 import org.jmt.starfort.game.entity.human.EntityHuman;
@@ -35,12 +36,14 @@ import org.jmt.starfort.renderer.Renderer;
 import org.jmt.starfort.ui.UserInterfacing;
 import org.jmt.starfort.ui.gui.GUI;
 import org.jmt.starfort.ui.gui.window.WindowContext;
+import org.jmt.starfort.ui.gui.window.WindowPause;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.util.Direction;
 import org.jmt.starfort.util.InlineFunctions;
 import org.jmt.starfort.util.NativePathModifier;
 import org.jmt.starfort.world.TickRequest;
 import org.jmt.starfort.world.World;
+import org.jmt.starfort.world.controller.conduit.ControlerConduit;
 import org.jmt.starfort.world.entity.aiold.ControllerTask;
 import org.jmt.starfort.world.material.IMaterial;
 import org.jmt.starfort.world.material.MaterialRegistry;
@@ -78,6 +81,8 @@ public class Starfort {
 	static World w1;
 	
 	static int target = 0;
+	
+	static WindowPause winopt;
 	
 	public static void main(String[] args) throws Exception {
 		
@@ -133,6 +138,7 @@ public class Starfort {
 		
 		w.getBlock(new Coord(-1, 0, -1)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.SELFFULL), mat));
 		
+		/*
 		w.getBlock(new Coord(-2, 0, -2)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XDEC, Direction.ZDEC), mat));
 		w.getBlock(new Coord(-1, 0, -2)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XINC, Direction.XDEC, Direction.ZDEC), mat));
 		w.getBlock(new Coord(0, 0, -2)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XINC, Direction.ZDEC), mat));
@@ -144,6 +150,21 @@ public class Starfort {
 		w.getBlock(new Coord(-2, 0, -4)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XDEC, Direction.ZINC), mat));
 		w.getBlock(new Coord(-1, 0, -4)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XINC, Direction.XDEC, Direction.ZINC), mat));
 		w.getBlock(new Coord(0, 0, -4)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XINC, Direction.ZINC), mat));
+		*/
+		
+		w.getBlock(new Coord(-2, 0, -2)).addComponent(new ComponentConduit(mat));
+		w.getBlock(new Coord(-1, 0, -2)).addComponent(new ComponentConduit(mat));
+		w.getBlock(new Coord(0, 0, -2)).addComponent(new ComponentConduit(mat));
+		
+		w.getBlock(new Coord(-2, 0, -3)).addComponent(new ComponentConduit(mat));
+		w.getBlock(new Coord(-1, 0, -3)).addComponent(new ComponentConduit(mat));
+		w.getBlock(new Coord(0, 0, -3)).addComponent(new ComponentConduit(mat));
+		
+		w.getBlock(new Coord(-2, 0, -4)).addComponent(new ComponentConduit(mat));
+		w.getBlock(new Coord(-1, 0, -4)).addComponent(new ComponentConduit(mat));
+		w.getBlock(new Coord(0, 0, -4)).addComponent(new ComponentConduit(mat));
+		
+		w.getController(ControlerConduit.class);
 		
 		w.getBlock(new Coord(0, 1, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XDEC, Direction.ZDEC, Direction.ZINC), mat));
 		w.getBlock(new Coord(1, 1, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.ZDEC, Direction.ZINC), mat));
@@ -223,6 +244,9 @@ public class Starfort {
 						break;
 						case (GLFW.GLFW_KEY_1):
 							target = 1;
+						break;
+						case (GLFW.GLFW_KEY_ESCAPE):
+							winopt.show = !winopt.show;
 						break;
 						}
 					}
@@ -413,6 +437,8 @@ public class Starfort {
 		//GUI.addWidget(wwindow);
 		WindowContext winctx = new WindowContext();
 		GUI.addWidget(winctx);
+		winopt = new WindowPause();
+		GUI.addWidget(winopt);
 		r.init(renderRules);
 		
 	}

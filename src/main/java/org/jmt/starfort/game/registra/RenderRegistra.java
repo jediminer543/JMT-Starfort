@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.jmt.starfort.game.components.ComponentStairs;
 import org.jmt.starfort.game.components.ComponentWall;
+import org.jmt.starfort.game.components.conduit.ComponentConduit;
 import org.jmt.starfort.game.components.fluid.ComponentPipe;
 import org.jmt.starfort.game.entity.EntityDrone;
 import org.jmt.starfort.game.renderer.HumanRenderer;
@@ -46,6 +47,35 @@ public class RenderRegistra {
 		mapping.put(new Direction[] {Direction.ZDEC, Direction.XDEC, Direction.ZINC , Direction.XINC}, new int[] {2, 2});
 		
 		ruleSet.add(new DirectionBasedRenderer(InlineFunctions.inlineArray(ComponentPipe.class), 
+				"".getClass().getResourceAsStream("/org/jmt/starfort/texture/component/fluid/pipe/Pipe.png"), 
+				4, 4, 
+				mapping,
+				10, 
+				false));
+		
+		
+		mapping = new HashMap<>();
+		mapping.put(new Direction[] {Direction.XINC}, new int[] {1, 3});
+		mapping.put(new Direction[] {Direction.XDEC}, new int[] {3, 3});
+		mapping.put(new Direction[] {Direction.ZINC}, new int[] {3, 2});
+		mapping.put(new Direction[] {Direction.ZDEC}, new int[] {2, 3});
+		
+		mapping.put(new Direction[] {Direction.XINC, Direction.XDEC}, new int[] {1, 0});
+		mapping.put(new Direction[] {Direction.ZINC, Direction.ZDEC}, new int[] {0, 0});
+		
+		mapping.put(new Direction[] {Direction.XINC, Direction.ZINC}, new int[] {2, 1});
+		mapping.put(new Direction[] {Direction.XINC, Direction.ZDEC}, new int[] {2, 0});
+		mapping.put(new Direction[] {Direction.XDEC, Direction.ZINC}, new int[] {3, 1});
+		mapping.put(new Direction[] {Direction.XDEC, Direction.ZDEC}, new int[] {3, 0});
+		
+		mapping.put(new Direction[] {Direction.XINC, Direction.ZINC, Direction.XDEC}, new int[] {1, 2});
+		mapping.put(new Direction[] {Direction.XINC, Direction.ZDEC, Direction.XDEC}, new int[] {1, 1});
+		mapping.put(new Direction[] {Direction.ZINC, Direction.XINC, Direction.ZDEC}, new int[] {0, 1});
+		mapping.put(new Direction[] {Direction.ZDEC, Direction.XDEC, Direction.ZINC}, new int[] {0, 2});
+		
+		mapping.put(new Direction[] {Direction.ZDEC, Direction.XDEC, Direction.ZINC , Direction.XINC}, new int[] {2, 2});
+		
+		ruleSet.add(new DirectionBasedRenderer(InlineFunctions.inlineArray(ComponentConduit.class), 
 				"".getClass().getResourceAsStream("/org/jmt/starfort/texture/component/fluid/pipe/Pipe.png"), 
 				4, 4, 
 				mapping,
