@@ -8,6 +8,7 @@ import org.jmt.starfort.Starfort;
 import org.jmt.starfort.ui.gui.NkCtxGLFW3;
 import org.jmt.starfort.ui.gui.widget.IWidget;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.nuklear.NkContext;
 import org.lwjgl.nuklear.NkRect;
 
@@ -48,7 +49,9 @@ public class WindowPause implements IWidget {
 					nk_button_text(ctx, "New");
 					nk_button_text(ctx, "Save");
 					nk_button_text(ctx, "Load");
-					nk_button_text(ctx, "Exit");
+					if (nk_button_text(ctx, "Exit")) {
+						GLFW.glfwSetWindowShouldClose(Starfort.window, true);
+					}
 					nk_tree_state_pop(ctx);
 				}
 				if (nk_tree_state_push(ctx, NK_TREE_TAB, "Options", tabStates[1])) {

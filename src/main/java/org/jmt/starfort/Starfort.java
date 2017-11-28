@@ -152,6 +152,7 @@ public class Starfort {
 		w.getBlock(new Coord(0, 0, -4)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XINC, Direction.ZINC), mat));
 		*/
 		
+		/*
 		w.getBlock(new Coord(-2, 0, -2)).addComponent(new ComponentConduit(mat));
 		w.getBlock(new Coord(-1, 0, -2)).addComponent(new ComponentConduit(mat));
 		w.getBlock(new Coord(0, 0, -2)).addComponent(new ComponentConduit(mat));
@@ -165,6 +166,7 @@ public class Starfort {
 		w.getBlock(new Coord(0, 0, -4)).addComponent(new ComponentConduit(mat));
 		
 		w.getController(ControlerConduit.class);
+		*/
 		
 		w.getBlock(new Coord(0, 1, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XDEC, Direction.ZDEC, Direction.ZINC), mat));
 		w.getBlock(new Coord(1, 1, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.ZDEC, Direction.ZINC), mat));
