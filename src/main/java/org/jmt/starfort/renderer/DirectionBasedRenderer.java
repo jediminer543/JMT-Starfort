@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.jmt.starfort.logging.Logger;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.util.Direction;
 import org.jmt.starfort.world.component.IComponent;
@@ -181,7 +182,7 @@ public class DirectionBasedRenderer implements IRendererRule {
 				
 				vaoCache.put(Arrays.asList(dirArray), vaoId);
 				vboCache.put(Arrays.asList(dirArray), vboId);
-				System.out.println("VAO GENERATED");
+				Logger.trace("VAO GENERATED", this.getClass().getSimpleName());
 				}
 			jglUseProgram(0);
 			jglPopMatrix();

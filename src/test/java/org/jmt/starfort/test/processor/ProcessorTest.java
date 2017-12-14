@@ -39,13 +39,13 @@ public class ProcessorTest {
 			}
 		};
 		Processor.addRequest(r);
-		while (complete != 1) {
+		while (complete < 1) {
 			
 		}
 		assertEquals("Processor Runnable Test", var, 10);
 	}
 	
-	//@Test TODO: MORE FIX PLS
+	@Test
 	public void massProcessingTest() {
 		var = 0;
 		complete = 0;
@@ -73,7 +73,7 @@ public class ProcessorTest {
 		});
 		MassProccessRequest r = new MassProccessRequest(runnables);
 		Processor.addRequest((ProcessingRequest) r);
-		while (complete != 3) {
+		while (complete < 3) {
 			
 		}
 		assertEquals("Processor Runnable Test", 90, var);

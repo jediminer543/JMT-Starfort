@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.jmt.starfort.logging.Logger;
 import org.jmt.starfort.processor.ComplexRunnable;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.util.Direction;
@@ -94,7 +96,7 @@ public class ControlerConduit implements IController {
 						if (configConduit) synchronized (conduits.get(current).getConduitConnectedDirections()) {
 							conduits.get(current).getConduitConnectedDirections().clear();
 							conduits.get(current).getConduitConnectedDirections().addAll(toAdd);
-							System.out.println(toAdd);
+							Logger.trace(toAdd.toString(), "ControllerConduit");
 						}
 						network.add(current);
 						processed.add(current);

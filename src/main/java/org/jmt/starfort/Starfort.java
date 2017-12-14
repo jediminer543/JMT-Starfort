@@ -29,6 +29,8 @@ import org.jmt.starfort.game.entity.EntityDrone;
 import org.jmt.starfort.game.entity.human.EntityHuman;
 import org.jmt.starfort.game.registra.MaterialRegistra;
 import org.jmt.starfort.game.registra.RenderRegistra;
+import org.jmt.starfort.logging.LogLevel;
+import org.jmt.starfort.logging.Logger;
 import org.jmt.starfort.processor.Processor;
 import org.jmt.starfort.renderer.Colour;
 import org.jmt.starfort.renderer.IRendererRule;
@@ -52,6 +54,8 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.nuklear.NkContext;
 import org.lwjgl.opengl.GL;
+
+import com.esotericsoftware.minlog.Log;
 
 /**
  * THIS SHOULD LIVE IN TEST, BUT LIVES HERE BECAUSE IT CAN
@@ -360,6 +364,14 @@ public class Starfort {
 	}
 	
 	public static void preInit() throws IOException {
+		
+		Logger.addLogOutput((LogLevel l, String mesg) -> {
+			if (l.ordinal() > LogLevel.Info.ordinal()) {
+				System.err.println(mesg);
+			} else if (l.ordinal() >= LogLevel.Debug.ordinal()) {
+				System.out.println(mesg);
+			}
+		});
 		
 		glfwSetErrorCallback(GLFWErrorCallback.createPrint(System.err));
 		if (!glfwInit())
