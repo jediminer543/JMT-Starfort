@@ -1,5 +1,6 @@
 package org.jmt.starfort.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -39,7 +40,10 @@ public class InlineFunctions {
 	 */
 	@SafeVarargs
 	public static <T> List<T> inlineArrayList(T... args) {
-		return Arrays.asList(args);
+		List<T> out = new ArrayList<T>();
+		out.addAll(Arrays.asList(args));
+		return out;
+		//return Arrays.asList(args); Doesn't allow add operations
 	}
 	
 	/**

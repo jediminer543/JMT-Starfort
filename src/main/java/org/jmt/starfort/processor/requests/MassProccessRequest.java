@@ -91,11 +91,6 @@ public class MassProccessRequest implements Runnable, ReusableProcessingRequest<
 	public boolean autoRepeat() {
 		return false;
 	}
-
-	@Override
-	public boolean suspended() {
-		return false;
-	}
 	
 	
 	

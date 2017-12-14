@@ -36,6 +36,7 @@ import org.jmt.starfort.renderer.Renderer;
 import org.jmt.starfort.ui.UserInterfacing;
 import org.jmt.starfort.ui.gui.GUI;
 import org.jmt.starfort.ui.gui.window.WindowContext;
+import org.jmt.starfort.ui.gui.window.WindowInspectDebug;
 import org.jmt.starfort.ui.gui.window.WindowPause;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.util.Direction;
@@ -83,6 +84,7 @@ public class Starfort {
 	static int target = 0;
 	
 	static WindowPause winopt;
+	static WindowInspectDebug winidbg;
 	
 	public static void main(String[] args) throws Exception {
 		
@@ -152,7 +154,7 @@ public class Starfort {
 		w.getBlock(new Coord(0, 0, -4)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XINC, Direction.ZINC), mat));
 		*/
 		
-		/*
+		
 		w.getBlock(new Coord(-2, 0, -2)).addComponent(new ComponentConduit(mat));
 		w.getBlock(new Coord(-1, 0, -2)).addComponent(new ComponentConduit(mat));
 		w.getBlock(new Coord(0, 0, -2)).addComponent(new ComponentConduit(mat));
@@ -166,7 +168,7 @@ public class Starfort {
 		w.getBlock(new Coord(0, 0, -4)).addComponent(new ComponentConduit(mat));
 		
 		w.getController(ControlerConduit.class);
-		*/
+		
 		
 		w.getBlock(new Coord(0, 1, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XDEC, Direction.ZDEC, Direction.ZINC), mat));
 		w.getBlock(new Coord(1, 1, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.ZDEC, Direction.ZINC), mat));
@@ -246,9 +248,6 @@ public class Starfort {
 						break;
 						case (GLFW.GLFW_KEY_1):
 							target = 1;
-						break;
-						case (GLFW.GLFW_KEY_ESCAPE):
-							winopt.show = !winopt.show;
 						break;
 						}
 					}
@@ -441,6 +440,8 @@ public class Starfort {
 		GUI.addWidget(winctx);
 		winopt = new WindowPause();
 		GUI.addWidget(winopt);
+		winidbg = new WindowInspectDebug();
+		GUI.addWidget(winidbg);
 		r.init(renderRules);
 		
 	}

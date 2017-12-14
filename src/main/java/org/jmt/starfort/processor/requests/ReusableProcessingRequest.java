@@ -51,12 +51,4 @@ public interface ReusableProcessingRequest<T> extends ProcessingRequest {
 	 * @return True if to automaticly cycled
 	 */
 	public boolean autoRepeat();
-	
-	/**
-	 * Declare if this processing request is suspended.
-	 * When flagged, this will NOT be reset.
-	 * 
-	 * @return suspended flag
-	 */
-	public boolean suspended();
 }

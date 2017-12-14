@@ -2,6 +2,12 @@ package org.jmt.starfort.event.events.ui;
 
 import org.jmt.starfort.event.IEventUI;
 
+/**
+ * Fired whenever a key is pressed while the screen is selected
+ * 
+ * @author jediminer543
+ *
+ */
 public class EventKey implements IEventUI {
 
 	boolean consumed = false;

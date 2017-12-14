@@ -26,6 +26,14 @@ import org.jmt.starfort.world.component.IComponent;
 import org.jmt.starfort.world.component.IComponentDirectioned;
 import org.joml.Vector2f;
 
+/**
+ * A renderer for rendering any component based upon direction.
+ * 
+ * TODO Optimise, as this calls sort every loop.
+ * 
+ * @author jediminer543
+ *
+ */
 public class DirectionBasedRenderer implements IRendererRule {
 
 	Class<? extends IComponent>[] comps;
@@ -115,12 +123,13 @@ public class DirectionBasedRenderer implements IRendererRule {
 			glPopMatrix();
 		} else {*/
 		IComponentDirectioned dirComp = (IComponentDirectioned) comp;
-		if (dirComp.getComponentDirections() != null) {
+		if (dirComp.getComponentDirections() != null) synchronized (dirComp.getComponentDirections()) {
 			jglPushMatrix();
 			Vector2f drawSrc = r.wtrCoord(compLoc, offset);
 			jglTranslatef(drawSrc.x, drawSrc.y, 0);
 			t.bind();
-			Arrays.sort(dirComp.getComponentDirections());
+			Direction[] dirArray = dirComp.getComponentDirections();
+			Arrays.sort(dirArray);
 			Colour c;
 			if (comp.getComponentMaterial() != null && (c = r.getMaterialColor(comp.getComponentMaterial())) != null) {
 				c.apply();
@@ -130,8 +139,8 @@ public class DirectionBasedRenderer implements IRendererRule {
 			jglUseProgram(r.program);
 			int[] target = null;
 			Integer vao = null;
-			if ((target = mapping.get(Arrays.asList(dirComp.getComponentDirections()))) != null 
-					&& (vao = vaoCache.get(Arrays.asList(dirComp.getComponentDirections()))) != null) {
+			if ((target = mapping.get(Arrays.asList(dirArray))) != null 
+					&& (vao = vaoCache.get(Arrays.asList(dirArray))) != null) {
 				glBindVertexArray(vao);
 	        	glDrawArrays(GL_TRIANGLES, 0, 6);
 	        	glBindVertexArray(0);
@@ -170,10 +179,10 @@ public class DirectionBasedRenderer implements IRendererRule {
 	        	glDrawArrays(GL_TRIANGLES, 0, 6);
 	        	glBindVertexArray(0);
 				
-				vaoCache.put(Arrays.asList(dirComp.getComponentDirections()), vaoId);
-				vboCache.put(Arrays.asList(dirComp.getComponentDirections()), vboId);
+				vaoCache.put(Arrays.asList(dirArray), vaoId);
+				vboCache.put(Arrays.asList(dirArray), vboId);
 				System.out.println("VAO GENERATED");
-			}
+				}
 			jglUseProgram(0);
 			jglPopMatrix();
 		}

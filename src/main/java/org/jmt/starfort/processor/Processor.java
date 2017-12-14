@@ -1,6 +1,8 @@
 package org.jmt.starfort.processor;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.NoSuchElementException;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
@@ -8,6 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jmt.starfort.processor.requests.ProcessingRequest;
 import org.jmt.starfort.processor.requests.ReusableProcessingRequest;
+import org.jmt.starfort.processor.requests.SuspenableProcessingRequest;
 
 /**
  * Statically accessible threading pool
@@ -41,15 +44,15 @@ public class Processor {
 	
 	static volatile AtomicInteger curMoving = new AtomicInteger();
 	
-	static LinkedBlockingDeque <ProcessingRequest> proccessingJobs = new LinkedBlockingDeque <ProcessingRequest>();
-	static LinkedBlockingDeque <Runnable> simpleJobs = new LinkedBlockingDeque <Runnable>();
+	static Deque <ProcessingRequest> proccessingJobs = new LinkedBlockingDeque <ProcessingRequest>();
+	static Deque <Runnable> simpleJobs = new LinkedBlockingDeque <Runnable>();
 	
 	static ArrayList<Thread> cores = new ArrayList<Thread>();
 	
 	/**
 	 * Number of threads to run
 	 */
-	static int size = 1;
+	static int size = 4;
 	
 	/**
 	 * Initialises and starts the processor
@@ -71,8 +74,8 @@ public class Processor {
 							if (simpleJobs.size() > 0) { 	//Code for handling normal runables
 								Runnable job = null;		//GET norm runable job
 								try {
-									job = simpleJobs.pollFirst(10, TimeUnit.MICROSECONDS);
-								} catch (InterruptedException nsee) {
+									job = simpleJobs.pollFirst();
+								} catch (NoSuchElementException nsee) {
 									//nsee.printStackTrace();
 									//Happens when task is being cycled; shouldn't be a problem
 								}
@@ -91,27 +94,41 @@ public class Processor {
 									} 
 								}
 								try {
-								if (first.complete()) {
-									if (first instanceof ReusableProcessingRequest<?> && ((ReusableProcessingRequest<?>)first).autoRepeat()) {
+									if (first instanceof SuspenableProcessingRequest && ((SuspenableProcessingRequest) first).suspended()) {
+										//Job is currently suspended and needs to be pushed to the end of the stack
 										curMoving.incrementAndGet();
 										ProcessingRequest job = null;
 										while (job == null && online) {
-										try {
-											job = proccessingJobs.pop();
-										} catch (NoSuchElementException nsee) {
-										//nsee.printStackTrace();
-										//Happens when task is being cycled; shouldn't be a problem
-										} }
-										if (!((ReusableProcessingRequest<?>) job).suspended()) {
-											((ReusableProcessingRequest<?>) job).reset();
-										}
+											try {
+												job = proccessingJobs.pop();
+											} catch (NoSuchElementException nsee) {
+												//nsee.printStackTrace();
+												//Happens when task is being cycled; shouldn't be a problem
+											} }
+
 										proccessingJobs.addLast(job);
 										curMoving.decrementAndGet();
-									} else {
-										proccessingJobs.remove(first);
-										//proccessingJobs.remove(0);
+										continue;
 									}
-								} else {
+									if (first.complete()) {
+										if (first instanceof ReusableProcessingRequest<?> && ((ReusableProcessingRequest<?>)first).autoRepeat()) {
+											curMoving.incrementAndGet();
+											ProcessingRequest job = null;
+											while (job == null && online) {
+												try {
+													job = proccessingJobs.pop();
+												} catch (NoSuchElementException nsee) {
+													//nsee.printStackTrace();
+													//Happens when task is being cycled; shouldn't be a problem
+												} }
+											((ReusableProcessingRequest<?>)job).reset();
+											proccessingJobs.addLast(job);
+											curMoving.decrementAndGet();
+										} else {
+											proccessingJobs.remove(first);
+											//proccessingJobs.remove(0);
+										}
+									} else {
 									try {
 									if (first.remaining() > 0) {
 										if (!first.processNext()) { idleTicks++; }

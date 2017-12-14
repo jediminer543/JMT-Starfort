@@ -1,8 +1,12 @@
 package org.jmt.starfort.game.registra;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.jmt.starfort.game.components.ComponentStairs;
 import org.jmt.starfort.game.components.ComponentWall;
@@ -63,10 +67,10 @@ public class RenderRegistra {
 		mapping.put(new Direction[] {Direction.XINC, Direction.XDEC}, new int[] {1, 0});
 		mapping.put(new Direction[] {Direction.ZINC, Direction.ZDEC}, new int[] {0, 0});
 		
-		mapping.put(new Direction[] {Direction.XINC, Direction.ZINC}, new int[] {2, 1});
-		mapping.put(new Direction[] {Direction.XINC, Direction.ZDEC}, new int[] {2, 0});
-		mapping.put(new Direction[] {Direction.XDEC, Direction.ZINC}, new int[] {3, 1});
-		mapping.put(new Direction[] {Direction.XDEC, Direction.ZDEC}, new int[] {3, 0});
+		mapping.put(new Direction[] {Direction.XDEC, Direction.ZINC}, new int[] {2, 1});
+		mapping.put(new Direction[] {Direction.XDEC, Direction.ZDEC}, new int[] {2, 0});
+		mapping.put(new Direction[] {Direction.XINC, Direction.ZINC}, new int[] {3, 1});
+		mapping.put(new Direction[] {Direction.XINC, Direction.ZDEC}, new int[] {3, 0});
 		
 		mapping.put(new Direction[] {Direction.XINC, Direction.ZINC, Direction.XDEC}, new int[] {1, 2});
 		mapping.put(new Direction[] {Direction.XINC, Direction.ZDEC, Direction.XDEC}, new int[] {1, 1});
@@ -74,6 +78,23 @@ public class RenderRegistra {
 		mapping.put(new Direction[] {Direction.ZDEC, Direction.XDEC, Direction.ZINC}, new int[] {0, 2});
 		
 		mapping.put(new Direction[] {Direction.ZDEC, Direction.XDEC, Direction.ZINC , Direction.XINC}, new int[] {2, 2});
+		
+		
+		Map<Direction[], int[]> tmpmapping = new HashMap<>();
+		for (Entry<Direction[], int[]> p : mapping.entrySet()) {
+			List<Direction> l = InlineFunctions.inlineArrayList(p.getKey());
+			l.add(Direction.YINC);
+			tmpmapping.put(l.toArray(new Direction[l.size()]), p.getValue());
+		}
+		mapping.putAll(tmpmapping);
+		
+		tmpmapping = new HashMap<>();
+		for (Entry<Direction[], int[]> p : mapping.entrySet()) {
+			List<Direction> l = InlineFunctions.inlineArrayList(p.getKey());
+			l.add(Direction.YDEC);
+			tmpmapping.put(l.toArray(new Direction[l.size()]), p.getValue());
+		}
+		mapping.putAll(tmpmapping);
 		
 		ruleSet.add(new DirectionBasedRenderer(InlineFunctions.inlineArray(ComponentConduit.class), 
 				"".getClass().getResourceAsStream("/org/jmt/starfort/texture/component/fluid/pipe/Pipe.png"), 

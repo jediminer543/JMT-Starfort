@@ -86,12 +86,28 @@ public enum Direction  {
 		if (b == Direction.SELFFULL)
 			return null;
 		//apparently faster than x % 2 == 0
+		/*
 		else if ((b.ordinal() & 1) == 0) {
 			return Direction.values()[b.ordinal() + 1];
 		} else {
 			return Direction.values()[b.ordinal() - 1];
+		}*/
+		switch (b) {
+		case XINC:
+			return Direction.XDEC;
+		case XDEC:
+			return Direction.XINC;
+		case YINC:
+			return Direction.YDEC;
+		case YDEC:
+			return Direction.YINC;
+		case ZINC:
+			return Direction.ZDEC;
+		case ZDEC:
+			return Direction.ZINC;
+		default:
+			return null;
 		}
-			
 	}
 	
 	/**

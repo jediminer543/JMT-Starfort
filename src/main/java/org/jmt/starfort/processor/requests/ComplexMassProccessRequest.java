@@ -91,11 +91,6 @@ public class ComplexMassProccessRequest implements Runnable, ReusableProcessingR
 	public boolean autoRepeat() {
 		return false;
 	}
-
-	@Override
-	public boolean suspended() {
-		return false;
-	}
 	
 	
 	

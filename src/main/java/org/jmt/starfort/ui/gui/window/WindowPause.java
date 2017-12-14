@@ -5,6 +5,9 @@ import static org.lwjgl.nuklear.Nuklear.*;
 import java.nio.IntBuffer;
 
 import org.jmt.starfort.Starfort;
+import org.jmt.starfort.event.EventBus;
+import org.jmt.starfort.event.IEvent;
+import org.jmt.starfort.event.events.ui.EventKey;
 import org.jmt.starfort.ui.gui.NkCtxGLFW3;
 import org.jmt.starfort.ui.gui.widget.IWidget;
 import org.lwjgl.BufferUtils;
@@ -15,6 +18,40 @@ import org.lwjgl.nuklear.NkRect;
 public class WindowPause implements IWidget {
 
 	public boolean show = true;
+	
+	public WindowPause() {
+		EventBus.registerEventCallback(new EventBus.EventCallback() {
+			
+			@Override
+			public void handleEvent(IEvent ev) {
+				if (!ev.getEventConsumed()) {
+					if (ev instanceof EventKey) {
+						EventKey kev = (EventKey)(ev);
+						if (kev.getEventAction() == GLFW.GLFW_PRESS) {
+							switch (kev.getEventKey()) {
+								case (GLFW.GLFW_KEY_ESCAPE):
+									show = !show;
+									break;
+							}
+						}
+					} 
+				}	
+			}
+			
+			@SuppressWarnings("unchecked") // Cant fix because reasons
+			@Override
+			public Class<? extends IEvent>[] getProcessableEvents() {
+				return new Class[] {EventKey.class};
+			}
+	
+			@Override
+			public int getPriority() {
+				return 0;
+			}
+			
+			
+		});
+	}
 	
 	private IntBuffer[] tabStates = new IntBuffer[2];
 	

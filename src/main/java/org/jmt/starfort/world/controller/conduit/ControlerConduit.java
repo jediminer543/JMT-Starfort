@@ -23,7 +23,7 @@ public class ControlerConduit implements IController {
 	
 	//Cycling
 	int networkingState = 0;
-	long renetworkEvery = 500;
+	long renetworkEvery = 100;
 	long renetworkCount = 0;
 	
 	Map<Coord, IComponentConduit> conduits = new HashMap<Coord, IComponentConduit>();
@@ -31,7 +31,9 @@ public class ControlerConduit implements IController {
 	
 	List<List<Coord>> networks = new ArrayList<>();
 	
-	ComplexRunnable tick = (Object... args) -> {
+	Direction[] procableDirs = new Direction[] {Direction.XDEC, Direction.ZDEC, Direction.YDEC, Direction.XINC, Direction.YINC, Direction.ZINC};
+	
+	public void tick(Object... args) {
 		World w = (World)args[0];
 		
 		
@@ -55,8 +57,8 @@ public class ControlerConduit implements IController {
 				}
 			}
 			networkingState = 1;
-		}
-		else if (networkingState == 1) {
+			return;
+		} else if (networkingState == 1) {
 			//Generate networks
 			networks = new ArrayList<>();
 			List<Coord> processed = new ArrayList<>();
@@ -64,56 +66,80 @@ public class ControlerConduit implements IController {
 				if (!processed.contains(node.getKey())) {
 					//Closed Set
 					List<Coord> network = new ArrayList<>();
-					
+										
 					//Open Set
 					ArrayList<Coord> openSet = new ArrayList<>();
 					openSet.add(node.getKey());
 					
+					List<Direction> toAdd = new ArrayList<>();
+					
 					while (openSet.size() > 0) {
 						Coord current = openSet.remove(0);
-						boolean configConduit = conduits.get(current).getConduitConnectedDirections() != null;
-						if (configConduit) {
-							conduits.get(current).getConduitConnectedDirections().clear();
+						if (processed.contains(current)) {
+							continue;
 						}
-						for (Direction dir : new Direction[] {Direction.XDEC, Direction.ZDEC, Direction.YDEC, Direction.XINC, Direction.YINC, Direction.ZINC}) {
-							if (conduits.containsKey(current.addR(dir.getDir()))) {
+						boolean configConduit = conduits.get(current).getConduitConnectedDirections() != null;
+						toAdd.clear();
+						for (Direction dir : procableDirs) {
+							if (conduits.containsKey(current.addR(dir.getDir())) && !network.contains(current.addR(dir.getDir()))) {
 								openSet.add(current.addR(dir.getDir()));
 							}
 							if (devices.containsKey(current.addR(dir.getDir()))) {
 								network.add(current.addR(dir.getDir()));
 							}
 							if (configConduit && ((conduits.containsKey(current.addR(dir.getDir()))) || (devices.containsKey(current.addR(dir.getDir()))))) {
-								conduits.get(current).getConduitConnectedDirections().add(dir);
+								toAdd.add(dir);
 							}
 						}
+						if (configConduit) synchronized (conduits.get(current).getConduitConnectedDirections()) {
+							conduits.get(current).getConduitConnectedDirections().clear();
+							conduits.get(current).getConduitConnectedDirections().addAll(toAdd);
+							System.out.println(toAdd);
+						}
 						network.add(current);
+						processed.add(current);
 					}
 					networks.add(network);
 				}
 			}
 			networkingState = 2;
+			return;
 		} else if (networkingState == 2) {
+			List<ConduitChannel> toAdd = new ArrayList<>();
 			for (List<Coord> net : networks) {
 				Map<IConduitChannelType, ConduitChannel> channels = new HashMap<>();
 				for (Coord c : net) {
 					if (devices.containsKey(c)) {
-						devices.get(c).getConduitDeviceChannels().clear();
+						toAdd.clear();
 						for (IConduitChannelType chnt : devices.get(c).getConduitDeviceTypes()) { 
 							if (!channels.containsKey(chnt)) {
 								channels.put(chnt, new ConduitChannel(chnt));
 							}
-							devices.get(c).getConduitDeviceChannels().add(channels.get(chnt));
+							toAdd.add(channels.get(chnt));
 							channels.get(chnt).addDevice(devices.get(c));
+						}
+						synchronized (devices.get(c).getConduitDeviceChannels()) {
+							devices.get(c).getConduitDeviceChannels().clear();
+							devices.get(c).getConduitDeviceChannels().addAll(toAdd);
 						}
 					}
 				}
 			}
+			networkingState = 3;
+			return;
+		} else if (networkingState == 3) {
+			if (renetworkCount > 0) {
+				renetworkCount--;
+			} else {
+				networkingState = 0;
+			}
+			return;
 		}
 	};
 	
 	@Override
 	public ComplexRunnable getTick() {
-		return tick;
+		return this::tick;
 	}
 
 }
