@@ -2,6 +2,7 @@ package org.jmt.starfort.world.entity;
 
 import org.jmt.starfort.pathing.bruteforce.IPassageCallback;
 import org.jmt.starfort.util.Coord;
+import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.component.IComponent;
 import org.jmt.starfort.world.item.Item;
 
@@ -16,14 +17,27 @@ public interface IEntityAI {
 	
 	public EntityAICapabilities getEntityAICapibilities();
 	
+	//PER TICK
+	
+	/**
+	 * Should be called every tick; provides data necesary for AI functionality.
+	 * 
+	 * If you don't call this, your task will NOT WORK, and you shall be being
+	 * judged by past me on that day (If it takes you multiple attempts to fix)
+	 * 
+	 * @param w The world the entity exists in
+	 * @param c The current location of the entity in the world
+	 */
+	public void setPosition(World w, Coord c);
+	
 	//TASK METHODS
-	public boolean moveTo(Coord cur, Coord dest);
+	public boolean moveTo(Coord dest);
 	
-	public boolean interactWithComponent(Coord cur, Coord dest, IComponent comp);
+	public boolean interactWithComponent(Coord pos, IComponent comp);
 	
-	public boolean useItem(Coord cur, Coord dest, Item item);
+	public boolean useItem(Coord pos, Item item);
 	
-	public boolean useItemOnComponent(Coord cur, Coord dest, IComponent comp);
+	public boolean useItemOnComponent(Coord pos, IComponent comp);
 	
 	// STUFF METHODS
 	/**

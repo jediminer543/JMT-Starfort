@@ -127,6 +127,8 @@ public class BruteforcePather {
 	        }
 	        loopCount++;
 	        if (loopCount > 10000) {
+	        	//To stop pathing locking up the entire system
+	        	//TODO add some dynamic solution to generate a partial path.
 	        	break;
 	        }
 		}
