@@ -7,7 +7,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jmt.starfort.event.EventBus;
-import org.jmt.starfort.event.events.EventMove;
+import org.jmt.starfort.event.world.EventMove;
 import org.jmt.starfort.processor.ComplexRunnable;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.world.block.Block;

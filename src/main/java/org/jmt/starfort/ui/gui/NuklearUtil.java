@@ -24,13 +24,13 @@ import java.util.ArrayList;
 
 import org.jmt.starfort.event.EventBus;
 import org.jmt.starfort.event.EventBus.EventCallback;
+import org.jmt.starfort.event.ui.EventChar;
+import org.jmt.starfort.event.ui.EventCursorPos;
+import org.jmt.starfort.event.ui.EventKey;
+import org.jmt.starfort.event.ui.EventMouseButton;
+import org.jmt.starfort.event.ui.EventScroll;
 import org.jmt.starfort.event.IEvent;
 import org.jmt.starfort.event.IEventUI;
-import org.jmt.starfort.event.events.ui.EventChar;
-import org.jmt.starfort.event.events.ui.EventCursorPos;
-import org.jmt.starfort.event.events.ui.EventKey;
-import org.jmt.starfort.event.events.ui.EventMouseButton;
-import org.jmt.starfort.event.events.ui.EventScroll;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.nuklear.NkAllocator;
 import org.lwjgl.nuklear.NkBuffer;

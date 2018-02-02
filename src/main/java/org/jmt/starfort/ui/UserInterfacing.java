@@ -6,11 +6,11 @@ import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetMouseButtonCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetScrollCallback;
 import org.jmt.starfort.event.EventBus;
-import org.jmt.starfort.event.events.ui.EventChar;
-import org.jmt.starfort.event.events.ui.EventCursorPos;
-import org.jmt.starfort.event.events.ui.EventKey;
-import org.jmt.starfort.event.events.ui.EventMouseButton;
-import org.jmt.starfort.event.events.ui.EventScroll;
+import org.jmt.starfort.event.ui.EventChar;
+import org.jmt.starfort.event.ui.EventCursorPos;
+import org.jmt.starfort.event.ui.EventKey;
+import org.jmt.starfort.event.ui.EventMouseButton;
+import org.jmt.starfort.event.ui.EventScroll;
 
 public class UserInterfacing {
 

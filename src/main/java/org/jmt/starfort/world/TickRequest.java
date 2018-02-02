@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.jmt.starfort.event.EventBus;
 import org.jmt.starfort.event.IEvent;
 import org.jmt.starfort.event.EventBus.EventCallback;
-import org.jmt.starfort.event.events.EventMove;
+import org.jmt.starfort.event.world.EventMove;
 import org.jmt.starfort.processor.ComplexRunnable;
 import org.jmt.starfort.processor.requests.ReusableProcessingRequest;
 import org.jmt.starfort.processor.requests.SuspenableProcessingRequest;

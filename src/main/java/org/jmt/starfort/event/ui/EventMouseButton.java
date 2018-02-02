@@ -1,4 +1,4 @@
-package org.jmt.starfort.event.events.ui;
+package org.jmt.starfort.event.ui;
 
 import org.jmt.starfort.event.IEventUI;
 

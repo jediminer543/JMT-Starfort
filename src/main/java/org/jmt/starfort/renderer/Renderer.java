@@ -17,8 +17,8 @@ import java.util.Map.Entry;
 
 import org.jmt.starfort.event.EventBus;
 import org.jmt.starfort.event.EventBus.EventCallback;
-import org.jmt.starfort.event.events.EventWorldClick;
-import org.jmt.starfort.event.events.ui.EventMouseButton;
+import org.jmt.starfort.event.ui.EventMouseButton;
+import org.jmt.starfort.event.world.EventWorldClick;
 import org.jmt.starfort.event.IEvent;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.world.World;

@@ -121,7 +121,7 @@ public class EventBus {
 	public static boolean fireEvent(IEvent ev) {
 		if (callbacks.containsKey(ev.getClass())) {
 			if (callbacks.get(ev.getClass()) == null) {
-				//This should be unreachable right? But it is a saftey measure, so why not leave it in
+				//This should be unreachable right? But it is a safety measure, so why not leave it in
 				callbacks.put(ev.getClass(), new ArrayList<EventBus.EventCallback>());
 			} else {
 				//List is pre-sorted

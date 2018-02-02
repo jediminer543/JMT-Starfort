@@ -7,7 +7,7 @@ import java.nio.IntBuffer;
 import org.jmt.starfort.Starfort;
 import org.jmt.starfort.event.EventBus;
 import org.jmt.starfort.event.IEvent;
-import org.jmt.starfort.event.events.ui.EventKey;
+import org.jmt.starfort.event.ui.EventKey;
 import org.jmt.starfort.ui.gui.NkCtxGLFW3;
 import org.jmt.starfort.ui.gui.widget.IWidget;
 import org.lwjgl.BufferUtils;

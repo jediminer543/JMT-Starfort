@@ -1,4 +1,4 @@
-package org.jmt.starfort.event.events;
+package org.jmt.starfort.event.world;
 
 import org.jmt.starfort.event.IEvent;
 import org.jmt.starfort.util.Coord;
@@ -31,9 +31,22 @@ public class EventMove implements IEvent {
 		//Move event's aren't consumed
 	}
 	
+	/**
+	 * The component that has been moved
+	 */
 	public IComponent icomp;
+	/**
+	 * The original position of the component
+	 */
 	public Coord src;
+	/**
+	 * The final position of the component
+	 */
 	public Coord dst;
+	/**
+	 * The world in which this move takes place
+	 * TODO add inter-world move, but that requires inter-world to begin with
+	 */
 	public World w;
 	
 	public EventMove(World w, IComponent icomp, Coord src, Coord dst) {

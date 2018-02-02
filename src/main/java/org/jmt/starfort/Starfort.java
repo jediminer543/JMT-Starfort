@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
 import org.jmt.starfort.event.EventBus;
 import org.jmt.starfort.event.IEvent;
-import org.jmt.starfort.event.events.ui.EventKey;
+import org.jmt.starfort.event.ui.EventKey;
 import org.jmt.starfort.game.components.ComponentStairs;
 import org.jmt.starfort.game.components.ComponentWall;
 import org.jmt.starfort.game.components.conduit.ComponentConduit;
