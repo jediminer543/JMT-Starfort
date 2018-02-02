@@ -1,5 +1,7 @@
 package org.jmt.starfort.game.registra;
 
+import org.jmt.starfort.renderer.Colour;
+import org.jmt.starfort.renderer.Renderer;
 import org.jmt.starfort.world.material.IMaterial;
 import org.jmt.starfort.world.material.IMaterialType;
 import org.jmt.starfort.world.material.MaterialRegistry;
@@ -161,5 +163,16 @@ public class MaterialRegistra {
 		};
 		
 		 MaterialRegistry.registerMaterial(mat);
+	}
+	
+	/**
+	 * Registers all materials with the passed renderer
+	 * 
+	 * @param r The renderer to set material colors with
+	 */
+	public static void registerRenderer(Renderer r) {
+		IMaterial mat = MaterialRegistry.getMaterial("Debug");
+		int matID = MaterialRegistry.getMaterialID(mat);	
+		r.materialRenderReg.put(matID, new Colour(0.5f, 0.2f, 0.5f, 1f));
 	}
 }

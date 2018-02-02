@@ -19,6 +19,7 @@ import org.jmt.starfort.event.EventBus;
 import org.jmt.starfort.event.EventBus.EventCallback;
 import org.jmt.starfort.event.ui.EventMouseButton;
 import org.jmt.starfort.event.world.EventWorldClick;
+import org.jmt.starfort.logging.Logger;
 import org.jmt.starfort.event.IEvent;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.world.World;
@@ -197,10 +198,10 @@ public class Renderer {
 		for (IRendererRule rr : renderRules) {
 			for (Class<? extends IComponent> comp : rr.getRenderableComponents())
 				renderSet.put(comp, rr);
-				System.out.println("Renderer added component");
+				Logger.trace("Renderer added component", "Renderer");
 			rr.init(this);
 		}
-		System.out.println("Renderer loaded");
+		Logger.trace("Renderer loaded", "Renderer");
 		jglUseProgram(0);
 	}
 	

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.objenesis.Objenesis;
 import org.objenesis.ObjenesisStd;
 
-public class SaveTest {
+public class ObjenesisSaveTest {
 
 	public static void main(String[] args) {
 		Objenesis generator = new ObjenesisStd(true);

@@ -5,13 +5,40 @@ import java.util.HashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RunnableFuture;
+
+import org.jmt.starfort.processor.Processor;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.util.Direction;
 import org.jmt.starfort.world.World;
 
 //TODO ~~kill~~ replave with a better impl
+/**
+ * This is the universally used pathfinding algorithm used accross this game
+ * 
+ * It is an implementation of A*, which was implemented LONG before I knew what pathfinding was.
+ * But it works pretty fracking well to say that.
+ * 
+ * This is future me documentating this BWT.
+ * 
+ * @author jediminer543
+ *
+ */
 public class BruteforcePather {
 
+	/**
+	 * Generates an asynchronous request to pathfind between two points.
+	 * 
+	 * You can then pass this to the processor to be computed asychronously.
+	 * USE THIS UNLESS YOU ARE A MONSTER (as otherwise you hog a processor thread)
+	 * 
+	 * @see Processor#addRequest(Runnable)
+	 * 
+	 * @param src 
+	 * @param dst 
+	 * @param NodeSet
+	 * @param passController
+	 * @return
+	 */
 	public static RunnableFuture<Path> pathBetweenAsync(Coord src, Coord dst, World NodeSet, IPassageCallback passController) {
 		return new FutureTask<Path>(new BruteforcePathingCallable(src, dst, NodeSet, passController));
 	}

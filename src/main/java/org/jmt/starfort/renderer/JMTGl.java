@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+import org.jmt.starfort.logging.Logger;
 import org.joml.Matrix4f;
 import org.joml.MatrixStack;
 import org.joml.Vector3f;
@@ -220,12 +221,12 @@ public class JMTGl {
 		glShaderSource(fragShader, fragShaderSrc);
 		
 		glCompileShader(vertShader);
-		System.out.println("Vert Shader Compile status: " + (glGetShaderi(vertShader, GL_COMPILE_STATUS) == GL_TRUE));
-		System.out.println(glGetShaderInfoLog(vertShader));
+		Logger.debug("Vert Shader Compile status: " + (glGetShaderi(vertShader, GL_COMPILE_STATUS) == GL_TRUE), "JMTGL");
+		Logger.debug(glGetShaderInfoLog(vertShader), "JMTGL");
 		
 		glCompileShader(fragShader);
-		System.out.println("Frag Shader Compile status: " + (glGetShaderi(fragShader, GL_COMPILE_STATUS) == GL_TRUE));
-		System.out.println(glGetShaderInfoLog(fragShader));
+		Logger.debug("Frag Shader Compile status: " + (glGetShaderi(fragShader, GL_COMPILE_STATUS) == GL_TRUE), "JMTGL");
+		Logger.debug(glGetShaderInfoLog(fragShader), "JMTGL");
 		
 		
 		glAttachShader(shader, vertShader);

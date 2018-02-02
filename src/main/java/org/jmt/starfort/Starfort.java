@@ -113,8 +113,7 @@ public class Starfort {
 		World w = w1;
 		
 		IMaterial mat = MaterialRegistry.getMaterial("Debug");
-		int matID = MaterialRegistry.getMaterialID(mat);	
-		r.materialRenderReg.put(matID, new Colour(0.5f, 0.2f, 0.5f, 1f));
+		MaterialRegistra.registerRenderer(r);
 		
 		//boolean loadtest = false;
 		//if (!loadtest) {
@@ -431,13 +430,18 @@ public class Starfort {
 		w1 = new World(); 
 	}
 	
+	/**
+	 * Register Registras 
+	 */
 	public static void preInitRegistas() {
 		RenderRegistra.register(renderRules);
 		MaterialRegistra.register();
 		
 	}
 	
-	
+	/**
+	 * Initialise the game
+	 */
 	public static void init() {
 		Processor.init();
 		UserInterfacing.setupInterfacing(window);

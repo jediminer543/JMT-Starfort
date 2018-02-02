@@ -17,13 +17,13 @@ public interface IEntityAI {
 	public EntityAICapabilities getEntityAICapibilities();
 	
 	//TASK METHODS
-	public boolean moveTo(Coord c);
+	public boolean moveTo(Coord cur, Coord dest);
 	
-	public boolean interactWithComponent(Coord c, IComponent comp);
+	public boolean interactWithComponent(Coord cur, Coord dest, IComponent comp);
 	
-	public boolean useItem(Coord c, Item item);
+	public boolean useItem(Coord cur, Coord dest, Item item);
 	
-	public boolean useItemOnComponent(Coord c, Item item, IComponent comp);
+	public boolean useItemOnComponent(Coord cur, Coord dest, IComponent comp);
 	
 	// STUFF METHODS
 	/**
