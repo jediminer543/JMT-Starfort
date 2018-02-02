@@ -29,6 +29,11 @@ public interface ITaskGenerator {
 	 */
 	public int avaliableTaskGeneratorTasks();
 	
-	
+	/**
+	 * Gets an appropriate task for the passed EntityAI
+	 * 
+	 * @param entity The entity AI that will be completing this task
+	 * @return A VALID task for the entity to complete
+	 */
 	public Task getTaskGeneratorTask(IEntityAI entity);
 }

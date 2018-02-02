@@ -9,7 +9,6 @@ import java.util.concurrent.RunnableFuture;
 import org.jmt.starfort.processor.ComplexRunnable;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.world.World;
-import org.jmt.starfort.world.component.IComponentTasked;
 import org.jmt.starfort.world.controller.IController;
 import org.jmt.starfort.world.entity.IEntity;
 
@@ -46,7 +45,7 @@ public class ControllerTask implements IController {
 									lastZ = z;
 									finished = false;
 								} else {
-									for (IComponentTasked c: w.getBlockNoAdd(new Coord(x, y, z)).getCompInstances(IComponentTasked.class)) {
+									for (IComponentTaskedOld c: w.getBlockNoAdd(new Coord(x, y, z)).getCompInstances(IComponentTaskedOld.class)) {
 										worldTasks.addAll(Arrays.asList(c.getComponentTasks()));
 									}
 								}
@@ -66,7 +65,7 @@ public class ControllerTask implements IController {
 									finished = false;
 								} else {
 									if (w.getBlockNoAdd(new Coord(x, y, z)) != null)
-									for (IComponentTasked c: w.getBlockNoAdd(new Coord(x, y, z)).getCompInstances(IComponentTasked.class)) {
+									for (IComponentTaskedOld c: w.getBlockNoAdd(new Coord(x, y, z)).getCompInstances(IComponentTaskedOld.class)) {
 										worldTasks.addAll(Arrays.asList(c.getComponentTasks()));
 									}
 								}

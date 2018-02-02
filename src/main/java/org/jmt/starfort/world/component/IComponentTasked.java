@@ -1,14 +1,7 @@
 package org.jmt.starfort.world.component;
 
-import org.jmt.starfort.world.entity.aiold.ITask;
+import org.jmt.starfort.world.entity.ai.ITaskGenerator;
 
-/**
- * A component that allocates tasks
- * 
- * @author Jediminer543
- *
- */
-public interface IComponentTasked extends IComponent {
+public interface IComponentTasked extends IComponent, ITaskGenerator {
 
-	public ITask[] getComponentTasks();
 }
