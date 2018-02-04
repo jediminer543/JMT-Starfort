@@ -3,9 +3,10 @@ package org.jmt.starfort.game.components.debug;
 import org.jmt.starfort.world.component.IComponent;
 import org.jmt.starfort.world.component.IComponentTasked;
 import org.jmt.starfort.world.entity.IEntityAI;
-import org.jmt.starfort.world.entity.ai.Task;
+import org.jmt.starfort.world.entity.ai.ITask;
 import org.jmt.starfort.world.entity.aiold.IComponentTaskedOld;
 import org.jmt.starfort.world.material.IMaterial;
+import org.jmt.starfort.world.material.MaterialRegistry;
 
 /**
  * A flag for debugging
@@ -17,39 +18,34 @@ import org.jmt.starfort.world.material.IMaterial;
  * @author jediminer543
  *
  */
-public class ComponentFlag implements IComponent, IComponentTasked {
+public class ComponentDebugFlag implements IComponent, IComponentTasked {
 
-	public ComponentFlag() {
+	public ComponentDebugFlag() {
 		
 	}
 
 	@Override
 	public String getComponentName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "Debug Flag";
 	}
 
 	@Override
 	public IMaterial getComponentMaterial() {
-		// TODO Auto-generated method stub
-		return null;
+		return MaterialRegistry.getMaterial("Debug");
 	}
 
 	@Override
 	public boolean isTaskGeneratorCompletable(IEntityAI entity) {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
 	public int avaliableTaskGeneratorTasks() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public Task getTaskGeneratorTask(IEntityAI entity) {
-		// TODO Auto-generated method stub
+	public ITask getTaskGeneratorTask(IEntityAI entity) {
 		return null;
 	}
 

@@ -88,7 +88,7 @@ public class EntityAI implements IEntityAI {
 			p = null;
 		} else if (p != null && p.remaining() > 0) {
 			Coord dst = c.addR(p.pop().getDir());
-			w.moveComponent(baseEntity, c, dest);
+			w.moveComponent(baseEntity, c, dst);
 		}
 		return false;
 	}

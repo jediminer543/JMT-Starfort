@@ -120,7 +120,6 @@ public class WindowInspectDebug implements IWidget {
 					try {
 						nk_label(ctx, f.getName()+" "+f.get(comp), NK_TEXT_ALIGN_CENTERED);
 					} catch (IllegalArgumentException | IllegalAccessException e) {
-						e.printStackTrace();
 					}
 				}
 				nk_tree_state_pop(ctx);
@@ -130,7 +129,6 @@ public class WindowInspectDebug implements IWidget {
 					try {
 						nk_label(ctx, m.getName(), NK_TEXT_ALIGN_CENTERED);
 					} catch (IllegalArgumentException e) {
-						e.printStackTrace();
 					}
 				}
 				nk_tree_state_pop(ctx);

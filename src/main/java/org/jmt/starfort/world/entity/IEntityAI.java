@@ -31,6 +31,11 @@ public interface IEntityAI {
 	public void setPosition(World w, Coord c);
 	
 	//TASK METHODS
+	/**
+	 * Move the entity to a coordinate
+	 * @param dest
+	 * @return
+	 */
 	public boolean moveTo(Coord dest);
 	
 	public boolean interactWithComponent(Coord pos, IComponent comp);
