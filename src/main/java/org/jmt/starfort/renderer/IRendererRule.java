@@ -14,7 +14,8 @@ public interface IRendererRule {
 	
 	/**
 	 * Time to load images etc.
-	 * @param nvgCtx
+	 * 
+	 * @param r The renderer instance being used
 	 */
 	public void init(Renderer r);
 	

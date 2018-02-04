@@ -1,4 +1,4 @@
-package org.jmt.starfort.renderer;
+package org.jmt.starfort.renderer.rules;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
@@ -21,6 +21,10 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.jmt.starfort.logging.Logger;
+import org.jmt.starfort.renderer.Colour;
+import org.jmt.starfort.renderer.IRendererRule;
+import org.jmt.starfort.renderer.Renderer;
+import org.jmt.starfort.renderer.Texture;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.util.Direction;
 import org.jmt.starfort.world.component.IComponent;

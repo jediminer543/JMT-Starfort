@@ -5,6 +5,17 @@ import org.jmt.starfort.world.component.IComponent;
 import org.jmt.starfort.world.component.IComponentDirectioned;
 import org.jmt.starfort.world.material.IMaterial;
 
+/**
+ * Was going to be a pipe
+ * 
+ * But then conduits exist now
+ * 
+ * So this is useless
+ * 
+ * @author jediminer543
+ *
+ */
+@Deprecated
 public class ComponentPipe implements IComponent, IComponentDirectioned {
 
 	Direction[] connected;

@@ -1,4 +1,4 @@
-package org.jmt.starfort.ui.gui.window;
+package org.jmt.starfort.ui.gui.window.debug;
 
 import static org.lwjgl.nuklear.Nuklear.*;
 

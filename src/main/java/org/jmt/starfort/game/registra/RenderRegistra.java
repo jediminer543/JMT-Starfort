@@ -14,9 +14,9 @@ import org.jmt.starfort.game.components.conduit.ComponentConduit;
 import org.jmt.starfort.game.components.fluid.ComponentPipe;
 import org.jmt.starfort.game.entity.EntityDrone;
 import org.jmt.starfort.game.renderer.HumanRenderer;
-import org.jmt.starfort.renderer.DirectionBasedRenderer;
-import org.jmt.starfort.renderer.GenericRenderer;
 import org.jmt.starfort.renderer.IRendererRule;
+import org.jmt.starfort.renderer.rules.DirectionBasedRenderer;
+import org.jmt.starfort.renderer.rules.GenericRenderer;
 import org.jmt.starfort.util.Direction;
 import org.jmt.starfort.util.InlineFunctions;
 
