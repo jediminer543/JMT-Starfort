@@ -28,7 +28,7 @@ public class DirectionTest {
 	public void testInverseOf() {
 		Direction dir1 = Direction.XDEC;
 		Direction dir2 = Direction.inverseOf(dir1);
-		Coord resultant = dir1.getDir().addR(dir2.getDir());
+		Coord resultant = dir1.getDir().add(dir2.getDir());
 		assertEquals("Checking X is zero", 0, resultant.x);
 		assertEquals("Checking Y is zero", 0, resultant.y);
 		assertEquals("Checking Z is zero", 0, resultant.z);
@@ -38,7 +38,7 @@ public class DirectionTest {
 	public void testXzFlip() {
 		Direction dir1 = Direction.values()[0];
 		Direction dir2 = Direction.xzFlip(dir1);
-		Coord resultant = dir1.getDir().absR().addRM(dir2.getDir().absR());
+		Coord resultant = dir1.getDir().abs().addM(dir2.getDir().abs());
 		assertEquals("Checking X and Z are equal", resultant.x, resultant.z);
 	}
 }

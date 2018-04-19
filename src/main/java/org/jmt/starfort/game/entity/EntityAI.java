@@ -87,7 +87,7 @@ public class EntityAI implements IEntityAI {
 			Processor.addRequest(futurePath);
 			p = null;
 		} else if (p != null && p.remaining() > 0) {
-			Coord dst = c.addR(p.pop().getDir());
+			Coord dst = c.add(p.pop().getDir());
 			w.moveComponent(baseEntity, c, dst);
 		}
 		return false;

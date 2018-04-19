@@ -106,7 +106,7 @@ public class BruteforcePather {
 	        for (Direction d : new Direction[] {Direction.XDEC, Direction.ZDEC, Direction.YDEC, Direction.XINC, Direction.YINC, Direction.ZINC}) {
 	        	if (!passController.canPass(NodeSet, current, d))
 	        		continue;
-	        	Coord neighbor = current.addR(d.getDir());
+	        	Coord neighbor = current.add(d.getDir());
 	        	if (closedSet.contains(neighbor))
 	        		continue;
 	        	
@@ -142,7 +142,7 @@ public class BruteforcePather {
 		Coord newCurr;
 		while (cameFrom.containsKey(current)) {
 			newCurr = cameFrom.get(current);
-			Direction d = Direction.getValueOf(newCurr.subR(current)).inverse();
+			Direction d = Direction.getValueOf(newCurr.sub(current)).inverse();
 			if (d != null) 
 				path.push(d);
 			else
@@ -154,7 +154,7 @@ public class BruteforcePather {
 	}
 
 	private static int heuristic_cost_estimate(Coord src, Coord dst) {
-		Coord delta = src.subR(dst).absRM();
+		Coord delta = src.sub(dst).absM();
 		return (delta.x)*(delta.x) + (delta.y * 5)*(delta.y * 5) + (delta.z)*(delta.z); 
 		
 	}

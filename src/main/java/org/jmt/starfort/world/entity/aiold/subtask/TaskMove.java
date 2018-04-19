@@ -66,7 +66,7 @@ public class TaskMove implements ITask {
 			}
 		}
 		if (p != null && p.remaining() > 0) {
-			Coord dst = c.addR(p.pop().getDir());
+			Coord dst = c.add(p.pop().getDir());
 			w.moveComponent(ie, c, dst);
 			assumedCoord = dst;
 			/*

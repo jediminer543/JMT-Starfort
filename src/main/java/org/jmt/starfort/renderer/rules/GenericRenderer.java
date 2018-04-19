@@ -27,6 +27,11 @@ import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.world.component.IComponent;
 import org.joml.Vector2f;
 
+/**
+ * Generic renderer for making thing
+ * @author jediminer543
+ *
+ */
 public class GenericRenderer implements IRendererRule {
 
 	Class<? extends IComponent>[] toRender;
@@ -68,25 +73,6 @@ public class GenericRenderer implements IRendererRule {
 	
 	int vaoId;
 	int vboId;
-	
-	/* GL11 Impl
-	glBegin(GL_TRIANGLES);
-	glTexCoord2f(0, 0);
-	glVertex2f(0, 0);
-	glTexCoord2f(0, 1);
-	glVertex2f(0, r.wtrLen(1));
-	glTexCoord2f(1, 0);
-	glVertex2f(r.wtrLen(1), 0);
-	
-	glTexCoord2f(1, 1);
-	glVertex2f(r.wtrLen(1), r.wtrLen(1));
-	glTexCoord2f(0, 1);
-	glVertex2f(0, r.wtrLen(1));
-	glTexCoord2f(1, 0);
-	glVertex2f(r.wtrLen(1), 0);
-	glEnd();
-	glPopMatrix();
-	*/
 	
 	@Override
 	public void draw(Renderer r, Coord offset, IComponent comp,

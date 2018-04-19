@@ -27,7 +27,7 @@ public class EntityHuman extends EntityHumanoid {
 		@Override
 		public boolean canPass(World w, Coord src, Direction dir) {
 			if (dir != Direction.YINC && dir != Direction.YDEC) {
-				if (w.getBlock(src.addR(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(dir.inverse()) || w.getBlock(src.addR(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(Direction.SELFFULL) 
+				if (w.getBlock(src.add(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(dir.inverse()) || w.getBlock(src.add(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(Direction.SELFFULL) 
 						|| w.getBlock(src.get()).getBlockedDirs(NavContext.Physical).contains(dir)) {
 						return false;
 				}

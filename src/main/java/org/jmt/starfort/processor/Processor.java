@@ -4,6 +4,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.NoSuchElementException;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -44,8 +45,8 @@ public class Processor {
 	
 	static volatile AtomicInteger curMoving = new AtomicInteger();
 	
-	static Deque <ProcessingRequest> proccessingJobs = new LinkedBlockingDeque <ProcessingRequest>();
-	static Deque <Runnable> simpleJobs = new LinkedBlockingDeque <Runnable>();
+	static Deque <ProcessingRequest> proccessingJobs = new ConcurrentLinkedDeque <ProcessingRequest>();
+	static Deque <Runnable> simpleJobs = new ConcurrentLinkedDeque <Runnable>();
 	
 	static ArrayList<Thread> cores = new ArrayList<Thread>();
 	

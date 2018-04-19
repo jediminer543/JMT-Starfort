@@ -82,7 +82,7 @@ public class NodePather {
 	}
 
 	private int heuristic_cost_estimate(PathingNode src, PathingNode dst) {
-		Coord delta = src.nodeLocation.subR(dst.nodeLocation).absRM();
+		Coord delta = src.nodeLocation.sub(dst.nodeLocation).absM();
 		return delta.x + delta.y + delta.z; 
 		
 	}

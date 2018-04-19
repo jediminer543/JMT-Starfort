@@ -78,7 +78,7 @@ public class EntityDrone implements IEntity {
 				Processor.addRequest(parent.futurePath);
 				parent.p = null;
 			} else if (parent.p != null && parent.p.remaining() > 0) {
-				Coord dst = c.addR(parent.p.pop().getDir());
+				Coord dst = c.add(parent.p.pop().getDir());
 				w.moveComponent(parent, c, dst);
 			}
 	};
@@ -107,7 +107,7 @@ public class EntityDrone implements IEntity {
 
 	public boolean passageCallback(World w, Coord src, Direction dir) {
 		if (dir != Direction.YINC && dir != Direction.YDEC) {
-			if (w.getBlock(src.addR(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(dir.inverse()) || w.getBlock(src.addR(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(Direction.SELFFULL) 
+			if (w.getBlock(src.add(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(dir.inverse()) || w.getBlock(src.add(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(Direction.SELFFULL) 
 					|| w.getBlock(src.get()).getBlockedDirs(NavContext.Physical).contains(dir)) {
 					return false;
 			}

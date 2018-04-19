@@ -103,7 +103,7 @@ public class Renderer {
 	 * @return
 	 */
 	public Vector2f wtrCoord(Coord worldC, Coord offset) {
-		Coord tmp = worldC.addR(offset);
+		Coord tmp = worldC.add(offset);
 		return new Vector2f(tmp.x * 1/zoom * renderSpacePerWorldSpace, tmp.z * 1/zoom * renderSpacePerWorldSpace);
 	}
 	

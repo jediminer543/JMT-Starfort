@@ -83,13 +83,13 @@ public class ControlerConduit implements IController {
 						boolean configConduit = conduits.get(current).getConduitConnectedDirections() != null;
 						toAdd.clear();
 						for (Direction dir : procableDirs) {
-							if (conduits.containsKey(current.addR(dir.getDir())) && !network.contains(current.addR(dir.getDir()))) {
-								openSet.add(current.addR(dir.getDir()));
+							if (conduits.containsKey(current.add(dir.getDir())) && !network.contains(current.add(dir.getDir()))) {
+								openSet.add(current.add(dir.getDir()));
 							}
-							if (devices.containsKey(current.addR(dir.getDir()))) {
-								network.add(current.addR(dir.getDir()));
+							if (devices.containsKey(current.add(dir.getDir()))) {
+								network.add(current.add(dir.getDir()));
 							}
-							if (configConduit && ((conduits.containsKey(current.addR(dir.getDir()))) || (devices.containsKey(current.addR(dir.getDir()))))) {
+							if (configConduit && ((conduits.containsKey(current.add(dir.getDir()))) || (devices.containsKey(current.add(dir.getDir()))))) {
 								toAdd.add(dir);
 							}
 						}
