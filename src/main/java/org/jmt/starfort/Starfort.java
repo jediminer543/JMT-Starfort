@@ -15,7 +15,10 @@ import static org.lwjgl.opengl.GL32.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.jmt.starfort.renderer.JMTGl.*;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import org.jmt.starfort.event.EventBus;
@@ -115,8 +118,6 @@ public class Starfort {
 		IMaterial mat = MaterialRegistry.getMaterial("Debug");
 		MaterialRegistra.registerRenderer(r);
 		
-		//boolean loadtest = false;
-		//if (!loadtest) {
 		w.getBlock(new Coord(0, 0, 0)).addComponent(new ComponentStairs(mat, true, false));
 		w.getBlock(new Coord(0, 1, 0)).addComponent(new ComponentStairs(mat, false, true));
 		
@@ -197,25 +198,14 @@ public class Starfort {
 		//w.getController(ControllerTask.class);
 		w.getBlock(new Coord()).addComponent(new EntityHuman("BOB"));
 		
-		//JsonFactory factory = new JsonFactory();
-		//factory.createGenerator();
-		
-		//World w2 = Jack
-		
-		//	File f = new File("saveTest.map");
-		//	if (!f.exists()) { f.createNewFile(); }
-		//	FileOutputStream fos = new FileOutputStream(f);
-		//	WorldSaver.saveWorld(w, fos);
-		//	fos.flush();
-		//	fos.close();
-		//	
-		//} else {
-		//	File f = new File("saveTest.map");
-		//	if (!f.exists()) { f.createNewFile(); }
-		//	w1 = w = WorldSaver.loadWorld(new FileInputStream(f));
-		//}
-		
 		DevUtil.makeRoom(w1, mat, new Coord(0,0,5), new Coord(3,1,8));
+		
+		// TESTING WORLD SAVING WITH JAVA SERIALSER HERE
+		File f = new File("saveTest.serial");
+		f.createNewFile();
+		ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
+		oos.writeObject(w);
+		oos.close();
 		
 		final Coord displayOffset = new Coord(5, 0, 5);
 		
@@ -274,7 +264,7 @@ public class Starfort {
 		
 		World w2 = new World();
 		
-		/*
+		
 		w2.getBlock(new Coord(0, 0, 0)).addComponent(new ComponentStairs(mat, true, false));
 		w2.getBlock(new Coord(0, 1, 0)).addComponent(new ComponentStairs(mat, false, true));
 		
@@ -301,17 +291,17 @@ public class Starfort {
 		
 		w2.getBlock(new Coord(-1, 0, -1)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.SELFFULL), mat));
 		
-		w2.getBlock(new Coord(-2, 0, -2)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XDEC, Direction.ZDEC), mat));
-		w2.getBlock(new Coord(-1, 0, -2)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XINC, Direction.XDEC, Direction.ZDEC), mat));
-		w2.getBlock(new Coord(0, 0, -2)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XINC, Direction.ZDEC), mat));
+		//w2.getBlock(new Coord(-2, 0, -2)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XDEC, Direction.ZDEC), mat));
+		//w2.getBlock(new Coord(-1, 0, -2)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XINC, Direction.XDEC, Direction.ZDEC), mat));
+		//w2.getBlock(new Coord(0, 0, -2)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XINC, Direction.ZDEC), mat));
 		
-		w2.getBlock(new Coord(-2, 0, -3)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.ZDEC, Direction.ZINC, Direction.XINC), mat));
-		w2.getBlock(new Coord(-1, 0, -3)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XINC, Direction.XDEC, Direction.ZINC, Direction.ZDEC), mat));
-		w2.getBlock(new Coord(0, 0, -3)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.ZINC, Direction.ZDEC, Direction.XDEC), mat));
+		//w2.getBlock(new Coord(-2, 0, -3)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.ZDEC, Direction.ZINC, Direction.XINC), mat));
+		//w2.getBlock(new Coord(-1, 0, -3)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XINC, Direction.XDEC, Direction.ZINC, Direction.ZDEC), mat));
+		//w2.getBlock(new Coord(0, 0, -3)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.ZINC, Direction.ZDEC, Direction.XDEC), mat));
 		
-		w2.getBlock(new Coord(-2, 0, -4)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XDEC, Direction.ZINC), mat));
-		w2.getBlock(new Coord(-1, 0, -4)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XINC, Direction.XDEC, Direction.ZINC), mat));
-		w2.getBlock(new Coord(0, 0, -4)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XINC, Direction.ZINC), mat));
+		//w2.getBlock(new Coord(-2, 0, -4)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XDEC, Direction.ZINC), mat));
+		//w2.getBlock(new Coord(-1, 0, -4)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XINC, Direction.XDEC, Direction.ZINC), mat));
+		//w2.getBlock(new Coord(0, 0, -4)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XINC, Direction.ZINC), mat));
 		
 		w2.getBlock(new Coord(0, 1, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XDEC, Direction.ZDEC, Direction.ZINC), mat));
 		w2.getBlock(new Coord(1, 1, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.ZDEC, Direction.ZINC), mat));
@@ -333,7 +323,7 @@ public class Starfort {
 		w2.getBlock(new Coord(0, 0, 0)).addComponent(new EntityDrone());
 		w2.getBlock(new Coord(0, 0, 1)).addComponent(new EntityDrone());
 		w2.getBlock(new Coord(5, 1, 0)).addComponent(new EntityDrone());
-		*/
+		
 		
 		Processor.addRequest(new TickRequest(w));
 		Processor.addRequest(new TickRequest(w2));
@@ -399,7 +389,7 @@ public class Starfort {
 		
 		GL.createCapabilities();
 		
-		System.out.println("OpenGL version: " + glGetString(GL_VERSION));
+		Logger.info("OpenGL version: " + glGetString(GL_VERSION));
 		
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();

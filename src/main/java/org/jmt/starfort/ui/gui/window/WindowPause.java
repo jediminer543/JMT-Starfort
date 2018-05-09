@@ -53,15 +53,18 @@ public class WindowPause implements IWidget {
 		});
 	}
 	
-	private IntBuffer[] tabStates = new IntBuffer[2];
-	
-	//Initialises all tab states
+	//private IntBuffer[] tabStates = new IntBuffer[2];
+	private IntBuffer tabStates = BufferUtils.createIntBuffer(2);
 	{
-		tabStates[0] = BufferUtils.createIntBuffer(1);
-		tabStates[0].put(NK_MAXIMIZED);
-		tabStates[0].rewind();
-		tabStates[1] = BufferUtils.createIntBuffer(1);
+		tabStates.put(1);
 	}
+	//Initialises all tab states
+	//{
+	//	tabStates[0] = BufferUtils.createIntBuffer(1);
+	//	tabStates[0].put(NK_MAXIMIZED);
+	//	tabStates[0].rewind();
+	//	tabStates[1] = BufferUtils.createIntBuffer(1);
+	//}
 	
 	private int winWidth = 256, winHeight = 400;
 	
@@ -82,7 +85,7 @@ public class WindowPause implements IWidget {
 				//the function is called.
 				//DOES THAT MAKE SENSE
 				//THAT IS FOR STATE PUSH
-				if (nk_tree_state_push(ctx, NK_TREE_TAB, "Game", tabStates[0])) {
+				if (nk_tree_state_push(ctx, NK_TREE_TAB, "Game", (IntBuffer)tabStates.position(0))) {
 					nk_button_text(ctx, "New");
 					nk_button_text(ctx, "Save");
 					nk_button_text(ctx, "Load");
@@ -91,7 +94,7 @@ public class WindowPause implements IWidget {
 					}
 					nk_tree_state_pop(ctx);
 				}
-				if (nk_tree_state_push(ctx, NK_TREE_TAB, "Options", tabStates[1])) {
+				if (nk_tree_state_push(ctx, NK_TREE_TAB, "Options", (IntBuffer)tabStates.position(1))) {
 					nk_button_text(ctx, "Sound");
 					nk_button_text(ctx, "Graphics");
 					nk_button_text(ctx, "Something");

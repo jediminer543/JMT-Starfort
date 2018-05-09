@@ -1,6 +1,8 @@
 package org.jmt.starfort.world.material;
 
-public interface IMaterial {
+import java.io.Serializable;
+
+public interface IMaterial extends Serializable {
 	
 	public String getMaterialName();
 	

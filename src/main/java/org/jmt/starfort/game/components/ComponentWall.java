@@ -13,6 +13,11 @@ import org.jmt.starfort.world.material.IMaterial;
 
 public class ComponentWall implements IComponent, IComponentBlocking, IComponentDamagable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4130761884808812056L;
+	
 	Direction[] blockedDirs;
 	int wallHealth, wallMaxHealth;
 	IMaterial mat;

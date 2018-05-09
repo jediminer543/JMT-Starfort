@@ -1,5 +1,6 @@
 package org.jmt.starfort.world;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -20,13 +21,31 @@ import org.jmt.starfort.world.controller.IController;
  * @author Jediminer543
  *
  */
-public class World {
+public class World implements Serializable {
 
+	/**
+	 * For Saving
+	 */
+	private static final long serialVersionUID = -8189700013481707282L;
+
+	/**
+	 * For referencing and comparing with copies of this world
+	 */
 	UUID id = UUID.randomUUID();
 	
+	/**
+	 * The blocks this world is made up of
+	 */
 	ConcurrentHashMap<Coord, Block> blocks = new ConcurrentHashMap<>();
+	
+	/**
+	 * The controllers that maintain this world
+	 */
 	ArrayList<IController> controllers = new ArrayList<>();
 	
+	/**
+	 * Creates a new instance of the World object
+	 */
 	public World () {} 
 	
 	/**
@@ -45,7 +64,6 @@ public class World {
 	public Block getBlock(Coord c) {
 			if (!blocks.containsKey(c)) {
 				blocks.put(c.get(), new Block());
-				//updateBounds();
 			}
 			return blocks.get(c);
 	}
@@ -58,7 +76,7 @@ public class World {
 	 */
 	public Block getBlockNoAdd(Coord c) {
 			// READ THE DOCS; get returns null if not contained. no need to duplicate function
-			// TODO CLEANUP, ONCE REMINED THAT I AM IDIOT
+			// YOU ARE A DERP, DON'T CLEANUP, TO REMINED YOU THAT I AM IDIOT
 			//if (!blocks.containsKey(c)) {
 			//	return null;
 			//} 
@@ -70,7 +88,7 @@ public class World {
 	 * Returns null if block cannot be located
 	 * 
 	 * @param b The block to locate
-	 * @return
+	 * @return The coordinate of the block passed, or null if not found
 	 */
 	public Coord getBlockLocation(Block b) {
 			for (Entry<Coord, Block> e: blocks.entrySet()) {
@@ -111,15 +129,16 @@ public class World {
 	 * @param b The block to change to
 	 */
 	public void setBlock(Coord c, Block b) {
-		//boolean isnew = blocks.containsKey(c);
 		synchronized (blocks) {
 			blocks.put(c, b);
 		}
-		//if (isnew) { updateBounds(); }
 	}
 	
 	/**
-	 * Gets the worlds block array
+	 * Gets the worlds block array.
+	 * 
+	 * YOU REALLY SHOULDN'T BE CALLING THIS, AS IT COULD BREAK CONCURRENCY
+	 * 
 	 * @return the worlds block array
 	 */
 	public synchronized Map<Coord, Block> getBlocks() {
@@ -158,34 +177,18 @@ public class World {
 		return (T) i;
 	}
 	
-	
-	
-//	/**
-//	 * <b>NYI:</b>
-//	 * <br>
-//	 * Returns a clone of the world map, allowing for non syncronus opperations, such as rendering
-//	 * to be performed
-//	 * 
-//	 * @return
-//	 */
-//	public synchronized Map<Coord, Block> getBlocksClone() {
-//		Map<Coord, Block> clone = Cloner.standard().deepClone(blocks);
-//		return clone;
-//	}
-//	
-//	/**
-//	 * <b>NYI:</b>
-//	 * <br>
-//	 * Returns a clone of the world map, allowing for non syncronus opperations, such as rendering
-//	 * to be performed
-//	 * 
-//	 * @return
-//	 */
-//	public synchronized Collection<Block> getBlocksValuesClone() {
-//		Collection<Block> clone = Cloner.standard().deepClone(blocks.values());
-//		return clone;
-//	}
-	
+	/**
+	 * Move a component from a coordinate to a coordinate, updating the relevant blocks
+	 * and firing an EventMove across the event bus whilst doing so. 
+	 * <br> If either of the referenced blocks does not exist, then the move will not occur. 
+	 * If you wish to move to an un-populated coord, you should call getBlock() on the coord first.
+	 * 
+	 * @see EventMove
+	 * 
+	 * @param ic Component that will be moved, if not in the source block then no event will occur
+	 * @param source The coordinate of the origin block
+	 * @param dest The coordinate of the destination block
+	 */
 	public void moveComponent(IComponent ic, Coord source, Coord dest) {
 		Block sb = getBlockNoAdd(source);
 		Block db = getBlockNoAdd(dest);
@@ -196,6 +199,14 @@ public class World {
 		}
 	}
 	
+	/**
+	 * Updates the bounding box of the world in world coordinates
+	 * 
+	 * Complexity is tied to number of blocks in world, so calling
+	 * should be minimised on large worlds, if done every tick.
+	 * 
+	 * @see World#getBounds(boolean)
+	 */
 	public void updateBounds() {
 		int xmin, xmax, ymin, ymax, zmin, zmax;
 		xmax = ymax = zmax = Integer.MIN_VALUE;
@@ -220,7 +231,10 @@ public class World {
 	}
 	
 	/**
-	 * Gets the bounds of the world
+	 * Gets the bounds of the world, recalculating if required.
+	 * If the bounds have not been updated then it will return
+	 * a `new int[8]`, so you should call update first time any
+	 * thing calls this function
 	 * 
 	 * @param update Weather to recalculate the bounds
 	 * @return {xmin, ymin, zmin, xmax, ymax, zmax} 

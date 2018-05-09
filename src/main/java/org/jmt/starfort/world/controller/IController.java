@@ -1,8 +1,10 @@
 package org.jmt.starfort.world.controller;
 
+import java.io.Serializable;
+
 import org.jmt.starfort.processor.ComplexRunnable;
 
-public interface IController {
+public interface IController extends Serializable {
 
 	/**
 	 * This is the tick function passed to the processing thread pool 

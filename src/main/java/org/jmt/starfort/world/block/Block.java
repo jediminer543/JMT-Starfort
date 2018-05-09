@@ -1,5 +1,6 @@
 package org.jmt.starfort.world.block;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -14,8 +15,13 @@ import org.jmt.starfort.world.component.IComponent;
 import org.jmt.starfort.world.component.IComponentBlocking;
 import org.jmt.starfort.world.component.IComponentTickable;
 
-public class Block {
+public class Block implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6120827590177127003L;
+
 	UUID id = UUID.randomUUID();
 	
 	volatile ArrayList<IComponent> components = new ArrayList<>();

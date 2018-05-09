@@ -28,7 +28,10 @@ import org.jmt.starfort.world.component.IComponent;
 import org.joml.Vector2f;
 
 /**
- * Generic renderer for making thing
+ * Generic renderer for rendering components in the world with a static texture
+ * 
+ * Usefull for really basic and generic things. Hence the name
+ * 
  * @author jediminer543
  *
  */
@@ -38,12 +41,27 @@ public class GenericRenderer implements IRendererRule {
 	InputStream is;
 	int priority;
 	
+	/**
+	 * Initialises a generic renderer with a texture stream
+	 * 
+	 * @param compClass List of Component Classes to render
+	 * @param tex Texture that the components will be rendered with as an input stream
+	 * @param priority Z priority of this render rule
+	 */
 	public GenericRenderer(Class<? extends IComponent>[] compClass, InputStream tex, int priority) {
 		toRender = compClass;
 		is = tex;
 		this.priority = priority;
 	}
 
+	/**
+	 * Initialises a generic renderer with a path to a texture file, be it in classpath or an external resource.
+	 * 
+	 * @param compClass List of Component Classes to render
+	 * @param fileName A path to the texture file
+	 * @param priority Z priority of this render rule
+	 * @param ext If true, will search for the outside the classpath, otherwise it will search in the class path
+	 */
 	public GenericRenderer(Class<? extends IComponent>[] compClass, String fileName, int priority, boolean ext) throws FileNotFoundException {
 		this(compClass, ext ? new FileInputStream(fileName) : fileName.getClass().getResourceAsStream(fileName), priority);
 	}

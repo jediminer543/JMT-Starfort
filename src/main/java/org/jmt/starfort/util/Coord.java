@@ -1,13 +1,19 @@
 package org.jmt.starfort.util;
 
+import java.io.Serializable;
+
 /**
  * A three dimensional integer coordinate, meant to represent a blocks location in the world.
  * 
  * @author Jediminer543
  *
  */
-public class Coord implements Cloneable {
+public class Coord implements Cloneable, Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 762022302312507787L;
 	/**
 	 * The locations of the coordinate
 	 */

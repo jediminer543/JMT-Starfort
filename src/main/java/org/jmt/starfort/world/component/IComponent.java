@@ -1,5 +1,7 @@
 package org.jmt.starfort.world.component;
 
+import java.io.Serializable;
+
 import org.jmt.starfort.world.material.IMaterial;
 
 /**
@@ -12,7 +14,7 @@ import org.jmt.starfort.world.material.IMaterial;
  * @author Jediminer543
  *
  */
-public interface IComponent {
+public interface IComponent extends Serializable {
 	
 	/**
 	 * Display name of the component
