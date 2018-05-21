@@ -34,6 +34,9 @@ public class InlineFunctions {
 	}
 	
 	/**
+	 * Creates an array list inline that is fully manipulatable
+	 * 
+	 * Unlike Arrays.asList(). Hintidy hint hint
 	 * 
 	 * @param args
 	 * @return
@@ -79,7 +82,7 @@ public class InlineFunctions {
 			try {
 				map.put(i[0], i[1]);
 			} catch (ArrayIndexOutOfBoundsException e) {
-				//TODO logging
+				throw new IllegalArgumentException("One of the arrays you provided was defective", e);
 			}
 		}
 		return map;

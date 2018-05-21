@@ -15,6 +15,8 @@ import org.jmt.starfort.world.material.IMaterial;
  * 
  * But future me can deal with that
  * 
+ * Update: Frack you, further future me can deal with it - Future me
+ * 
  * @author jediminer543
  *
  */

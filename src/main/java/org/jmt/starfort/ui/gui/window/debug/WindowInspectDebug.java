@@ -11,9 +11,11 @@ import org.jmt.starfort.event.EventBus;
 import org.jmt.starfort.event.IEvent;
 import org.jmt.starfort.event.ui.EventKey;
 import org.jmt.starfort.event.world.EventWorldClick;
+import org.jmt.starfort.logging.Logger;
 import org.jmt.starfort.ui.gui.NkCtxGLFW3;
 import org.jmt.starfort.ui.gui.widget.IWidget;
-import org.jmt.starfort.world.block.Block;
+import org.jmt.starfort.util.Coord;
+import org.jmt.starfort.world.Block;
 import org.jmt.starfort.world.component.IComponent;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
@@ -42,6 +44,8 @@ public class WindowInspectDebug implements IWidget {
 					} else if (ev instanceof EventWorldClick) {
 						EventWorldClick wke = (EventWorldClick)(ev);
 						block = wke.getEventWorld().getBlock(wke.getEventCoord());
+						curPos = wke.getEventCoord();
+						//Logger.debug(curPos.toString());
 					} 
 				}	
 			}
@@ -79,6 +83,7 @@ public class WindowInspectDebug implements IWidget {
 		
 	}
 	
+	public Coord curPos;
 	public Block block;
 	private int offset = 0;
 	

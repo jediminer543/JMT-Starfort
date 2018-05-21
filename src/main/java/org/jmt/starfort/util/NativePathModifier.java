@@ -9,6 +9,8 @@ import java.lang.reflect.Field;
  * May be useful for other native-dependent stuff though,
  * so it stays.
  * 
+ * Now less useful, as LWJGL does this automagically.
+ * 
  * @author jediminer543
  *
  */

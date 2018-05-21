@@ -4,8 +4,8 @@ import java.util.Map.Entry;
 
 import org.jmt.starfort.processor.ComplexRunnable;
 import org.jmt.starfort.util.Coord;
+import org.jmt.starfort.world.Block;
 import org.jmt.starfort.world.World;
-import org.jmt.starfort.world.block.Block;
 import org.jmt.starfort.world.component.IComponentRandomTickable;
 
 /**

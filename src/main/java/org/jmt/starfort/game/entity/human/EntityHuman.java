@@ -20,32 +20,12 @@ import org.jmt.starfort.world.material.IMaterial;
 
 public class EntityHuman extends EntityHumanoid {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1713245705625921265L;
 	String name;
-	transient EntityAI entityAI = new EntityAI();
-	transient IPassageCallback pc = new IPassageCallback() {
-		
-		@Override
-		public boolean canPass(World w, Coord src, Direction dir) {
-			if (dir != Direction.YINC && dir != Direction.YDEC) {
-				if (w.getBlock(src.add(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(dir.inverse()) || w.getBlock(src.add(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(Direction.SELFFULL) 
-						|| w.getBlock(src.get()).getBlockedDirs(NavContext.Physical).contains(dir)) {
-						return false;
-				}
-				return true;
-			} else {
-				List<IComponentUpDown> UDCL = null;
-				if (!(UDCL = w.getBlock(src).getCompInstances(IComponentUpDown.class)).isEmpty()) {
-					for (IComponentUpDown UDC : UDCL) {
-						if (UDC.canUp() && dir == Direction.YINC)
-							return true;
-						if (UDC.canDown() && dir == Direction.YDEC)
-							return true;
-					}
-				}
-			}
-			return false;
-		}
-	};
+	EntityAI entityAI = new EntityAI();
 	
 	public EntityHuman(String name) {
 		this.name = name;
@@ -100,9 +80,33 @@ public class EntityHuman extends EntityHumanoid {
 		return new ITask[] {t};
 	}
 
+	public boolean passageCallback(World w, Coord src, Direction dir) {
+		if (w.getBlockNoAdd(src.add(dir.getDir())) == null || w.getBlockNoAdd(src) == null) {
+			return false;
+		}
+		if (dir != Direction.YINC && dir != Direction.YDEC) {
+			if (w.getBlockNoAdd(src.add(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(dir.inverse()) || w.getBlockNoAdd(src.add(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(Direction.SELFFULL) 
+					|| w.getBlockNoAdd(src.get()).getBlockedDirs(NavContext.Physical).contains(dir)) {
+					return false;
+			}
+			return true;
+		} else {
+			List<IComponentUpDown> UDCL = null;
+			if (!(UDCL = w.getBlockNoAdd(src).getCompInstances(IComponentUpDown.class)).isEmpty()) {
+				for (IComponentUpDown UDC : UDCL) {
+					if (UDC.canUp() && dir == Direction.YINC)
+						return true;
+					if (UDC.canDown() && dir == Direction.YDEC)
+						return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	@Override
 	public IPassageCallback getEntityPassageCallback() {
-		return pc;
+		return this::passageCallback;
 	}
 
 	@Override

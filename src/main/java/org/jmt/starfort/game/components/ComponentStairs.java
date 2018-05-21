@@ -9,7 +9,14 @@ import org.jmt.starfort.world.material.IMaterial;
 
 public class ComponentStairs implements IComponent, IComponentDirectioned, IComponentUpDown {
 
+	private static final long serialVersionUID = -8764913098897973098L;
+	/**
+	 * Allowed directions of motion
+	 */
 	boolean up, down;
+	/**
+	 * Material of stairs
+	 */
 	IMaterial mat;
 	
 	protected ComponentStairs() {}

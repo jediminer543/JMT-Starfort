@@ -13,9 +13,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.jmt.starfort.processor.ComplexRunnable;
 import org.jmt.starfort.util.Coord;
+import org.jmt.starfort.world.Block;
 import org.jmt.starfort.world.TickRequest;
 import org.jmt.starfort.world.World;
-import org.jmt.starfort.world.block.Block;
 import org.jmt.starfort.world.component.IComponent;
 
 /**

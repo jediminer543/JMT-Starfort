@@ -15,6 +15,8 @@ public class MaterialRegistra {
 		
 		//Register Mats
 		registerDebug();
+		
+		registerOrganicMaterial();
 	}
 	
 	public static void registerCommonWorldTypes() {
@@ -27,7 +29,6 @@ public class MaterialRegistra {
 			
 			@Override
 			public String getMaterialTypeDescriptor() {
-				// TODO Auto-generated method stub
 				return "A stonelike material";
 			}
 		};

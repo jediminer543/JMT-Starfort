@@ -17,7 +17,20 @@ import org.jmt.starfort.world.component.conduits.IComponentConduitDevice;
 import org.jmt.starfort.world.component.conduits.IConduitChannelType;
 import org.jmt.starfort.world.controller.IController;
 
+/**
+ * Controls conduit networks
+ * 
+ * Probably needs a massive rewrite
+ * 
+ * @author jediminer543
+ *
+ */
 public class ControlerConduit implements IController {
+
+	/**
+	 * Serialisation ID
+	 */
+	private static final long serialVersionUID = 8876526825142851777L;
 
 	// Allows task to be spread over multiple ticks
 	//long maxLen = 50000;

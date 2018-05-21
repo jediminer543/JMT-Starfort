@@ -235,7 +235,7 @@ public class NuklearUtil {
 			stbtt_InitFont(fontInfo, ttf);
 			scale = stbtt_ScaleForPixelHeight(fontInfo, FONT_HEIGHT);
 
-			IntBuffer d = MemoryUtil.memAllocInt(1);
+			IntBuffer d = stack.callocInt(1);
 			stbtt_GetFontVMetrics(fontInfo, null, d, null);
 			descent = d.get(0) * scale;
 
@@ -268,9 +268,8 @@ public class NuklearUtil {
 		font
 		.width((handle, h, text, len) -> {
 			float text_width = 0;
-			//try ( MemoryStack substack = stackPush() ) {
-				//MemoryStack substack = MemoryStack.stackGet();
-				IntBuffer unicode = memCallocInt(1);
+			try ( MemoryStack substack = stackPush() ) {
+				IntBuffer unicode = substack.callocInt(1);
 
 				int glyph_len = nnk_utf_decode(text, memAddress(unicode), len);
 				int text_len = glyph_len;
@@ -278,7 +277,7 @@ public class NuklearUtil {
 				if ( glyph_len == 0 )
 					return 0;
 
-				IntBuffer advance = memCallocInt(1);
+				IntBuffer advance = substack.callocInt(1);
 				while ( text_len <= len && glyph_len != 0 ) {
 					if ( unicode.get(0) == NK_UTF_INVALID )
 						break;
@@ -291,7 +290,7 @@ public class NuklearUtil {
 					glyph_len = nnk_utf_decode(text + text_len, memAddress(unicode), len - text_len);
 					text_len += glyph_len;
 				
-				//}
+				}
 				
 			}
 			return text_width;

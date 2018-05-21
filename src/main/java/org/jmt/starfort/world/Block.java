@@ -1,4 +1,4 @@
-package org.jmt.starfort.world.block;
+package org.jmt.starfort.world;
 
 import java.io.Serializable;
 import java.util.ArrayList;

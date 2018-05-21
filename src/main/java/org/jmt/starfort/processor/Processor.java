@@ -53,7 +53,7 @@ public class Processor {
 	/**
 	 * Number of threads to run
 	 */
-	static int size = 4;
+	static int size = 16;
 	
 	/**
 	 * Initialises and starts the processor
@@ -81,7 +81,9 @@ public class Processor {
 									//Happens when task is being cycled; shouldn't be a problem
 								}
 								if (job != null) {			//Check if we aquired a task
+									Thread.currentThread().setPriority(Thread.currentThread().getPriority()+1);
 									job.run(); 				//Process normal runable job
+									Thread.currentThread().setPriority(Thread.currentThread().getPriority()-1);
 								}
 							}
 							else if (proccessingJobs.size() - curMoving.get() > 0) {
@@ -93,6 +95,7 @@ public class Processor {
 									//nsee.printStackTrace();
 									//Happens when task is being cycled; shouldn't be a problem
 									} 
+									Thread.yield();
 								}
 								try {
 									if (first instanceof SuspenableProcessingRequest && ((SuspenableProcessingRequest) first).suspended()) {
@@ -132,7 +135,9 @@ public class Processor {
 									} else {
 									try {
 									if (first.remaining() > 0) {
+										Thread.currentThread().setPriority(Thread.currentThread().getPriority()+1);
 										if (!first.processNext()) { idleTicks++; }
+										Thread.currentThread().setPriority(Thread.currentThread().getPriority()-1);
 									}
 									} catch (NoSuchElementException nsee) {
 										//nsee.printStackTrace();
@@ -148,6 +153,7 @@ public class Processor {
 							} else {
 								idleTicks++;
 							}
+							Thread.yield();
 						}
 					}
 

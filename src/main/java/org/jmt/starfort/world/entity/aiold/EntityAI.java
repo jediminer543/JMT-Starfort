@@ -3,6 +3,7 @@ package org.jmt.starfort.world.entity.aiold;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.io.Serializable;
 import java.util.concurrent.ExecutionException;
 
 import org.jmt.starfort.processor.Processor;
@@ -20,7 +21,7 @@ import org.jmt.starfort.world.entity.aiold.ITask.TaskState;
  * @author Jediminer543
  *
  */
-public class EntityAI {
+public class EntityAI implements Serializable {
 
 	ITask t = null;
 	FutureTask<ITask> futureT = null;

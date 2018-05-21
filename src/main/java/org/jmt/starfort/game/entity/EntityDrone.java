@@ -24,11 +24,18 @@ import org.jmt.starfort.world.entity.IEntityAI;
 import org.jmt.starfort.world.entity.aiold.ITask;
 import org.jmt.starfort.world.entity.organs.IOrgan;
 import org.jmt.starfort.world.material.IMaterial;
+import org.jmt.starfort.world.material.IMaterialType;
+import org.jmt.starfort.world.material.MaterialRegistry;
 
 public class EntityDrone implements IEntity {
 
-	Path p;
-	transient RunnableFuture<Path> futurePath;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6954828635651637329L;
+	
+	public transient Path p;
+	public transient RunnableFuture<Path> futurePath;
 	Deque<Coord> targets = new ArrayDeque<Coord>();
 	{
 		targets.addLast(new Coord(0, 0, 3));
@@ -45,27 +52,42 @@ public class EntityDrone implements IEntity {
 
 	@Override
 	public IMaterial getComponentMaterial() {
-		return null;
+		return MaterialRegistry.getMaterial("Bone"); // JUST HERE FOR DEBUG TODO FIX
 	}
 
-	transient ComplexRunnable tick = (Object... args) -> {
+	public Coord lastPos;
+	
+	private void tick(Object... args) {
 			EntityDrone parent = this;
 			World w = (World) args[0];
 			Coord c = (Coord) args[1];
 			//TickRequest tr = (TickRequest) args[2];
 			//System.out.println("Processing");
-			if (parent.p == null && parent.futurePath == null) {
-				parent.futurePath = BruteforcePather.pathBetweenAsync(c, parent.targets.getFirst(), w, parent.getEntityPassageCallback());
-				Processor.addRequest(parent.futurePath);
-				parent.p = null;
+			if (lastPos == null) {
+				lastPos = c;
 			}
-			if (c.equals(parent.targets.getFirst())) {
-				parent.targets.addLast(parent.targets.pop());
+			if (c != lastPos) {
+				//w.moveComponent(parent, c, lastPos);
+				p = null;
+				futurePath = null;
+				lastPos = c;
 			}
-			if (parent.futurePath != null && parent.futurePath.isDone()) {
+			if (c == null) {
+				//IDK WHAT HAPPENED HERE
+				throw new IllegalStateException("SOMETHING WENT HORRIBLY WRONG HERE");
+			}
+			if (p == null && futurePath == null) {
+				futurePath = BruteforcePather.pathBetweenAsync(c, parent.targets.getFirst(), w, parent.getEntityPassageCallback());
+				Processor.addRequest(futurePath);
+				p = null;
+			}
+			if (c.equals(targets.getFirst())) {
+				targets.addLast(targets.pop());
+			}
+			if (futurePath != null && futurePath.isDone()) {
 				try {
-					parent.p = parent.futurePath.get(100, TimeUnit.MICROSECONDS);
-					parent.futurePath = null;
+					p = futurePath.get(100, TimeUnit.MICROSECONDS);
+					futurePath = null;
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				} catch (ExecutionException e) {
@@ -79,13 +101,18 @@ public class EntityDrone implements IEntity {
 				parent.p = null;
 			} else if (parent.p != null && parent.p.remaining() > 0) {
 				Coord dst = c.add(parent.p.pop().getDir());
-				w.moveComponent(parent, c, dst);
+				if (w.moveComponent(parent, c, dst)) {
+					lastPos = dst;
+				} else {
+					p = null;
+					futurePath = null;
+				}
 			}
 	};
 	
 	@Override
 	public ComplexRunnable getTick() {
-		return tick;
+		return this::tick;
 	}
 
 	@Override
@@ -106,15 +133,18 @@ public class EntityDrone implements IEntity {
 	}
 
 	public boolean passageCallback(World w, Coord src, Direction dir) {
+		if (w.getBlockNoAdd(src.add(dir.getDir())) == null || w.getBlockNoAdd(src) == null) {
+			return false;
+		}
 		if (dir != Direction.YINC && dir != Direction.YDEC) {
-			if (w.getBlock(src.add(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(dir.inverse()) || w.getBlock(src.add(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(Direction.SELFFULL) 
-					|| w.getBlock(src.get()).getBlockedDirs(NavContext.Physical).contains(dir)) {
+			if (w.getBlockNoAdd(src.add(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(dir.inverse()) || w.getBlockNoAdd(src.add(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(Direction.SELFFULL) 
+					|| w.getBlockNoAdd(src.get()).getBlockedDirs(NavContext.Physical).contains(dir)) {
 					return false;
 			}
 			return true;
 		} else {
 			List<IComponentUpDown> UDCL = null;
-			if (!(UDCL = w.getBlock(src).getCompInstances(IComponentUpDown.class)).isEmpty()) {
+			if (!(UDCL = w.getBlockNoAdd(src).getCompInstances(IComponentUpDown.class)).isEmpty()) {
 				for (IComponentUpDown UDC : UDCL) {
 					if (UDC.canUp() && dir == Direction.YINC)
 						return true;

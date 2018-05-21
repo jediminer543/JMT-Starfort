@@ -4,14 +4,33 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class is the static registry of all materials.
+ * 
+ * It provides static storage of both materials and material
+ * types, and can be searched through by name, and by ID.
+ * 
+ * Also assigns materials ID's
+ * 
+ * How the frack was this not documented
+ * 
+ * @author jediminer543
+ *
+ */
 public class MaterialRegistry {
 
-	static ArrayList<IMaterial> mats = new ArrayList<>();
-	static Map<String, Integer> matIndex = new HashMap<>();
+	public static ArrayList<IMaterial> mats = new ArrayList<>();
+	public static Map<String, Integer> matIndex = new HashMap<>();
 	
-	static ArrayList<IMaterialType> matTypes = new ArrayList<>();
-	static Map<String, Integer> matTypeIndex = new HashMap<>();
+	public static ArrayList<IMaterialType> matTypes = new ArrayList<>();
+	public static Map<String, Integer> matTypeIndex = new HashMap<>();
 	
+	/**
+	 * Register a material with the material registry
+	 * 
+	 * @param mat The material to register
+	 * @return The ID of that material, allowing for quick finding
+	 */
 	public static int registerMaterial(IMaterial mat) {
 		if (matIndex.containsKey(mat.getMaterialName())) {
 			return -1;
@@ -22,6 +41,12 @@ public class MaterialRegistry {
 		}
 	}
 	
+	/**
+	 * Register a material type with the material registry
+	 * 
+	 * @param mat The material type to register
+	 * @return The ID of that material type, allowing for quick finding
+	 */
 	public static int registerMaterialType(IMaterialType mat) {
 		if (matTypeIndex.containsKey(mat.getMaterialTypeName())) {
 			return -1;
@@ -62,5 +87,9 @@ public class MaterialRegistry {
 	
 	public static int getMaterialTypeID(IMaterialType matName) {
 		return matTypeIndex.get(matName.getMaterialTypeName());
+	}
+	
+	public static boolean materialsEqual(IMaterial imat1, IMaterial imat2) {
+		return imat1.getMaterialName() == imat2.getMaterialName();
 	}
 }

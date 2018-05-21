@@ -11,7 +11,6 @@ import org.jmt.starfort.event.EventBus;
 import org.jmt.starfort.event.world.EventMove;
 import org.jmt.starfort.processor.ComplexRunnable;
 import org.jmt.starfort.util.Coord;
-import org.jmt.starfort.world.block.Block;
 import org.jmt.starfort.world.component.IComponent;
 import org.jmt.starfort.world.controller.IController;
 
@@ -188,15 +187,19 @@ public class World implements Serializable {
 	 * @param ic Component that will be moved, if not in the source block then no event will occur
 	 * @param source The coordinate of the origin block
 	 * @param dest The coordinate of the destination block
+	 * 
+	 * @return If the move event completed successfully
 	 */
-	public void moveComponent(IComponent ic, Coord source, Coord dest) {
+	public boolean moveComponent(IComponent ic, Coord source, Coord dest) {
 		Block sb = getBlockNoAdd(source);
 		Block db = getBlockNoAdd(dest);
 		if (sb != null && db != null && sb.getComponents().contains(ic)) {
 			EventBus.fireEvent(new EventMove(this, ic, source, dest));
 			sb.removeComponent(ic);
 			db.addComponent(ic);
+			return true;
 		}
+		return false;
 	}
 	
 	/**

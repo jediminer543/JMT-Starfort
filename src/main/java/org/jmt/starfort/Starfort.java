@@ -16,8 +16,10 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.jmt.starfort.renderer.JMTGl.*;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
@@ -58,6 +60,11 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.nuklear.NkContext;
 import org.lwjgl.opengl.GL;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.KryoObjectInput;
+import com.esotericsoftware.kryo.io.KryoObjectOutput;
+import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.minlog.Log;
 
 /**
@@ -93,6 +100,7 @@ public class Starfort {
 	static WindowPause winopt;
 	static WindowInspectDebug winidbg;
 	
+	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
 		
 		//TODO do stuff
@@ -101,11 +109,11 @@ public class Starfort {
 		NativePathModifier.modLibraryPath("lib/native");
 		
 		//ENABLE DEBUG
-		//org.lwjgl.system.Configuration.DEBUG_STREAM.set(System.out);
-		//org.lwjgl.system.Configuration.DEBUG_STACK.set(true);
-		//org.lwjgl.system.Configuration.DEBUG.set(true);
-		//org.lwjgl.system.Configuration.DEBUG_FUNCTIONS.set(true);
-		//org.lwjgl.system.Configuration.DEBUG_MEMORY_ALLOCATOR.set(true);
+		org.lwjgl.system.Configuration.DEBUG_STREAM.set(System.out);
+		org.lwjgl.system.Configuration.DEBUG_STACK.set(true);
+		org.lwjgl.system.Configuration.DEBUG.set(true);
+		org.lwjgl.system.Configuration.DEBUG_FUNCTIONS.set(true);
+		org.lwjgl.system.Configuration.DEBUG_MEMORY_ALLOCATOR.set(true);
 		
 		preInit();
 		
@@ -200,12 +208,28 @@ public class Starfort {
 		
 		DevUtil.makeRoom(w1, mat, new Coord(0,0,5), new Coord(3,1,8));
 		
+		
+		
 		// TESTING WORLD SAVING WITH JAVA SERIALSER HERE
 		File f = new File("saveTest.serial");
 		f.createNewFile();
+		//Kryo k = new Kryo();
+		//k.setAsmEnabled(true);
+		//Output o = new Output(new FileOutputStream(f));
+		//KryoObjectOutput oos = new KryoObjectOutput(k, o);
 		ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
 		oos.writeObject(w);
 		oos.close();
+		if (f.exists() && true) {
+			//Input i = new Input(new FileInputStream(f));
+			//KryoObjectInput ois = new KryoObjectInput(k, i);
+			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
+			w = (World) ois.readObject();
+			ois.close();
+		}
+		
+		IMaterial testmat = w.getBlock(new Coord(0, 0, 0)).getCompInstance(ComponentStairs.class).getComponentMaterial();
+		//System.out.println(testmat == mat);
 		
 		final Coord displayOffset = new Coord(5, 0, 5);
 		
