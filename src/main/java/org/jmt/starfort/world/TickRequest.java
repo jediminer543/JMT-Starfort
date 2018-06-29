@@ -45,7 +45,7 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	 * Time until rerun
 	 * IN NANOS (IS IMPORTANT)
 	 */
-	long sleepTime = 50000000;
+	long sleepTime = 1000000000;
 	//long sleepTime = 0;
 
 	/**
@@ -230,8 +230,8 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 			long endTime = System.nanoTime();
 			long frameTime = endTime - sleepStart;
 			@SuppressWarnings("unused")
-			float TPS = (1000000000/frameTime);
-			//System.out.println("TPS: " + TPS);
+			float TPS = (1000000000f/frameTime);
+			System.out.println("TPS: " + TPS);
 			//Occasionally throws Div zero exception
 		} catch (ArithmeticException e) {}
 		//glRotatef(-90, 0, 0, 1);

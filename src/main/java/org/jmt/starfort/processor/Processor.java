@@ -53,7 +53,7 @@ public class Processor {
 	/**
 	 * Number of threads to run
 	 */
-	static int size = 16;
+	static int size = 4;
 	
 	/**
 	 * Initialises and starts the processor
@@ -152,6 +152,11 @@ public class Processor {
 								}
 							} else {
 								idleTicks++;
+								try {
+									Thread.sleep(0, 100);
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+								}
 							}
 							Thread.yield();
 						}

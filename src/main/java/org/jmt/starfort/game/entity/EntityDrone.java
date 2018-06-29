@@ -8,6 +8,7 @@ import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.jmt.starfort.logging.Logger;
 import org.jmt.starfort.pathing.bruteforce.BruteforcePather;
 import org.jmt.starfort.pathing.bruteforce.IPassageCallback;
 import org.jmt.starfort.pathing.bruteforce.Path;
@@ -33,6 +34,13 @@ public class EntityDrone implements IEntity {
 	 * 
 	 */
 	private static final long serialVersionUID = 6954828635651637329L;
+	
+	static int numberCumalative = 0;
+	int number;
+	{
+		number = numberCumalative;
+		numberCumalative++;
+	}
 	
 	public transient Path p;
 	public transient RunnableFuture<Path> futurePath;
@@ -80,14 +88,17 @@ public class EntityDrone implements IEntity {
 				futurePath = BruteforcePather.pathBetweenAsync(c, parent.targets.getFirst(), w, parent.getEntityPassageCallback());
 				Processor.addRequest(futurePath);
 				p = null;
+				if (number==0) Logger.debug("Drone requested new path");
 			}
 			if (c.equals(targets.getFirst())) {
 				targets.addLast(targets.pop());
+				if (number==0) Logger.debug("Drone Cycled Targets");
 			}
 			if (futurePath != null && futurePath.isDone()) {
 				try {
 					p = futurePath.get(100, TimeUnit.MICROSECONDS);
 					futurePath = null;
+					if (number==0) Logger.debug("Drone Aquired Path");
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				} catch (ExecutionException e) {
@@ -99,14 +110,18 @@ public class EntityDrone implements IEntity {
 				parent.futurePath = BruteforcePather.pathBetweenAsync(c, parent.targets.getFirst(), w, parent.getEntityPassageCallback());
 				Processor.addRequest(parent.futurePath);
 				parent.p = null;
+				if (number==0) Logger.debug("Drone Finished Path");
 			} else if (parent.p != null && parent.p.remaining() > 0) {
 				Coord dst = c.add(parent.p.pop().getDir());
 				if (w.moveComponent(parent, c, dst)) {
+					if (number==0) Logger.debug("Drone moved");
 					lastPos = dst;
 				} else {
+					if (number==0) Logger.debug("Drone failed to move");
 					p = null;
 					futurePath = null;
 				}
+				
 			}
 	};
 	

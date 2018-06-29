@@ -55,6 +55,7 @@ import org.jmt.starfort.world.controller.conduit.ControlerConduit;
 import org.jmt.starfort.world.entity.aiold.ControllerTask;
 import org.jmt.starfort.world.material.IMaterial;
 import org.jmt.starfort.world.material.MaterialRegistry;
+import org.jmt.starfort.world.save.WorldSaver;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.nuklear.NkContext;
@@ -109,11 +110,11 @@ public class Starfort {
 		NativePathModifier.modLibraryPath("lib/native");
 		
 		//ENABLE DEBUG
-		org.lwjgl.system.Configuration.DEBUG_STREAM.set(System.out);
-		org.lwjgl.system.Configuration.DEBUG_STACK.set(true);
-		org.lwjgl.system.Configuration.DEBUG.set(true);
-		org.lwjgl.system.Configuration.DEBUG_FUNCTIONS.set(true);
-		org.lwjgl.system.Configuration.DEBUG_MEMORY_ALLOCATOR.set(true);
+		//org.lwjgl.system.Configuration.DEBUG_STREAM.set(System.out);
+		//org.lwjgl.system.Configuration.DEBUG_STACK.set(true);
+		//org.lwjgl.system.Configuration.DEBUG.set(true);
+		//org.lwjgl.system.Configuration.DEBUG_FUNCTIONS.set(true);
+		//org.lwjgl.system.Configuration.DEBUG_MEMORY_ALLOCATOR.set(true);
 		
 		preInit();
 		
@@ -211,8 +212,9 @@ public class Starfort {
 		
 		
 		// TESTING WORLD SAVING WITH JAVA SERIALSER HERE
-		File f = new File("saveTest.serial");
-		f.createNewFile();
+		//File f = new File("saveTest.serial");
+		//f.createNewFile();
+		/*
 		//Kryo k = new Kryo();
 		//k.setAsmEnabled(true);
 		//Output o = new Output(new FileOutputStream(f));
@@ -226,10 +228,12 @@ public class Starfort {
 			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
 			w = (World) ois.readObject();
 			ois.close();
-		}
+		}*/
+		//WorldSaver.saveWorld(f, w);
+		//w = WorldSaver.loadWorld(f);
 		
 		IMaterial testmat = w.getBlock(new Coord(0, 0, 0)).getCompInstance(ComponentStairs.class).getComponentMaterial();
-		//System.out.println(testmat == mat);
+		System.out.println(testmat == mat);
 		
 		final Coord displayOffset = new Coord(5, 0, 5);
 		
@@ -255,10 +259,10 @@ public class Starfort {
 							displayOffset.x -= 1;
 						break;
 						case (GLFW.GLFW_KEY_LEFT_BRACKET):
-							displayOffset.y += 1;
+							displayOffset.y -= 1;
 						break;
 						case (GLFW.GLFW_KEY_RIGHT_BRACKET):
-							displayOffset.y -= 1;
+							displayOffset.y += 1;
 						break;
 						case (GLFW.GLFW_KEY_0):
 							target = 0;

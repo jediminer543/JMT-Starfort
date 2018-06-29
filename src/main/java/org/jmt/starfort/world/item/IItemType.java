@@ -16,6 +16,5 @@ public interface IItemType {
 	 * @return The unlocalized string
 	 */
 	public String getItemTypeName();
-	
 
 }

@@ -1,8 +1,6 @@
 package org.jmt.starfort.game.registra;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +9,6 @@ import java.util.Map.Entry;
 import org.jmt.starfort.game.components.ComponentStairs;
 import org.jmt.starfort.game.components.ComponentWall;
 import org.jmt.starfort.game.components.conduit.ComponentConduit;
-import org.jmt.starfort.game.components.fluid.ComponentPipe;
 import org.jmt.starfort.game.entity.EntityDrone;
 import org.jmt.starfort.game.renderer.HumanRenderer;
 import org.jmt.starfort.renderer.IRendererRule;
@@ -28,8 +25,10 @@ public class RenderRegistra {
 	
 	public static void registerBlocks(ArrayList<IRendererRule> ruleSet) {
 		
-		//Register Pipe Renderer
 		Map<Direction[], int[]> mapping = new HashMap<>();
+		/*
+		//Register Pipe Renderer
+		mapping = new HashMap<>();
 		mapping.put(new Direction[] {Direction.XINC}, new int[] {1, 3});
 		mapping.put(new Direction[] {Direction.XDEC}, new int[] {3, 3});
 		mapping.put(new Direction[] {Direction.ZINC}, new int[] {3, 2});
@@ -56,6 +55,7 @@ public class RenderRegistra {
 				mapping,
 				10, 
 				false));
+		*/
 		
 		
 		mapping = new HashMap<>();
