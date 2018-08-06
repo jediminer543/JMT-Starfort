@@ -1,6 +1,6 @@
 package org.jmt.starfort.world.entity;
 
-public abstract class EntityAICapabilities {
+public interface EntityAICapabilities {
 		
-	public abstract int getEntityInteractRange();
+	public int getEntityInteractRange();
 }

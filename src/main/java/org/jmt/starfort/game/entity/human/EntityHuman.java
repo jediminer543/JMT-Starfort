@@ -11,10 +11,6 @@ import org.jmt.starfort.util.NavContext;
 import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.component.IComponentUpDown;
 import org.jmt.starfort.world.entity.IEntityAI;
-import org.jmt.starfort.world.entity.aiold.EntityAI;
-import org.jmt.starfort.world.entity.aiold.ITask;
-import org.jmt.starfort.world.entity.aiold.Task;
-import org.jmt.starfort.world.entity.aiold.subtask.TaskMove;
 import org.jmt.starfort.world.entity.organs.IOrgan;
 import org.jmt.starfort.world.material.IMaterial;
 
@@ -25,7 +21,6 @@ public class EntityHuman extends EntityHumanoid {
 	 */
 	private static final long serialVersionUID = 1713245705625921265L;
 	String name;
-	EntityAI entityAI = new EntityAI();
 	
 	public EntityHuman(String name) {
 		this.name = name;
@@ -51,9 +46,7 @@ public class EntityHuman extends EntityHumanoid {
 
 			@Override
 			public void run(Object... args) {
-				World w = (World) args[0];
-				Coord c = (Coord) args[1];
-				entityAI.tick(w, c, parent);
+				//TODO FIX
 			}
 		};
 	
@@ -71,13 +64,6 @@ public class EntityHuman extends EntityHumanoid {
 	@Override
 	public IMaterial getComponentMaterial() {
 		return null;
-	}
-
-	@Override
-	public ITask[] getEntityTaskList() {
-		Task t = new Task(name, 10, new ITask[] { new TaskMove(new Coord(6, 0, 6))});
-		
-		return new ITask[] {t};
 	}
 
 	public boolean passageCallback(World w, Coord src, Direction dir) {

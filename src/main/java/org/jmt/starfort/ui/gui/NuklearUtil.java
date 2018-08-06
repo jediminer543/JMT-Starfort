@@ -457,6 +457,8 @@ public class NuklearUtil {
 	 * @param glfw3ctx GLFW Nuklear Context to process with
 	 * @param win GLFW Window to attach events to
 	 * @return A NkContext that is configured to work with the EventBus
+	 * 
+	 * @author jediminer543
 	 */
 	public static NkContext nk_jmt_bus_init(NkCtxGLFW3 glfw3ctx, long win) {
 		glfw3ctx.win = win;

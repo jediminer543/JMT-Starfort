@@ -1,6 +1,6 @@
 package org.jmt.starfort.world.entity.ai;
 
-import org.jmt.starfort.world.entity.IEntityAI;
+import org.jmt.starfort.world.entity.IEntity;
 
 /**
  * Generates tasks for a given Entity Ai
@@ -17,7 +17,7 @@ public interface ITaskGenerator {
 	 * @param entity The entity AI to be checked
 	 * @return Whether there is ANY completable task generatable
 	 */
-	public boolean isTaskGeneratorCompletable(IEntityAI entity);
+	public boolean isTaskGeneratorCompletable(IEntity entity);
 	
 	/**
 	 * Count how many potentially completable tasks there are,
@@ -30,10 +30,18 @@ public interface ITaskGenerator {
 	public int avaliableTaskGeneratorTasks();
 	
 	/**
+	 * Get's the priority of the generator. Should be derived from the max priority
+	 * of any given task.
+	 * 
+	 * @return max task priority.
+	 */
+	public int getTaskGeneratorHighestPriority();
+	
+	/**
 	 * Gets an appropriate task for the passed EntityAI
 	 * 
 	 * @param entity The entity AI that will be completing this task
 	 * @return A VALID task for the entity to complete
 	 */
-	public ITask getTaskGeneratorTask(IEntityAI entity);
+	public ITask getTaskGeneratorTask(IEntity entity);
 }

@@ -15,12 +15,7 @@ import static org.lwjgl.opengl.GL32.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.jmt.starfort.renderer.JMTGl.*;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import org.jmt.starfort.event.EventBus;
@@ -29,7 +24,6 @@ import org.jmt.starfort.event.ui.EventKey;
 import org.jmt.starfort.game.components.ComponentStairs;
 import org.jmt.starfort.game.components.ComponentWall;
 import org.jmt.starfort.game.components.conduit.ComponentConduit;
-import org.jmt.starfort.game.components.fluid.ComponentPipe;
 import org.jmt.starfort.game.entity.EntityDrone;
 import org.jmt.starfort.game.entity.human.EntityHuman;
 import org.jmt.starfort.game.registra.MaterialRegistra;
@@ -37,7 +31,6 @@ import org.jmt.starfort.game.registra.RenderRegistra;
 import org.jmt.starfort.logging.LogLevel;
 import org.jmt.starfort.logging.Logger;
 import org.jmt.starfort.processor.Processor;
-import org.jmt.starfort.renderer.Colour;
 import org.jmt.starfort.renderer.IRendererRule;
 import org.jmt.starfort.renderer.Renderer;
 import org.jmt.starfort.ui.UserInterfacing;
@@ -52,21 +45,12 @@ import org.jmt.starfort.util.NativePathModifier;
 import org.jmt.starfort.world.TickRequest;
 import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.controller.conduit.ControlerConduit;
-import org.jmt.starfort.world.entity.aiold.ControllerTask;
 import org.jmt.starfort.world.material.IMaterial;
 import org.jmt.starfort.world.material.MaterialRegistry;
-import org.jmt.starfort.world.save.WorldSaver;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.nuklear.NkContext;
 import org.lwjgl.opengl.GL;
-
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.KryoObjectInput;
-import com.esotericsoftware.kryo.io.KryoObjectOutput;
-import com.esotericsoftware.kryo.io.Output;
-import com.esotericsoftware.minlog.Log;
 
 /**
  * THIS SHOULD LIVE IN TEST, BUT LIVES HERE BECAUSE IT CAN

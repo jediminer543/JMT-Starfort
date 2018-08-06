@@ -2,9 +2,9 @@ package org.jmt.starfort.game.components.debug;
 
 import org.jmt.starfort.world.component.IComponent;
 import org.jmt.starfort.world.component.IComponentTasked;
+import org.jmt.starfort.world.entity.IEntity;
 import org.jmt.starfort.world.entity.IEntityAI;
 import org.jmt.starfort.world.entity.ai.ITask;
-import org.jmt.starfort.world.entity.aiold.IComponentTaskedOld;
 import org.jmt.starfort.world.material.IMaterial;
 import org.jmt.starfort.world.material.MaterialRegistry;
 
@@ -35,17 +35,25 @@ public class ComponentDebugFlag implements IComponent, IComponentTasked {
 	}
 
 	@Override
-	public boolean isTaskGeneratorCompletable(IEntityAI entity) {
-		return true;
-	}
-
-	@Override
 	public int avaliableTaskGeneratorTasks() {
 		return 0;
 	}
 
 	@Override
-	public ITask getTaskGeneratorTask(IEntityAI entity) {
+	public boolean isTaskGeneratorCompletable(IEntity entity) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public int getTaskGeneratorHighestPriority() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public ITask getTaskGeneratorTask(IEntity entity) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 

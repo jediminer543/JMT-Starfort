@@ -15,7 +15,6 @@ import org.jmt.starfort.world.entity.IEntityAI;
  * @author jediminer543
  *
  */
-@FunctionalInterface
 public interface ITask {
 	
 	/**
@@ -28,4 +27,11 @@ public interface ITask {
 	 * @param ai {@link IEntityAI} taken from current {@link IEntity}
 	 */
 	public void execute(World w, Coord cur, IEntityAI ai);
+	
+	/**
+	 * Get's the state of this task
+	 * 
+	 * @return task's state
+	 */
+	public TaskState getTaskState();
 }

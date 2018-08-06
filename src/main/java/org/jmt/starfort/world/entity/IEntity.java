@@ -3,7 +3,6 @@ package org.jmt.starfort.world.entity;
 import org.jmt.starfort.pathing.bruteforce.IPassageCallback;
 import org.jmt.starfort.world.component.IComponent;
 import org.jmt.starfort.world.component.IComponentTickable;
-import org.jmt.starfort.world.entity.aiold.ITask;
 import org.jmt.starfort.world.entity.organs.IOrgan;
 
 /**
@@ -38,17 +37,6 @@ public interface IEntity extends IComponent, IComponentTickable {
 	public IOrgan getEntityOrganBody();
 	
 	/**
-	 * Gets the override tasklist for the entity,
-	 * 
-	 * should include stuff like drinking, eating,
-	 * sleeping, etc.
-	 * 
-	 * @return Override task list
-	 * @deprecated Moved to EntityAI
-	 */
-	public ITask[] getEntityTaskList();
-	
-	/**
 	 * Gets the passage callback for the entity
 	 * 
 	 * Required for task processing
@@ -56,7 +44,9 @@ public interface IEntity extends IComponent, IComponentTickable {
 	 * @return Task list
 	 * @deprecated Moved to EntityAI
 	 */
-	public IPassageCallback getEntityPassageCallback();
+	public default IPassageCallback getEntityPassageCallback() {
+		return this.getEntityAI().getEntityAIPassageCallback();
+	}
 	
 	/**
 	 * Gets the Entities AI, which is effectively its mental abilities.
