@@ -1,19 +1,14 @@
 package org.jmt.starfort.world.entity;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import org.jmt.starfort.pathing.bruteforce.BruteforcePather;
 import org.jmt.starfort.pathing.bruteforce.IPassageCallback;
 import org.jmt.starfort.pathing.bruteforce.Path;
-import org.jmt.starfort.processor.Processor;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.component.IComponent;
+import org.jmt.starfort.world.entity.ai.AIUtil;
+import org.jmt.starfort.world.entity.ai.AIUtil.MoveState;
 import org.jmt.starfort.world.entity.ai.ControllerEntityAI;
 import org.jmt.starfort.world.entity.ai.ITask;
-import org.jmt.starfort.world.entity.ai.TaskState;
 import org.jmt.starfort.world.item.IItem;
 
 /**
@@ -65,13 +60,21 @@ public interface IEntityAI {
 	 * @param dest
 	 * @return
 	 */
-	public boolean moveTo(World w, Coord cur, IEntity ie, Coord dest);
+	public default boolean moveTo(World w, Coord cur, IEntity ie, Coord dest) {
+		return AIUtil.controledEntityMoveTo(w, cur, ie, dest, getEntityAIMoveState());
+	}
 	
-	public boolean interactWithComponent(World w, Coord cur, IComponent comp);
+	public default boolean interactWithComponent(World w, Coord cur, IComponent comp) {
+		return false;
+	}
 	
-	public boolean useItem(World w, Coord cur, IItem item);
+	public default  boolean useItem(World w, Coord cur, IItem item) {
+		return false;
+	}
 	
-	public boolean useItemOnComponent(World w, Coord cur, IComponent comp);
+	public default  boolean useItemOnComponent(World w, Coord cur, IComponent comp) {
+		return false;
+	}
 	
 	// STUFF METHODS
 	/**
@@ -88,16 +91,12 @@ public interface IEntityAI {
 	public ITask setEntityAITask(ITask task);
 	
 	/**
-	 * Get's the current AI path
+	 * Gets the move state, which encapsulates it's path,
+	 * it's future path, and it's wait states.
+	 * 
+	 * Also means that changes to pathfinding result in less code changes.
 	 * 
 	 * @return See above
 	 */
-	public Path getEntityAIPath();
-	
-	/**
-	 * Set's the current AI path
-	 * 
-	 * @return The previous path that was in use
-	 */
-	public Path setEntityAIPath(Path path);
+	public MoveState getEntityAIMoveState();
 }

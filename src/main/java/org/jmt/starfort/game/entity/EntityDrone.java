@@ -22,6 +22,8 @@ import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.component.IComponentUpDown;
 import org.jmt.starfort.world.entity.IEntity;
 import org.jmt.starfort.world.entity.IEntityAI;
+import org.jmt.starfort.world.entity.ai.AIUtil;
+import org.jmt.starfort.world.entity.ai.AIUtil.MoveState;
 import org.jmt.starfort.world.entity.organs.IOrgan;
 import org.jmt.starfort.world.material.IMaterial;
 import org.jmt.starfort.world.material.MaterialRegistry;
@@ -40,8 +42,8 @@ public class EntityDrone implements IEntity {
 		numberCumalative++;
 	}
 	
-	public transient Path p;
-	public transient RunnableFuture<Path> futurePath;
+	//public transient Path p;
+	//public transient RunnableFuture<Path> futurePath;
 	Deque<Coord> targets = new ArrayDeque<Coord>();
 	{
 		targets.addLast(new Coord(0, 0, 3));
@@ -53,7 +55,7 @@ public class EntityDrone implements IEntity {
 	
 	@Override
 	public String getComponentName() {
-		return "Drony McDroneface";
+		return "Drony McDroneface " + number;
 	}
 
 	@Override
@@ -63,40 +65,41 @@ public class EntityDrone implements IEntity {
 
 	public Coord lastPos;
 	
+	public MoveState ms = new MoveState(this);
+	
 	private void tick(Object... args) {
 			EntityDrone parent = this;
 			World w = (World) args[0];
 			Coord c = (Coord) args[1];
 			//TickRequest tr = (TickRequest) args[2];
-			//System.out.println("Processing");
-			if (lastPos == null) {
-				lastPos = c;
-			}
-			if (c != lastPos) {
-				//w.moveComponent(parent, c, lastPos);
-				p = null;
-				futurePath = null;
-				lastPos = c;
-			}
 			if (c == null) {
 				//IDK WHAT HAPPENED HERE
 				throw new IllegalStateException("SOMETHING WENT HORRIBLY WRONG HERE");
+			}
+			if (AIUtil.controledEntityMoveTo(w, c, parent, targets.getFirst(), ms)) {
+				targets.addLast(targets.pop());
+			}	
+			/*
+			if (lastPos == null) {
+				lastPos = c;
+			}
+			if (!c.equals(lastPos)) {
+				p = null;
+				futurePath = null;
+				lastPos = c;
 			}
 			if (p == null && futurePath == null) {
 				futurePath = BruteforcePather.pathBetweenAsync(c, parent.targets.getFirst(), w, parent.getEntityPassageCallback());
 				Processor.addRequest(futurePath);
 				p = null;
-				if (number==0) Logger.debug("Drone requested new path");
 			}
 			if (c.equals(targets.getFirst())) {
 				targets.addLast(targets.pop());
-				if (number==0) Logger.debug("Drone Cycled Targets");
 			}
 			if (futurePath != null && futurePath.isDone()) {
 				try {
 					p = futurePath.get(100, TimeUnit.MICROSECONDS);
 					futurePath = null;
-					if (number==0) Logger.debug("Drone Aquired Path");
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				} catch (ExecutionException e) {
@@ -108,24 +111,24 @@ public class EntityDrone implements IEntity {
 				parent.futurePath = BruteforcePather.pathBetweenAsync(c, parent.targets.getFirst(), w, parent.getEntityPassageCallback());
 				Processor.addRequest(parent.futurePath);
 				parent.p = null;
-				if (number==0) Logger.debug("Drone Finished Path");
 			} else if (parent.p != null && parent.p.remaining() > 0) {
 				Coord dst = c.add(parent.p.pop().getDir());
 				if (w.moveComponent(parent, c, dst)) {
-					if (number==0) Logger.debug("Drone moved");
 					lastPos = dst;
 				} else {
-					if (number==0) Logger.debug("Drone failed to move");
 					p = null;
 					futurePath = null;
 				}
 				
 			}
+			*/
 	};
+	
+	ComplexRunnable tick = this::tick;
 	
 	@Override
 	public ComplexRunnable getTick() {
-		return this::tick;
+		return this.tick;
 	}
 
 	@Override
@@ -163,6 +166,8 @@ public class EntityDrone implements IEntity {
 		return false;
 	}
 	
+	IPassageCallback passageCallback = this::passageCallback;
+	
 	@Override
 	public IPassageCallback getEntityPassageCallback() {
 		return this::passageCallback;
@@ -170,8 +175,12 @@ public class EntityDrone implements IEntity {
 
 	@Override
 	public IEntityAI getEntityAI() {
-		// TODO Auto-generated method stub
-		return null;
+		return new EntityAI(this, null) {
+			@Override
+			public IPassageCallback getEntityAIPassageCallback() {
+				return passageCallback;
+			}
+		};
 	}
 
 }

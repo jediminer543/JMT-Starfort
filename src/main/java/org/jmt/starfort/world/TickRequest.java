@@ -10,6 +10,7 @@ import org.jmt.starfort.event.EventBus;
 import org.jmt.starfort.event.IEvent;
 import org.jmt.starfort.event.EventBus.EventCallback;
 import org.jmt.starfort.event.world.EventMove;
+import org.jmt.starfort.logging.Logger;
 import org.jmt.starfort.processor.ComplexRunnable;
 import org.jmt.starfort.processor.requests.ReusableProcessingRequest;
 import org.jmt.starfort.processor.requests.SuspenableProcessingRequest;
@@ -34,7 +35,7 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	/**
 	 * After how many loops should this request reload the tick map?
 	 */
-	int reload = 100;
+	int reload = 20;
 
 	/**
 	 * Reference to world which this tick request is based in
@@ -45,7 +46,7 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	 * Time until rerun
 	 * IN NANOS (IS IMPORTANT)
 	 */
-	long sleepTime = 1000000000;
+	long sleepTime = 50000000;
 	//long sleepTime = 0;
 
 	/**
@@ -76,6 +77,8 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 
 
 	AtomicInteger runningCount = new AtomicInteger(0);
+	
+	double TPS = 0;
 
 	public TickRequest(World w) {
 		this.w = w;
@@ -88,7 +91,10 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 			@Override
 			public void handleEvent(IEvent ev) {
 				if (ev instanceof EventMove && ((EventMove)ev).w == w && ((EventMove)ev).icomp instanceof IComponentTickable) {
-					move(((EventMove)ev).src, ((EventMove)ev).dst, ((IComponentTickable)((EventMove)ev).icomp).getTick());
+					if(!move(((EventMove)ev).src, ((EventMove)ev).dst, ((IComponentTickable)((EventMove)ev).icomp).getTick())) {
+						Logger.error("Failed to move component " + ((EventMove)ev).icomp.getComponentName(), "TickRequest");
+						Logger.error("Likley Dev error; Check if Tick is changing per getTick() re-call", "TickRequest");
+					}
 				}
 			}
 
@@ -112,14 +118,14 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 				ticksCurr.get(dst).add(tgt);
 				return true;
 			}
-		} catch (NullPointerException npe) {/*Concurrent Mod; IGNORE*/}
+		} catch (NullPointerException npe) {/*SyncException*/}
 		try {
 			if (ticksNext.get(src) != null && ticksNext.get(src).contains(tgt)) {
 				ticksNext.get(src).remove(tgt);
 				ticksNext.get(dst).add(tgt);
 				return true;
 			}
-		} catch (NullPointerException npe) {/*Concurrent Mod; IGNORE*/}
+		} catch (NullPointerException npe) {/*SyncException*/}
 		if (ticksProc.get(tgt) != null && ticksProc.get(tgt).equals(src)) {
 			ticksProc.put(tgt, dst);
 			return true;
@@ -129,15 +135,19 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 
 	@Override
 	public boolean processNext() {
+		//Setup Variables
 		boolean bumpedRunning = false;
 		lastProc = System.nanoTime();
 		ComplexRunnable task = null;
 		Coord execLoc = null;
+		//Aquire task to process
 		while (task == null) {
 			try {
 				if (ticksCurr.entrySet().size() == 0) {
+					//If there is nothing to process, stop processing
 					return false;
 				}
+				//Get First entry
 				Entry<Coord, ArrayList<ComplexRunnable>> item = ticksCurr.entrySet().iterator().next();
 				synchronized (item.getValue()) {
 					if (item.getValue().size() > 0) {
@@ -190,6 +200,7 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 			} catch (NullPointerException npe) {/*concurrency error*/ }
 		}
 		if (!bumpedRunning) {
+			//Logs when running count is not increased, as this could cause premature resetting
 			System.out.println("ERR");
 		}
 		runningCount.decrementAndGet();
@@ -197,7 +208,7 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	}
 
 	//TEST PLEASE IGNORE private volatile int completeCheckCount = 0;
-
+	
 	@Override
 	public boolean complete() {
 		//if (!wasDone && (sleepTime + sleepStart <= System.nanoTime())) {
@@ -226,12 +237,20 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 
 	@Override
 	public void reset() {
+		if (!complete()) {
+			Logger.debug("TickRequest Reset when not Complete");
+			return;
+		}
 		try {
 			long endTime = System.nanoTime();
 			long frameTime = endTime - sleepStart;
-			@SuppressWarnings("unused")
-			float TPS = (1000000000f/frameTime);
-			System.out.println("TPS: " + TPS);
+			if (!Double.isFinite(TPS)) {
+				TPS=0;
+			}
+			TPS = (TPS*loopCount+(1000000000.0/frameTime))/(loopCount+1);
+			if (loopCount % 10 == 0) {
+				System.out.println("TPS: " + TPS);
+			}
 			//Occasionally throws Div zero exception
 		} catch (ArithmeticException e) {}
 		//glRotatef(-90, 0, 0, 1);

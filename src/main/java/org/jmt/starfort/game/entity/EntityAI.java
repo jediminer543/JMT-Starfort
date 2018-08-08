@@ -8,6 +8,7 @@ import org.jmt.starfort.world.component.IComponent;
 import org.jmt.starfort.world.entity.EntityAICapabilities;
 import org.jmt.starfort.world.entity.IEntity;
 import org.jmt.starfort.world.entity.IEntityAI;
+import org.jmt.starfort.world.entity.ai.AIUtil.MoveState;
 import org.jmt.starfort.world.entity.ai.ITask;
 import org.jmt.starfort.world.item.IItem;
 
@@ -79,13 +80,7 @@ public class EntityAI implements IEntityAI {
 	}
 
 	@Override
-	public Path getEntityAIPath() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Path setEntityAIPath(Path path) {
+	public MoveState getEntityAIMoveState() {
 		// TODO Auto-generated method stub
 		return null;
 	}

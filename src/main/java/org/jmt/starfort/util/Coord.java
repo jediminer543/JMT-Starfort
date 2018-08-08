@@ -207,6 +207,24 @@ public class Coord implements Cloneable, Serializable {
 	}
 	
 	/**
+	 * Get's the manhattan distance value of this coord
+	 * 
+	 * @return Manhattan Distance as an integer.
+	 */
+	public int manhattan() {
+		return this.x+this.y+this.z;
+	}
+	
+	/**
+	 * Get's the pythagorean distance of this coord
+	 * 
+	 * @return Pythagorean distance as float
+	 */
+	public double pythag() {
+		return Math.sqrt((x*x)+(y*y)+(z*z));
+	}
+	
+	/**
 	 * Gets the abs value of this coord. Doesn't modify this
 	 * <br><br>
 	 * Doesn't modify this

@@ -53,7 +53,7 @@ public class Processor {
 	/**
 	 * Number of threads to run
 	 */
-	static int size = 4;
+	static int size = 8;
 	
 	/**
 	 * Initialises and starts the processor
@@ -124,8 +124,11 @@ public class Processor {
 												} catch (NoSuchElementException nsee) {
 													//nsee.printStackTrace();
 													//Happens when task is being cycled; shouldn't be a problem
-												} }
-											((ReusableProcessingRequest<?>)job).reset();
+												} 
+											}
+											if (job == first) {
+												((ReusableProcessingRequest<?>)job).reset();
+											}
 											proccessingJobs.addLast(job);
 											curMoving.decrementAndGet();
 										} else {
@@ -152,10 +155,14 @@ public class Processor {
 								}
 							} else {
 								idleTicks++;
-								try {
-									Thread.sleep(0, 100);
-								} catch (InterruptedException e) {
-									e.printStackTrace();
+								//Ensures CPU doesn't drop below 1% idle due to sleeping 
+								//as that would be bad and cause lag
+								if ((0.0+idleTicks)/totalTicks > 0.01) {
+									try {
+										Thread.sleep(0, 100);
+									} catch (InterruptedException e) {
+										e.printStackTrace();
+									}
 								}
 							}
 							Thread.yield();
