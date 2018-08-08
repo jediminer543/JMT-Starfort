@@ -5,6 +5,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.jmt.starfort.logging.Logger;
 import org.jmt.starfort.pathing.bruteforce.BruteforcePather;
 import org.jmt.starfort.pathing.bruteforce.Path;
 import org.jmt.starfort.processor.Processor;
@@ -32,14 +33,13 @@ public class AIUtil {
 		 */
 		public MoveState(IEntity ie) {};
 		
-		int maxWait = 0;
+		int maxWait = 5;
 		int wait = 0;
 		Future<Path> fp;
 		Path p;
 	}
 	
 	public static boolean controledEntityMoveTo(World w, Coord src, IEntity ie, Coord dest, MoveState ms) {
-		if (ms.wait > 0) ms.wait--;
 		//State 1; At dest
 		if (src.equals(dest)) {
 			return true;
@@ -65,21 +65,27 @@ public class AIUtil {
 		//State 4: Path exists
 		if (ms.p != null && ms.p.remaining() <= 0 && ms.fp == null) {
 			//State 4.1 Path done
+			Logger.trace("Path Done");
 			ms.fp = BruteforcePather.pathBetweenAsync(src, dest, w, ie.getEntityAI().getEntityAIPassageCallback());
 			Processor.addRequest((Runnable) ms.fp);
 			ms.p = null;
 		} else if (ms.p != null && ms.p.remaining() > 0) {
 			//State 4.2 Path Running
-			Direction dir = ms.p.pop();
 			if(ms.wait <= 0) {
 				//Not Waiting
+				Direction dir = ms.p.pop();
 				if (ie.getEntityAI().getEntityAIPassageCallback().canPass(w, src, dir)) {
+					//Path is still valid; can move
 					Coord dst = src.add(dir.getDir());
 					w.moveComponent(ie, src, dst);
 					ms.wait = ms.maxWait;
 				} else  {
+					//Path is invalid, reset and recalc;
+					Logger.trace("Re-calcing path");
 					ms.p = null;
 				}
+			} else {
+				if (ms.wait > 0) ms.wait--;
 			}
 		}
 		return false;

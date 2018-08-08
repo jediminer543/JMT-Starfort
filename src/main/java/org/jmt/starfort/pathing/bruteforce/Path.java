@@ -20,6 +20,10 @@ public class Path {
 		return path.pop();
 	}
 	
+	public Direction peek() {
+		return path.peek();
+	}
+	
 	/**
 	 * Used in path construction, as the path will be built
 	 */
