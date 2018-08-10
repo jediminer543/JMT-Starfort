@@ -24,6 +24,15 @@ import org.jmt.starfort.world.entity.IEntity;
  */
 public class AIUtil {
 
+	/**
+	 * Movement state for entity movement. This is supposed 
+	 * to encapsulate all movement capacity of an AI.
+	 * 
+	 * Also allows for future expansion once node-based pathing is implemented
+	 * 
+	 * @author jediminer543
+	 *
+	 */
 	public static class MoveState {
 		/**
 		 * Initialises move state, and determines
@@ -65,7 +74,6 @@ public class AIUtil {
 		//State 4: Path exists
 		if (ms.p != null && ms.p.remaining() <= 0 && ms.fp == null) {
 			//State 4.1 Path done
-			Logger.trace("Path Done");
 			ms.fp = BruteforcePather.pathBetweenAsync(src, dest, w, ie.getEntityAI().getEntityAIPassageCallback());
 			Processor.addRequest((Runnable) ms.fp);
 			ms.p = null;
@@ -81,7 +89,6 @@ public class AIUtil {
 					ms.wait = ms.maxWait;
 				} else  {
 					//Path is invalid, reset and recalc;
-					Logger.trace("Re-calcing path");
 					ms.p = null;
 				}
 			} else {
