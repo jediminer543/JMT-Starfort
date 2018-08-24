@@ -5,7 +5,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.jmt.starfort.logging.Logger;
 import org.jmt.starfort.pathing.bruteforce.BruteforcePather;
 import org.jmt.starfort.pathing.bruteforce.Path;
 import org.jmt.starfort.processor.Processor;
@@ -42,7 +41,12 @@ public class AIUtil {
 		 */
 		public MoveState(IEntity ie) {};
 		
-		int maxWait = 5;
+		/**
+		 * Wait time as calced by initializer
+		 * 
+		 * Should probably have getters/setters to allow adjustment due to overburdening etc.
+		 */
+		int maxWait = 5; 
 		int wait = 0;
 		Future<Path> fp;
 		Path p;
@@ -92,9 +96,21 @@ public class AIUtil {
 					ms.p = null;
 				}
 			} else {
+				//Decrement wait timer
 				if (ms.wait > 0) ms.wait--;
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * Unified standard range for interact range calculations
+	 * 
+	 * @param src Source position (Position of acting entity)
+	 * @param dest 
+	 * @return
+	 */
+	public int rangeBetween(Coord src, Coord dest) {
+		return dest.sub(src).abs().manhattan();
 	}
 }

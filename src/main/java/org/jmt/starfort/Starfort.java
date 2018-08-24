@@ -45,6 +45,7 @@ import org.jmt.starfort.util.NativePathModifier;
 import org.jmt.starfort.world.TickRequest;
 import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.controller.conduit.ControlerConduit;
+import org.jmt.starfort.world.controller.entity.ControllerEntityAI;
 import org.jmt.starfort.world.material.IMaterial;
 import org.jmt.starfort.world.material.MaterialRegistry;
 import org.lwjgl.glfw.GLFW;
@@ -335,6 +336,8 @@ public class Starfort {
 		w2.getBlock(new Coord(0, 0, 0)).addComponent(new EntityDrone());
 		w2.getBlock(new Coord(0, 0, 1)).addComponent(new EntityDrone());
 		w2.getBlock(new Coord(5, 1, 0)).addComponent(new EntityDrone());
+		
+		w2.getController(ControllerEntityAI.class);
 
 		Processor.addRequest(new TickRequest(w));
 		Processor.addRequest(new TickRequest(w2));

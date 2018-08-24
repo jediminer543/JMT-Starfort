@@ -5,9 +5,9 @@ import org.jmt.starfort.pathing.bruteforce.Path;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.component.IComponent;
+import org.jmt.starfort.world.controller.entity.ControllerEntityAI;
 import org.jmt.starfort.world.entity.ai.AIUtil;
 import org.jmt.starfort.world.entity.ai.AIUtil.MoveState;
-import org.jmt.starfort.world.entity.ai.ControllerEntityAI;
 import org.jmt.starfort.world.entity.ai.ITask;
 import org.jmt.starfort.world.item.IItem;
 
@@ -99,4 +99,5 @@ public interface IEntityAI {
 	 * @return See above
 	 */
 	public MoveState getEntityAIMoveState();
+	
 }
