@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -14,6 +15,7 @@ import org.jmt.starfort.util.NavContext;
 import org.jmt.starfort.world.component.IComponent;
 import org.jmt.starfort.world.component.IComponentBlocking;
 import org.jmt.starfort.world.component.IComponentTickable;
+import org.jmt.starfort.world.component.IComponentTickableMulti;
 
 public class Block implements Serializable {
 	
@@ -35,6 +37,12 @@ public class Block implements Serializable {
 				ComplexRunnable tick = tickcomp.getTick();
 				if (tick != null)
 					ticks.add(tick);
+			}
+			if (c instanceof IComponentTickableMulti) {
+				IComponentTickableMulti tickcomp = (IComponentTickableMulti) c;
+				List<ComplexRunnable> tickset = tickcomp.getTicks();
+				if (tickset != null)
+					ticks.addAll(tickset);
 			}
 		}
 		return ticks;

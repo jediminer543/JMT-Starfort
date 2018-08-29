@@ -29,6 +29,11 @@ import org.jmt.starfort.world.component.IComponent;
  */
 public class ControllerLookup implements IController {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5536182694166430815L;
+
 	//Cache lifetime in NANOS; Currently set to 1 second
 	long cacheTimeout = 1000000000;
 	
