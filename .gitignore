@@ -34,6 +34,7 @@
 # Error files
 hs_err_pid*.log
 replay_pid*.log
+*.class
 
 # File Changes#
 ###############
