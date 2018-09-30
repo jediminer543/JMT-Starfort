@@ -3,6 +3,7 @@ package org.jmt.starfort.test.world;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 
 import org.jmt.starfort.util.Direction;
@@ -104,7 +105,9 @@ public class BlockTest {
 		b.addComponent(compblock);
 		response = b.getBlockedDirs(NavContext.Physical);
 		assertEquals("Check non empty with blocking component", response.size(), blockTest.length);
-		assertArrayEquals("Check output", response.toArray(new Direction[response.size()]), blockTest);
+		//assertArrayEquals("Check output", response.toArray(new Direction[response.size()]), blockTest);
+		assertTrue("Check output is same as input", (response.size() == blockTest.length) && (response.containsAll(Arrays.asList(blockTest))));
+		
 	}
 	
 	@Test
