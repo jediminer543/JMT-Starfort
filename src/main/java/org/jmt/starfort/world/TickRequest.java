@@ -43,10 +43,15 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	World w;
 
 	/**
+	 * The target tickrate of a world in TPS
+	 */
+	float targetTickRate = 20;
+	
+	/**
 	 * Time until rerun
 	 * IN NANOS (IS IMPORTANT)
 	 */
-	long sleepTime = 50000000;
+	long sleepTime = (long) (1000000000/targetTickRate);
 	//long sleepTime = 0;
 
 	/**
@@ -78,10 +83,11 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 
 	AtomicInteger runningCount = new AtomicInteger(0);
 	
-	double TPS = 0;
+	public double TPS = 0;
 
 	public TickRequest(World w) {
 		this.w = w;
+		w.tickrequest = this;
 		ticksCurr = (ConcurrentHashMap<Coord, ArrayList<ComplexRunnable>>) w.getTicks();
 	}
 
@@ -181,7 +187,7 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 		try {
 			task.run(w, execLoc, this);
 		} catch (Exception e) {
-			System.err.println("ERROR: " + task.getClass().getName() + "threw an exception to the processing thread");
+			System.err.println("ERROR: " + task.getClass().getName() + " threw an exception to the processing thread");
 			e.printStackTrace();
 		}
 
@@ -238,7 +244,7 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	@Override
 	public void reset() {
 		if (!complete()) {
-			Logger.debug("TickRequest Reset when not Complete");
+			Logger.trace("TickRequest Reset when not Complete");
 			return;
 		}
 		try {
@@ -248,8 +254,16 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 				TPS=0;
 			}
 			TPS = (TPS*loopCount+(1000000000.0/frameTime))/(loopCount+1);
+			/*
 			if (loopCount % 10 == 0) {
 				System.out.println("TPS: " + TPS);
+			}
+			*/
+			float tol = 0.001f;
+			if (TPS < targetTickRate-tol) {
+				sleepTime -= (long)(100000.0*Math.abs(TPS-targetTickRate));
+			} else if (TPS > targetTickRate+tol) {
+				sleepTime += (long)(100000.0*Math.abs(TPS-targetTickRate));
 			}
 			//Occasionally throws Div zero exception
 		} catch (ArithmeticException e) {}

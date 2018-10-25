@@ -39,6 +39,8 @@ public class Renderer {
 	// 1 world space = 16 render spaces
 	int renderSpacePerWorldSpace = 16;
 	
+	public float FPS = 0;
+	
 	/**
 	 * Current render depth; placed here for custom shaders
 	 */
@@ -259,8 +261,7 @@ public class Renderer {
 		jglPopMatrix();
 		long endTime = System.nanoTime();
 		long frameTime = endTime - startTime;
-		@SuppressWarnings("unused")
-		float FPS = (1000000000/frameTime);
+		FPS = (1000000000/frameTime);
 		//System.out.println("FPS: " + FPS);
 		//glRotatef(-90, 0, 0, 1);
 	}
@@ -300,7 +301,12 @@ public class Renderer {
 				}
 				Collections.sort(rra, RRC.INSTANCE);
 				for (RenderPair rp : rra) {
-					rp.rr.draw(this, offset, rp.comp, curLoc);
+					try {
+						rp.rr.draw(this, offset, rp.comp, curLoc);
+					} catch (Exception e) {
+						Logger.error("Exception in render rule; ignoring and hoping it goes away", "Renderer");
+						Logger.error("Exception: " + e.toString(), "Renderer");
+					}
 				}
 			}
 		}

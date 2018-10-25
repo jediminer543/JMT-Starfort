@@ -55,6 +55,19 @@ public class World implements Serializable {
 	int[] bounds = new int[6];
 	
 	/**
+	 * Tick request of the world; required to allow for per-world time scaling
+	 */
+	TickRequest tickrequest;
+	
+	/**
+	 * Gets the worlds tick request to suspend it or change it's rate
+	 * @return World tick rate request
+	 */
+	public TickRequest getTickRequest() {
+		return tickrequest;
+	}
+	
+	/**
 	 * Gets the block at a specific coordinate; if none exists it creates a blank one
 	 * 
 	 * @param c The coord to search for a block 

@@ -1,4 +1,4 @@
-package org.jmt.starfort.game.components.factory;
+package org.jmt.starfort.game.components.production;
 
 import java.util.ArrayList;
 import java.util.List;

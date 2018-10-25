@@ -38,6 +38,7 @@ import org.jmt.starfort.ui.gui.GUI;
 import org.jmt.starfort.ui.gui.window.WindowContext;
 import org.jmt.starfort.ui.gui.window.WindowPause;
 import org.jmt.starfort.ui.gui.window.debug.WindowInspectDebug;
+import org.jmt.starfort.ui.gui.window.debug.WindowRateDisplay;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.util.Direction;
 import org.jmt.starfort.util.InlineFunctions;
@@ -78,6 +79,7 @@ public class Starfort {
 	
 	public static ArrayList<IRendererRule> renderRules = new ArrayList<>();
 	static Renderer r;
+	static TickRequest tr;
 	
 	static World w1;
 	
@@ -85,8 +87,8 @@ public class Starfort {
 	
 	static WindowPause winopt;
 	static WindowInspectDebug winidbg;
+	static WindowRateDisplay winrd;
 	
-	@SuppressWarnings("unused")
 	public static void main(String[] args) throws Exception {
 		
 		//TODO do stuff
@@ -339,7 +341,10 @@ public class Starfort {
 		
 		w2.getController(ControllerEntityAI.class);
 
-		Processor.addRequest(new TickRequest(w));
+		tr = new TickRequest(w);
+		winrd.setTickrateSource(tr);
+		
+		Processor.addRequest(tr);
 		Processor.addRequest(new TickRequest(w2));
 		
 		while (!GLFW.glfwWindowShouldClose(window)) {
@@ -462,6 +467,8 @@ public class Starfort {
 		GUI.addWidget(winopt);
 		winidbg = new WindowInspectDebug();
 		GUI.addWidget(winidbg);
+		winrd = new WindowRateDisplay(r, tr);
+		GUI.addWidget(winrd);
 		r.init(renderRules);
 		
 	}

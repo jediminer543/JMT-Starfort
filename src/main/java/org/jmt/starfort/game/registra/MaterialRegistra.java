@@ -80,6 +80,10 @@ public class MaterialRegistra {
 	
 	public static void registerOrganicMaterial() {
 		IMaterial bone = new IMaterial() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -5901728211191933987L;
 			IMaterialType type = MaterialRegistry.getMaterialType("Bone");
 			
 			@Override
@@ -100,6 +104,10 @@ public class MaterialRegistra {
 		};
 		
 		IMaterial flesh = new IMaterial() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -8584875160159031353L;
 			IMaterialType type = MaterialRegistry.getMaterialType("Flesh");
 			
 			@Override
@@ -120,6 +128,10 @@ public class MaterialRegistra {
 		};
 		
 		IMaterial chitin = new IMaterial() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -3124177198708027246L;
 			IMaterialType type = MaterialRegistry.getMaterialType("Bone");
 			
 			@Override
@@ -147,6 +159,11 @@ public class MaterialRegistra {
 	public static void registerDebug() {
 		IMaterial mat = new IMaterial() {
 			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -3767326346399907975L;
+
 			@Override
 			public IMaterialType getMaterialType() {
 				return MaterialRegistry.getMaterialType("Metal");
