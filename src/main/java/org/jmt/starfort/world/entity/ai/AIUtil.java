@@ -5,6 +5,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.jmt.starfort.game.entity.human.EntityHuman;
 import org.jmt.starfort.pathing.bruteforce.BruteforcePather;
 import org.jmt.starfort.pathing.bruteforce.Path;
 import org.jmt.starfort.processor.Processor;
@@ -36,20 +37,16 @@ public class AIUtil {
 		/**
 		 * Initialises move state, and determines
 		 * how long entity must wait for (when in)
-		 * 
-		 * @param ie Entity to calc for.
 		 */
-		public MoveState(IEntity ie) {};
+		public MoveState() {};
 		
 		/**
 		 * Wait time as calced by initializer
-		 * 
-		 * Should probably have getters/setters to allow adjustment due to overburdening etc.
 		 */
-		int maxWait = 5; 
-		int wait = 0;
-		Future<Path> fp;
-		Path p;
+		public int maxWait = 5; 
+		public int wait = 0;
+		public Future<Path> fp;
+		public Path p;
 	}
 	
 	public static boolean controledEntityMoveTo(World w, Coord src, IEntity ie, Coord dest, MoveState ms) {

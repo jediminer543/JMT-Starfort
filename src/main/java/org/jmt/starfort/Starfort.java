@@ -24,6 +24,7 @@ import org.jmt.starfort.event.ui.EventKey;
 import org.jmt.starfort.game.components.ComponentStairs;
 import org.jmt.starfort.game.components.ComponentWall;
 import org.jmt.starfort.game.components.conduit.ComponentConduit;
+import org.jmt.starfort.game.components.debug.ComponentDebugFlag;
 import org.jmt.starfort.game.entity.EntityDrone;
 import org.jmt.starfort.game.entity.human.EntityHuman;
 import org.jmt.starfort.game.registra.MaterialRegistra;
@@ -191,8 +192,9 @@ public class Starfort {
 		w.getBlock(new Coord(0, 0, 1)).addComponent(new EntityDrone());
 		w.getBlock(new Coord(5, 1, 0)).addComponent(new EntityDrone());
 		
-		//w.getController(ControllerTask.class);
 		w.getBlock(new Coord()).addComponent(new EntityHuman("BOB"));
+		w.getBlock(new Coord()).addComponent(new ComponentDebugFlag("0", 0));
+		w.getBlock(new Coord(6, 0, 6)).addComponent(new ComponentDebugFlag("1", 0));
 		
 		DevUtil.makeRoom(w1, mat, new Coord(0,0,5), new Coord(3,1,8));
 		
@@ -339,7 +341,7 @@ public class Starfort {
 		w2.getBlock(new Coord(0, 0, 1)).addComponent(new EntityDrone());
 		w2.getBlock(new Coord(5, 1, 0)).addComponent(new EntityDrone());
 		
-		w2.getController(ControllerEntityAI.class);
+		//w2.getController(ControllerEntityAI.class);
 
 		tr = new TickRequest(w);
 		winrd.setTickrateSource(tr);
@@ -427,7 +429,7 @@ public class Starfort {
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
 		glEnable(GL_BLEND);
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //TODO make this easter egg thing 
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnableClientState(GL_VERTEX_ARRAY);
     	glEnableClientState(GL_TEXTURE_COORD_ARRAY);

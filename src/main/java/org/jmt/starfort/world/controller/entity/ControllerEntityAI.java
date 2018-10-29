@@ -3,6 +3,7 @@ package org.jmt.starfort.world.controller.entity;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.jmt.starfort.processor.ComplexRunnable;
 import org.jmt.starfort.util.Coord;
@@ -26,7 +27,7 @@ public class ControllerEntityAI implements IController {
 	/**
 	 * The latest full taskgenerator list, sorted by priority
 	 */
-	transient volatile List<ITaskGenerator> tasks = new ArrayList<>();
+	transient volatile List<ITaskGenerator> tasks = new CopyOnWriteArrayList<>();
 	
 	/**
 	 * The in-progress version of the taskgenerator list
@@ -42,7 +43,7 @@ public class ControllerEntityAI implements IController {
 	public ITask getTask(IEntity ie) {
 		if (tasks != null) {
 			for (ITaskGenerator tg : tasks) {
-				if (tg.isTaskGeneratorCompletable(ie)) {
+				if (tg.avaliableTaskGeneratorTasks() > 0 && tg.isTaskGeneratorCompletable(ie)) {
 					return tg.getTaskGeneratorTask(ie);
 				}
 			}
@@ -51,7 +52,7 @@ public class ControllerEntityAI implements IController {
 	}
 	
 	private int countdown = 0;
-	private int countdownMax = 5;
+	private int countdownMax = 2;
 	
 	//private CoordRange witter = null;
 
@@ -68,8 +69,9 @@ public class ControllerEntityAI implements IController {
 			List<ITaskGenerator> newFinal = new ArrayList<>();
 			newFinal.addAll(pregen);
 			newFinal.addAll(registered);
-			newFinal.sort(Comparator.comparingInt(ITaskGenerator::getTaskGeneratorHighestPriority));
-			tasks = newFinal;
+			newFinal.sort(Comparator.comparingInt(ITaskGenerator::getTaskGeneratorHighestPriority).reversed());
+			tasks.clear();
+			tasks.addAll(newFinal);
 			countdown = countdownMax;
 		} else {
 			countdown--;

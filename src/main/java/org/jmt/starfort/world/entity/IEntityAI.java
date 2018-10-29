@@ -40,7 +40,7 @@ public interface IEntityAI {
 		} else { 
 			switch(this.getEntityAITask().getTaskState()) {
 			case CONTINUE:
-				this.getEntityAITask().execute(w, c, this);
+				this.getEntityAITask().execute(w, c, ie);
 			case WAIT:
 				break;
 			default:
@@ -58,7 +58,7 @@ public interface IEntityAI {
 	 * @param cur
 	 * @param ie
 	 * @param dest
-	 * @return
+	 * @return True one at destination
 	 */
 	public default boolean moveTo(World w, Coord cur, IEntity ie, Coord dest) {
 		return AIUtil.controledEntityMoveTo(w, cur, ie, dest, getEntityAIMoveState());

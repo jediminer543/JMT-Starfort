@@ -81,7 +81,7 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	volatile ConcurrentHashMap <ComplexRunnable, Coord> ticksProc = new ConcurrentHashMap <ComplexRunnable, Coord>();
 
 
-	AtomicInteger runningCount = new AtomicInteger(0);
+	volatile AtomicInteger runningCount = new AtomicInteger(0);
 	
 	public double TPS = 0;
 
@@ -170,13 +170,21 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 						}
 					}
 				}
+				synchronized (ticksProc) {
+					if (task != null && ticksProc.containsKey(task)) {
+						//Attempting to execute task that is already being executed; stop processing
+						if (bumpedRunning) {
+							runningCount.decrementAndGet();
+						}
+						return false;
+					}
+				}
 			} catch (NoSuchElementException nsee) {
 				//SYNC ERROR IGNORING
-				return false;
-			} finally {
 				if (bumpedRunning) {
 					runningCount.decrementAndGet();
 				}
+				return false;
 			}
 		}
 		synchronized (ticksProc) {
@@ -185,6 +193,9 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 
 		//Execute task, making certain that it doesn't kill the thread
 		try {
+			if (runningCount.get() <= 0) {
+				
+			}
 			task.run(w, execLoc, this);
 		} catch (Exception e) {
 			System.err.println("ERROR: " + task.getClass().getName() + " threw an exception to the processing thread");
@@ -203,6 +214,7 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 					ticksNext.get(ticksProc.get(task)).add(task);
 					complete = true;
 				}
+				ticksProc.remove(task);
 			} catch (NullPointerException npe) {/*concurrency error*/ }
 		}
 		if (!bumpedRunning) {
@@ -220,7 +232,7 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 		//if (!wasDone && (sleepTime + sleepStart <= System.nanoTime())) {
 		if (runningCount.get() < 0) {
 			runningCount.set(0);
-			//System.out.println("ERROR: running count lt 0");
+			System.out.println("ERROR: running count lt 0");
 		}
 		/* TEST PLEASE IGNORE
 		if (completeCheckCount >= 10) {

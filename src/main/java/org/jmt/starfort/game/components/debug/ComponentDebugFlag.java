@@ -1,10 +1,16 @@
 package org.jmt.starfort.game.components.debug;
 
+import org.jmt.starfort.world.controller.entity.ControllerEntityAI;
+
+import org.jmt.starfort.util.Coord;
+import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.component.IComponent;
 import org.jmt.starfort.world.component.IComponentTasked;
+import org.jmt.starfort.world.controller.ControllerLookup;
 import org.jmt.starfort.world.entity.IEntity;
 import org.jmt.starfort.world.entity.IEntityAI;
 import org.jmt.starfort.world.entity.ai.ITask;
+import org.jmt.starfort.world.entity.ai.TaskState;
 import org.jmt.starfort.world.material.IMaterial;
 import org.jmt.starfort.world.material.MaterialRegistry;
 
@@ -20,8 +26,17 @@ import org.jmt.starfort.world.material.MaterialRegistry;
  */
 public class ComponentDebugFlag implements IComponent, IComponentTasked {
 
-	public ComponentDebugFlag() {
-		
+	/**
+	 * SERIAL ID
+	 */
+	private static final long serialVersionUID = 6931361998394771002L;
+
+	String flagid; 
+	int pri;
+	
+	public ComponentDebugFlag(String flagid, int pri) {
+		this.flagid = flagid;
+		this.pri = pri;
 	}
 
 	@Override
@@ -34,27 +49,57 @@ public class ComponentDebugFlag implements IComponent, IComponentTasked {
 		return MaterialRegistry.getMaterial("Debug");
 	}
 
+	long sleepTime = 10000;
+	long lastTime = System.currentTimeMillis() - sleepTime;
+	
+	
 	@Override
 	public int avaliableTaskGeneratorTasks() {
-		return 0;
+		//System.out.println(lastTime+sleepTime + " : " + System.currentTimeMillis());
+		return lastTime+sleepTime <= System.currentTimeMillis() ? 1 : 0;
 	}
 
 	@Override
 	public boolean isTaskGeneratorCompletable(IEntity entity) {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
 	public int getTaskGeneratorHighestPriority() {
-		// TODO Auto-generated method stub
-		return 0;
+		return pri;
 	}
 
+	private ComponentDebugFlag beMe = this;
+	
+	private class Task implements ITask {
+
+		private TaskState state = TaskState.CONTINUE;
+		private Coord target = null;
+		
+		@Override
+		public void execute(World w, Coord cur, IEntity ie) {
+			if (state == TaskState.DONE) return;
+			if (target == null) {
+				target = w.getController(ControllerLookup.class).findComponentInstance(beMe);
+			}
+			if (target != null) {
+				if (ie.getEntityAI().moveTo(w, cur, ie, target)) {
+					state = TaskState.DONE;
+				}
+			}
+		}
+
+		@Override
+		public TaskState getTaskState() {
+			return state;
+		}
+		
+	}
+	
 	@Override
 	public ITask getTaskGeneratorTask(IEntity entity) {
-		// TODO Auto-generated method stub
-		return null;
+		lastTime = System.currentTimeMillis();
+		return new Task();
 	}
 
 }

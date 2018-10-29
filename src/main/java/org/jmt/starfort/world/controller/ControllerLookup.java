@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
@@ -13,6 +14,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.jmt.starfort.processor.ComplexRunnable;
 import org.jmt.starfort.util.Coord;
+import org.jmt.starfort.util.CoordRange;
 import org.jmt.starfort.world.Block;
 import org.jmt.starfort.world.TickRequest;
 import org.jmt.starfort.world.World;
@@ -34,20 +36,20 @@ public class ControllerLookup implements IController {
 	 */
 	private static final long serialVersionUID = -5536182694166430815L;
 
-	//Cache lifetime in NANOS; Currently set to 1 second
-	long cacheTimeout = 1000000000;
+	//Cache lifetime in Milis; Currently set to 100 second
+	long cacheTimeout = 100000000l;
 	
 	/**
 	 * Contains a list of all component classes to lookup
 	 * 
 	 * A list of keys; if one of these doesn't exist in the maps, it will be added
 	 */
-	private ArrayList<Class<? extends IComponent>> toLookup = new ArrayList<>();
+	private List<Class<? extends IComponent>> toLookup = new CopyOnWriteArrayList<>();
 	
 	/**
 	 * Cache of looked up classes
 	 */
-	private Map<Class<? extends IComponent>, ArrayList<Coord>> toLookupCache = new ConcurrentHashMap<Class<? extends IComponent>, ArrayList<Coord>>();
+	private Map<Class<? extends IComponent>, List<Coord>> toLookupCache = new ConcurrentHashMap<Class<? extends IComponent>, List<Coord>>();
 	
 	/**
 	 * List of last referenced times; used to allow purging of cache
@@ -61,10 +63,12 @@ public class ControllerLookup implements IController {
 	 */
 	private int stage = -1;
 	
+	private World w;
+	
 	@Override
 	public ComplexRunnable getTick() {
 		return (Object... args) -> {
-			World w = (World) args[0];
+			w = (World) args[0];
 			boolean complete = false;
 			while (!complete) {
 				if (stage == -1) {
@@ -73,17 +77,17 @@ public class ControllerLookup implements IController {
 					List<Class<? extends IComponent>> toPurge = new ArrayList<>();
 					for (Class<? extends IComponent> c : toLookup) {
 						if (toLookupLastAddTime.containsKey(c)) {
-							if (toLookupLastAddTime.get(c) + cacheTimeout < System.nanoTime()) {
+							if (toLookupLastAddTime.get(c) + cacheTimeout < System.currentTimeMillis()) {
 								if (!toLookupCache.containsKey(c)) {
-									toLookupCache.put(c, new ArrayList<>());
+									toLookupCache.put(c, new CopyOnWriteArrayList<>());
 								}
 							} else {
 								toPurge.add(c);
 							}
 						} else {
-							toLookupLastAddTime.put(c, System.nanoTime());
+							toLookupLastAddTime.put(c, System.currentTimeMillis());
 							if (!toLookupCache.containsKey(c)) {
-								toLookupCache.put(c, new ArrayList<>());
+								toLookupCache.put(c, new CopyOnWriteArrayList<>());
 							}
 						}
 					}
@@ -99,6 +103,9 @@ public class ControllerLookup implements IController {
 						for (Class<? extends IComponent> c : toLookup) {
 							if (b.getCompInstance(c) != null) { 
 								Coord coord = w.getBlockLocation(b);
+								if (toLookupCache.get(c) == null) {
+									toLookupCache.put(c, new CopyOnWriteArrayList<>());
+								}
 								toLookupCache.get(c).add(coord);
 							}
 						}
@@ -112,14 +119,27 @@ public class ControllerLookup implements IController {
 		};
 	}
 
-	public ArrayList<Coord> findAllComponents(Class<? extends IComponent> type) {
-		toLookupLastAddTime.put(type, System.nanoTime());
+	public List<Coord> findAllComponents(Class<? extends IComponent> type) {
+		toLookupLastAddTime.put(type, System.currentTimeMillis());
 		if (toLookup.contains(type)) {
 			if (toLookupCache.containsKey(type)) {
 				return toLookupCache.get(type);
 			}
 		} else {
 			toLookup.add(type);
+		}
+		return null;
+	}
+	
+	public Coord findComponentInstance(IComponent instance) {
+		List<Coord> possibleTargets = findAllComponents(instance.getClass());
+		if (possibleTargets != null) {
+			for (Coord c : possibleTargets) {
+				ArrayList<? extends IComponent> instances = w.getBlockNoAdd(c).getCompInstances(instance.getClass());
+				if (instances.contains(instance)) {
+					return c;
+				}
+			}
 		}
 		return null;
 	}

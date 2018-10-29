@@ -26,7 +26,7 @@ public interface ITask {
 	 * @param cur Coordinate taken {@link TickRequest}
 	 * @param ai {@link IEntityAI} taken from current {@link IEntity}
 	 */
-	public void execute(World w, Coord cur, IEntityAI ai);
+	public void execute(World w, Coord cur, IEntity ie);
 	
 	/**
 	 * Get's the state of this task

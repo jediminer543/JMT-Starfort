@@ -10,7 +10,10 @@ import org.jmt.starfort.util.Direction;
 import org.jmt.starfort.util.NavContext;
 import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.component.IComponentUpDown;
+import org.jmt.starfort.world.entity.EntityAICapabilities;
 import org.jmt.starfort.world.entity.IEntityAI;
+import org.jmt.starfort.world.entity.ai.AIUtil.MoveState;
+import org.jmt.starfort.world.entity.ai.ITask;
 import org.jmt.starfort.world.entity.organs.IOrgan;
 import org.jmt.starfort.world.material.IMaterial;
 
@@ -21,11 +24,11 @@ public class EntityHuman extends EntityHumanoid {
 	 */
 	private static final long serialVersionUID = 1713245705625921265L;
 	String name;
-	
+
 	public EntityHuman(String name) {
 		this.name = name;
 	}
-	
+
 	@Override
 	public String getEntityName() {
 		return name;
@@ -38,18 +41,57 @@ public class EntityHuman extends EntityHumanoid {
 
 	final EntityHuman parent = this;
 	transient ComplexRunnable tick = new ComplexRunnable() {
-			
-			/**
+
+		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 6525438261145656859L;
 
-			@Override
-			public void run(Object... args) {
-				//TODO FIX
-			}
-		};
-	
+		@Override
+		public void run(Object... args) {
+			World w = (World) args[0];
+			Coord c = (Coord) args[1];
+			parent.ai.tickEntityAI(w, c, parent);
+		}
+	};
+
+	private transient IEntityAI ai = new IEntityAI () {
+
+		ITask task = null;
+		MoveState ms = new MoveState();
+		{
+			ms.maxWait = 5;
+		}
+
+		@Override
+		public EntityAICapabilities getEntityAICapibilities() {
+			return null;
+		}
+
+		@Override
+		public IPassageCallback getEntityAIPassageCallback() {
+			return parent::passageCallback;
+		}
+
+		@Override
+		public ITask getEntityAITask() {
+			return task;
+		}
+
+		@Override
+		public ITask setEntityAITask(ITask task) {
+			ITask old = task;
+			this.task = task;
+			return old;
+		}
+
+		@Override
+		public MoveState getEntityAIMoveState() {
+			return ms;
+		}
+
+	};
+
 	@Override
 	public ComplexRunnable getTick() {
 		return tick;
@@ -60,7 +102,7 @@ public class EntityHuman extends EntityHumanoid {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public IMaterial getComponentMaterial() {
 		return null;
@@ -73,7 +115,7 @@ public class EntityHuman extends EntityHumanoid {
 		if (dir != Direction.YINC && dir != Direction.YDEC) {
 			if (w.getBlockNoAdd(src.add(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(dir.inverse()) || w.getBlockNoAdd(src.add(dir.getDir())).getBlockedDirs(NavContext.Physical).contains(Direction.SELFFULL) 
 					|| w.getBlockNoAdd(src.get()).getBlockedDirs(NavContext.Physical).contains(dir)) {
-					return false;
+				return false;
 			}
 			return true;
 		} else {
@@ -89,7 +131,7 @@ public class EntityHuman extends EntityHumanoid {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public IPassageCallback getEntityPassageCallback() {
 		return this::passageCallback;
@@ -97,8 +139,7 @@ public class EntityHuman extends EntityHumanoid {
 
 	@Override
 	public IEntityAI getEntityAI() {
-		// TODO Auto-generated method stub
-		return null;
+		return ai;
 	}
 
 }

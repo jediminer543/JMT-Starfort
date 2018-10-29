@@ -56,7 +56,10 @@ public class EntityDrone implements IEntity {
 
 	public Coord lastPos;
 	
-	public MoveState ms = new MoveState(this);
+	public MoveState ms = new MoveState();
+	{
+		ms.maxWait = 2;
+	}
 	
 	private void tick(Object... args) {
 			EntityDrone parent = this;
