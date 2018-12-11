@@ -1,9 +1,19 @@
 package org.jmt.starfort.renderer.rules;
 
-import static org.jmt.starfort.renderer.JMTGl.*;
-import static org.lwjgl.opengl.GL11.*;
+import static org.jmt.starfort.renderer.JMTGl.jglColor4f;
+import static org.jmt.starfort.renderer.JMTGl.jglGetAttribLocation;
+import static org.jmt.starfort.renderer.JMTGl.jglPopMatrix;
+import static org.jmt.starfort.renderer.JMTGl.jglPushMatrix;
+import static org.jmt.starfort.renderer.JMTGl.jglTranslatef;
+import static org.jmt.starfort.renderer.JMTGl.jglUseProgram;
+import static org.lwjgl.opengl.GL11.GL_FLOAT;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_COORD_ARRAY;
+import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL11.GL_VERTEX_ARRAY;
+import static org.lwjgl.opengl.GL11.glDrawArrays;
+import static org.lwjgl.opengl.GL11.glEnableClientState;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
-import static org.lwjgl.opengl.GL13.glClientActiveTexture;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
@@ -14,8 +24,6 @@ import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -27,18 +35,10 @@ import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.world.component.IComponent;
 import org.joml.Vector2f;
 
-/**
- * Generic renderer for rendering components in the world with a static texture
- * 
- * Usefull for really basic and generic things. Hence the name
- * 
- * @author jediminer543
- *
- */
-public class GenericRenderer implements IRendererRule {
+public class MaskedRenderer implements IRendererRule {
 
 	Class<? extends IComponent>[] toRender;
-	InputStream is;
+	InputStream isTex, isMask;
 	int priority;
 	
 	/**
@@ -46,59 +46,59 @@ public class GenericRenderer implements IRendererRule {
 	 * 
 	 * @param compClass List of Component Classes to render
 	 * @param tex Texture that the components will be rendered with as an input stream
+	 * @param mask Texture Mask that the components will be rendered with as an input stream
 	 * @param priority Z priority of this render rule
 	 */
-	public GenericRenderer(Class<? extends IComponent>[] compClass, InputStream tex, int priority) {
+	public MaskedRenderer(Class<? extends IComponent>[] compClass, InputStream tex, InputStream mask, int priority) {
 		toRender = compClass;
-		is = tex;
+		isTex = tex;
+		isMask = mask;
 		this.priority = priority;
 	}
-
-	/**
-	 * Initialises a generic renderer with a path to a texture file, be it in classpath or an external resource.
-	 * 
-	 * @param compClass List of Component Classes to render
-	 * @param fileName A path to the texture file
-	 * @param priority Z priority of this render rule
-	 * @param ext If true, will search for the outside the classpath, otherwise it will search in the class path
-	 */
-	public GenericRenderer(Class<? extends IComponent>[] compClass, String fileName, int priority, boolean ext) throws FileNotFoundException {
-		this(compClass, ext ? new FileInputStream(fileName) : fileName.getClass().getResourceAsStream(fileName), priority);
-	}
-
+	
 	@Override
 	public Class<? extends IComponent>[] getRenderableComponents() {
 		return toRender;
 	}
-
-	Texture t;
+	
+	Texture t, m;
 	
 	@Override
 	public void init(Renderer r) {
 		try {
-			t = new Texture(is);
+			t = new Texture(isTex);
+			m = new Texture(isMask);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			try {
-				is.close();
+				isTex.close();
+				isMask.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			is = null;
+			isTex = isMask = null;
 		}
 	}
-	
+
+	@Override
+	public boolean disabled(Renderer r) {
+		return false;
+	}
+
 	int vaoId;
 	int vboId;
 	
 	@Override
-	public void draw(Renderer r, Coord offset, IComponent comp,
-			Coord compLoc) {
+	public void draw(Renderer r, Coord offset, IComponent comp, Coord compLoc) {
 		jglPushMatrix();
 		Vector2f drawSrc = r.wtrCoord(compLoc, offset);
 		jglTranslatef(drawSrc.x, drawSrc.y, 0);
+		glActiveTexture(GL_TEXTURE0);
 		t.bind();
+		glActiveTexture(GL_TEXTURE0+1);
+		m.bind();
+		glActiveTexture(GL_TEXTURE0);
 		Colour c;
 		if (comp.getComponentMaterial() != null && (c = r.getMaterialColor(comp.getComponentMaterial())) != null) {
 			c.apply();
@@ -148,8 +148,4 @@ public class GenericRenderer implements IRendererRule {
 		return priority;
 	}
 
-	@Override
-	public boolean disabled(Renderer r) {
-		return false;
-	}
 }

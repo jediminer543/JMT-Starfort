@@ -105,7 +105,7 @@ public class World implements Serializable {
 	public Coord getBlockLocation(Block b) {
 			for (Entry<Coord, Block> e: blocks.entrySet()) {
 				if (e.getValue() == b) {
-					return e.getKey();
+					return e.getKey().get();
 				}
 			}
 		return null;
@@ -119,7 +119,7 @@ public class World implements Serializable {
 	public Map<Coord, ArrayList<ComplexRunnable>> getTicks() {
 		ConcurrentHashMap <Coord, ArrayList<ComplexRunnable>> ticks = new ConcurrentHashMap <Coord, ArrayList<ComplexRunnable>>();
 			for (Entry<Coord, Block> b: blocks.entrySet()) {
-				ticks.put(b.getKey(), b.getValue().getTicks());
+				ticks.put(b.getKey().get(), b.getValue().getTicks());
 			}
 		synchronized (controllers) {
 			ArrayList<ComplexRunnable> controllerTicks = new ArrayList<>();

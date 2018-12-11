@@ -287,14 +287,14 @@ public class JMTGl {
 		if (colLoc >=0 ) {
 			FloatBuffer buf = BufferUtils.createFloatBuffer(4);
 			color.get(buf);
-			glUniform4fv(colLoc, buf);;
+			glUniform4fv(colLoc, buf);
 		}
 		
 		//TextureMapping
 		int texLoc = jglGetUniformLocation(program, "u_tex");
 		//System.out.println("u_tex:" + texLoc);
 		if (texLoc >=0 ) {
-			glUniform1i(texLoc, 0);;
+			glUniform1i(texLoc, 0);
 		}
 	}
 	

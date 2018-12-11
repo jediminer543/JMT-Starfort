@@ -266,11 +266,21 @@ public class Renderer {
 		//glRotatef(-90, 0, 0, 1);
 	}
 	
+	/**
+	 * Allows for render rules to reset the shader mode after updating it
+	 */
+	public void resetShaderMode() {
+		glUniform1i(jglGetUniformLocation("u_flags"), 1<<0 | 1<<1);
+		glUniform1i(jglGetUniformLocation("u_tex"), 0); // Standardise texture setup
+		glUniform1i(jglGetUniformLocation("u_mask"), 1); // Standardise mask setup
+	}
+	
 	private void drawLayer(World w, Coord offset, int[] bounds, int depth) {
 		renderDepth = depth;
 		jglUseProgram(program);
 		glUniform1i(jglGetUniformLocation("u_depth"), depth);
 		glUniform4fv(jglGetUniformLocation("u_depthCol"), new float[] {0.1f, 0.1f, 0.2f, 1f});
+		resetShaderMode();
 		jglUseProgram(0);
 		glPushMatrix();
 		glTranslatef(0, 0, -wtrLen(depth));
