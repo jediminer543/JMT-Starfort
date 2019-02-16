@@ -1,5 +1,7 @@
 package org.jmt.starfort.world.entity;
 
+import java.io.Serializable;
+
 import org.jmt.starfort.pathing.bruteforce.IPassageCallback;
 import org.jmt.starfort.pathing.bruteforce.Path;
 import org.jmt.starfort.util.Coord;
@@ -7,6 +9,7 @@ import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.component.IComponent;
 import org.jmt.starfort.world.controller.entity.ControllerEntityAI;
 import org.jmt.starfort.world.entity.ai.AIUtil;
+import org.jmt.starfort.world.entity.ai.CannotPathException;
 import org.jmt.starfort.world.entity.ai.AIUtil.MoveState;
 import org.jmt.starfort.world.entity.ai.ITask;
 import org.jmt.starfort.world.item.IItem;
@@ -16,7 +19,7 @@ import org.jmt.starfort.world.item.IItem;
  * 
  * @author jediminer543
  */
-public interface IEntityAI {
+public interface IEntityAI extends Serializable {
 
 	//Capiablility
 	
@@ -36,7 +39,7 @@ public interface IEntityAI {
 	 */
 	public default void tickEntityAI(World w, Coord c, IEntity ie) {
 		if (this.getEntityAITask() == null) {
-			this.setEntityAITask(w.getController(ControllerEntityAI.class).getTask(ie));
+			this.setEntityAITask(w.getController(ControllerEntityAI.class).getTask(ie, c));
 		} else { 
 			switch(this.getEntityAITask().getTaskState()) {
 			case CONTINUE:
@@ -60,8 +63,20 @@ public interface IEntityAI {
 	 * @param dest
 	 * @return True one at destination
 	 */
-	public default boolean moveTo(World w, Coord cur, IEntity ie, Coord dest) {
+	public default boolean moveTo(World w, Coord cur, IEntity ie, Coord dest) throws CannotPathException {
 		return AIUtil.controledEntityMoveTo(w, cur, ie, dest, getEntityAIMoveState());
+	}
+	
+	/**
+	 * 
+	 * @param w
+	 * @param cur
+	 * @param ie
+	 * @param dest
+	 * @return True in range of destination
+	 */
+	public default boolean moveToRange(World w, Coord cur, IEntity ie, Coord dest, Coord range) throws CannotPathException {
+		return AIUtil.controledEntityMoveToRange(w, cur, ie, dest, getEntityAIMoveState(), range);
 	}
 	
 	public default boolean interactWithComponent(World w, Coord cur, IComponent comp) {

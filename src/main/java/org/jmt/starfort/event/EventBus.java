@@ -113,12 +113,11 @@ public class EventBus {
 	 * want to mess with stuff.s
 	 * 
 	 * @param ev Event fire
-	 * @return Whether the event was consumed or not
 	 * 
 	 * @see IEvent
 	 * @see EventCallback
 	 */
-	public static boolean fireEvent(IEvent ev) {
+	public static void fireEvent(IEvent ev) {
 		if (callbacks.containsKey(ev.getClass())) {
 			if (callbacks.get(ev.getClass()) == null) {
 				//This should be unreachable right? But it is a safety measure, so why not leave it in
@@ -130,6 +129,5 @@ public class EventBus {
 				}
 			}
 		}
-		return ev.getEventConsumed();
 	}
 }

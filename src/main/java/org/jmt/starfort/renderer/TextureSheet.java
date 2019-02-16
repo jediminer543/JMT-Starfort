@@ -1,5 +1,10 @@
 package org.jmt.starfort.renderer;
 
+/**
+ * TODO MAKE WORK
+ * @author jediminer543
+ *
+ */
 public class TextureSheet {
 
 	Texture tex;

@@ -1,14 +1,13 @@
 package org.jmt.starfort.game.components.debug;
 
-import org.jmt.starfort.world.controller.entity.ControllerEntityAI;
-
 import org.jmt.starfort.util.Coord;
+import org.jmt.starfort.util.TemporalBlacklist;
 import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.component.IComponent;
 import org.jmt.starfort.world.component.IComponentTasked;
 import org.jmt.starfort.world.controller.ControllerLookup;
 import org.jmt.starfort.world.entity.IEntity;
-import org.jmt.starfort.world.entity.IEntityAI;
+import org.jmt.starfort.world.entity.ai.CannotPathException;
 import org.jmt.starfort.world.entity.ai.ITask;
 import org.jmt.starfort.world.entity.ai.TaskState;
 import org.jmt.starfort.world.material.IMaterial;
@@ -31,6 +30,8 @@ public class ComponentDebugFlag implements IComponent, IComponentTasked {
 	 */
 	private static final long serialVersionUID = 6931361998394771002L;
 
+	TemporalBlacklist<IEntity> pathingBlacklist = new TemporalBlacklist<>();
+	
 	String flagid; 
 	int pri;
 	
@@ -61,6 +62,7 @@ public class ComponentDebugFlag implements IComponent, IComponentTasked {
 
 	@Override
 	public boolean isTaskGeneratorCompletable(IEntity entity) {
+		if (pathingBlacklist.contains(entity)) return false;
 		return true;
 	}
 
@@ -83,8 +85,13 @@ public class ComponentDebugFlag implements IComponent, IComponentTasked {
 				target = w.getController(ControllerLookup.class).findComponentInstance(beMe);
 			}
 			if (target != null) {
-				if (ie.getEntityAI().moveTo(w, cur, ie, target)) {
-					state = TaskState.DONE;
+				try {
+					if (ie.getEntityAI().moveTo(w, cur, ie, target)) {
+						state = TaskState.DONE;
+					}
+				} catch (CannotPathException e) {
+					pathingBlacklist.add(ie);
+					state = TaskState.ERROR;
 				}
 			}
 		}

@@ -1,7 +1,5 @@
 package org.jmt.starfort.event.ui;
 
-import org.jmt.starfort.event.IEventUI;
-
 public class EventCursorPos implements IEventUI {
 
 	boolean consumed = false;

@@ -19,17 +19,6 @@ import org.jmt.starfort.world.component.IComponentTickable;
  * @see TickRequest
  */
 public class EventMove implements IEvent {
-
-	@Override
-	public boolean getEventConsumed() {
-		//Move event's aren't consumed
-		return false;
-	}
-
-	@Override
-	public void consumeEvent() {
-		//Move event's aren't consumed
-	}
 	
 	/**
 	 * The component that has been moved

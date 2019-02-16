@@ -21,6 +21,7 @@ import org.jmt.starfort.event.ui.EventMouseButton;
 import org.jmt.starfort.event.world.EventWorldClick;
 import org.jmt.starfort.logging.Logger;
 import org.jmt.starfort.event.IEvent;
+import org.jmt.starfort.event.IEventConsumable;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.world.Block;
 import org.jmt.starfort.world.World;
@@ -68,7 +69,7 @@ public class Renderer {
 			
 			@Override
 			public void handleEvent(IEvent ev) {
-				if (!ev.getEventConsumed()) {
+				if (ev instanceof IEventConsumable && !((IEventConsumable) ev).getEventConsumed()) {
 					EventMouseButton emb = (EventMouseButton) ev;
 					if (emb.getEventAction() == GLFW.GLFW_RELEASE) {
 						double[] xa = new double[1], ya = new double[1];
@@ -76,10 +77,10 @@ public class Renderer {
 						Coord offset = worldOffsetMap.get(lastRenderedWorld);
 						Coord point = new Coord((int)Math.floor(rtwLen((float)xa[0]))-offset.x, offset.y, (int)Math.floor(rtwLen((float)ya[0]))-offset.z);
 						//System.out.println("Click at X:" + xa[0] + ", Y:" + ya[0] + " " + (point).toString());
-						IEvent oev = new EventWorldClick(emb.getEventWindow(), lastRenderedWorld, point);
+						EventWorldClick oev = new EventWorldClick(emb.getEventWindow(), lastRenderedWorld, point);
 						EventBus.fireEvent(oev);
 						if (oev.getEventConsumed()) {
-							ev.consumeEvent();
+							emb.consumeEvent();
 						}
 					}
 				}

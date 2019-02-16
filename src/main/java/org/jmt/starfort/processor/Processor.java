@@ -53,7 +53,7 @@ public class Processor {
 	/**
 	 * Number of threads to run
 	 */
-	static int size = 8;
+	static int size = 1;
 	
 	/**
 	 * Initialises and starts the processor
@@ -92,10 +92,10 @@ public class Processor {
 									try {
 										first = proccessingJobs.getFirst();
 									} catch (NoSuchElementException nsee) {
-									//nsee.printStackTrace();
-									//Happens when task is being cycled; shouldn't be a problem
+										//nsee.printStackTrace();
+										//Happens when task is being cycled; shouldn't be a problem
+										Thread.yield(); // Yield to working threads though
 									} 
-									Thread.yield();
 								}
 								try {
 									if (first instanceof SuspenableProcessingRequest && ((SuspenableProcessingRequest) first).suspended()) {
@@ -165,7 +165,6 @@ public class Processor {
 									}
 								}
 							}
-							Thread.yield();
 						}
 					}
 

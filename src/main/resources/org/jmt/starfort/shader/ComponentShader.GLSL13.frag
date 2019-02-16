@@ -21,7 +21,7 @@ void main(void) {
 	o_col = texture(u_tex, f_tex);
 	if ((u_flags & MODE_Colour) != 0) {
 		if ((u_flags & MODE_Mask) != 0 && textureSize(u_tex, 0) == textureSize(u_mask, 0)) {
-			if (texture(u_tex, f_tex).r > 0.5) {
+			if (texture(u_mask, f_tex).r == 1.0 && texture(u_mask, f_tex).g == 1.0 && texture(u_mask, f_tex).b == 1.0) {
 				o_col = o_col * u_col;
 			} //ELSE NOTHING
 		} else {

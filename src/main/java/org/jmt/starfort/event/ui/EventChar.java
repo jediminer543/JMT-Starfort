@@ -1,6 +1,5 @@
 package org.jmt.starfort.event.ui;
 
-import org.jmt.starfort.event.IEventUI;
 import org.jmt.starfort.ui.gui.NuklearUtil;
 import org.lwjgl.glfw.GLFW;
 

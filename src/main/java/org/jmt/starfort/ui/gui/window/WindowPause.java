@@ -7,6 +7,7 @@ import java.nio.IntBuffer;
 import org.jmt.starfort.Starfort;
 import org.jmt.starfort.event.EventBus;
 import org.jmt.starfort.event.IEvent;
+import org.jmt.starfort.event.IEventConsumable;
 import org.jmt.starfort.event.ui.EventKey;
 import org.jmt.starfort.ui.gui.NkCtxGLFW3;
 import org.jmt.starfort.ui.gui.widget.IWidget;
@@ -24,7 +25,7 @@ public class WindowPause implements IWidget {
 			
 			@Override
 			public void handleEvent(IEvent ev) {
-				if (!ev.getEventConsumed()) {
+				if (ev instanceof IEventConsumable && !((IEventConsumable) ev).getEventConsumed()){
 					if (ev instanceof EventKey) {
 						EventKey kev = (EventKey)(ev);
 						if (kev.getEventAction() == GLFW.GLFW_PRESS) {

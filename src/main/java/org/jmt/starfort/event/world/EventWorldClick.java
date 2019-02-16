@@ -1,7 +1,7 @@
 package org.jmt.starfort.event.world;
 
-import org.jmt.starfort.event.IEventUI;
 import org.jmt.starfort.event.ui.EventMouseButton;
+import org.jmt.starfort.event.ui.IEventUI;
 import org.jmt.starfort.renderer.Renderer;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.world.World;
@@ -21,7 +21,7 @@ import org.jmt.starfort.world.World;
  * @author jediminer543
  *
  */
-public class EventWorldClick implements IEventUI {
+public class EventWorldClick implements IEventUI, IEventLocated {
 	
 	boolean consumed;
 	
@@ -68,10 +68,12 @@ public class EventWorldClick implements IEventUI {
 		return window;
 	}
 	
+	@Override
 	public World getEventWorld() {
 		return w;
 	}
 	
+	@Override
 	public Coord getEventCoord() {
 		return c;
 	}

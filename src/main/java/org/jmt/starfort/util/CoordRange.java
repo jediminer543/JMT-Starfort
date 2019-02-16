@@ -66,7 +66,7 @@ public class CoordRange implements Iterable<Coord>, Iterator<Coord> {
 			cur.x = min.x;
 			cur.y += 1;
 		}
-		if (cur.y > max.z) {
+		if (cur.y > max.y) {
 			cur.y = min.y;
 			cur.z += 1;
 		}

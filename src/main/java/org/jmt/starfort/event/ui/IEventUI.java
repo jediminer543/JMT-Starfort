@@ -1,5 +1,7 @@
-package org.jmt.starfort.event;
+package org.jmt.starfort.event.ui;
 
+import org.jmt.starfort.event.IEvent;
+import org.jmt.starfort.event.IEventConsumable;
 import org.jmt.starfort.ui.gui.NuklearUtil;
 
 /**
@@ -14,7 +16,7 @@ import org.jmt.starfort.ui.gui.NuklearUtil;
  * @see IEvent
  * @see NuklearUtil#nk_jmt_bus_init(NkCtxGLFW3, long)
  */
-public interface IEventUI extends IEvent {
+public interface IEventUI extends IEventConsumable {
 	
 	/**
 	 * The GLFW window in which this event occurred

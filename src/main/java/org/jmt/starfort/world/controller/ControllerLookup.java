@@ -2,6 +2,7 @@ package org.jmt.starfort.world.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,7 +38,7 @@ public class ControllerLookup implements IController {
 	private static final long serialVersionUID = -5536182694166430815L;
 
 	//Cache lifetime in Milis; Currently set to 100 second
-	long cacheTimeout = 100000000l;
+	long cacheTimeout = 1000000000l;
 	
 	/**
 	 * Contains a list of all component classes to lookup
@@ -65,58 +66,62 @@ public class ControllerLookup implements IController {
 	
 	private World w;
 	
-	@Override
-	public ComplexRunnable getTick() {
-		return (Object... args) -> {
-			w = (World) args[0];
-			boolean complete = false;
-			while (!complete) {
-				if (stage == -1) {
-					//check integrity
-					//List of classes to purge due to timeout
-					List<Class<? extends IComponent>> toPurge = new ArrayList<>();
-					for (Class<? extends IComponent> c : toLookup) {
-						if (toLookupLastAddTime.containsKey(c)) {
-							if (toLookupLastAddTime.get(c) + cacheTimeout < System.currentTimeMillis()) {
-								if (!toLookupCache.containsKey(c)) {
-									toLookupCache.put(c, new CopyOnWriteArrayList<>());
-								}
-							} else {
-								toPurge.add(c);
-							}
-						} else {
-							toLookupLastAddTime.put(c, System.currentTimeMillis());
+	protected void tick(Object... args) {
+		w = (World) args[0];
+		boolean complete = false;
+		while (!complete) {
+			if (stage == -1) {
+				//check integrity
+				//List of classes to purge due to timeout
+				List<Class<? extends IComponent>> toPurge = new ArrayList<>();
+				for (Class<? extends IComponent> c : toLookup) {
+					if (toLookupLastAddTime.containsKey(c)) {
+						if (toLookupLastAddTime.get(c) + cacheTimeout > System.currentTimeMillis()) {
 							if (!toLookupCache.containsKey(c)) {
 								toLookupCache.put(c, new CopyOnWriteArrayList<>());
 							}
+						} else {
+							toPurge.add(c);
+						}
+					} else {
+						toLookupLastAddTime.put(c, System.currentTimeMillis());
+						if (!toLookupCache.containsKey(c)) {
+							toLookupCache.put(c, new CopyOnWriteArrayList<>());
 						}
 					}
-					//Purge timed out classes
-					for (Class<? extends IComponent> c : toPurge) {
-						toLookup.remove(c);
-						toLookupCache.remove(c);
-						toLookupLastAddTime.remove(c);
-					}
-					stage++;
-				} else if (stage == 0) {
-					for (Block b : w.getBlocks().values()) {
-						for (Class<? extends IComponent> c : toLookup) {
-							if (b.getCompInstance(c) != null) { 
-								Coord coord = w.getBlockLocation(b);
-								if (toLookupCache.get(c) == null) {
-									toLookupCache.put(c, new CopyOnWriteArrayList<>());
-								}
-								toLookupCache.get(c).add(coord);
-							}
-						}
-					}
-					stage++;
-				} else {
-					stage = -1;
-					complete = true;
 				}
+				//Purge timed out classes
+				for (Class<? extends IComponent> c : toPurge) {
+					toLookup.remove(c);
+					toLookupCache.remove(c);
+					toLookupLastAddTime.remove(c);
+				}
+				stage++;
+			} else if (stage == 0) {
+				for (Block b : w.getBlocks().values()) {
+					for (Class<? extends IComponent> c : toLookup) {
+						if (b.getCompInstance(c) != null) { 
+							Coord coord = w.getBlockLocation(b);
+							if (toLookupCache.get(c) == null) {
+								toLookupCache.put(c, new CopyOnWriteArrayList<>());
+							}
+							toLookupCache.get(c).add(coord);
+						}
+					}
+				}
+				stage++;
+			} else {
+				stage = -1;
+				complete = true;
 			}
-		};
+		}
+	}
+	
+	private ComplexRunnable tick = this::tick;
+	
+	@Override
+	public ComplexRunnable getTick() {
+		return tick;
 	}
 
 	public List<Coord> findAllComponents(Class<? extends IComponent> type) {
@@ -127,15 +132,28 @@ public class ControllerLookup implements IController {
 			}
 		} else {
 			toLookup.add(type);
+			toLookupLastAddTime.put(type, System.currentTimeMillis());
 		}
 		return null;
+	}
+	
+	public <T extends IComponent> Map<T, Coord> genComponentLookup(World w, Class<T> type) {
+		List<Coord> targets = findAllComponents(type);
+		Map<T, Coord> out = new ConcurrentHashMap<>();
+		for (Coord c : targets) {
+			List<T> things = w.getBlock(c).getCompInstances(type);
+			for (T thing : things) {
+				out.put(thing, c);
+			}
+		}
+		return out;
 	}
 	
 	public Coord findComponentInstance(IComponent instance) {
 		List<Coord> possibleTargets = findAllComponents(instance.getClass());
 		if (possibleTargets != null) {
 			for (Coord c : possibleTargets) {
-				ArrayList<? extends IComponent> instances = w.getBlockNoAdd(c).getCompInstances(instance.getClass());
+				List<? extends IComponent> instances = w.getBlockNoAdd(c).getCompInstances(instance.getClass());
 				if (instances.contains(instance)) {
 					return c;
 				}

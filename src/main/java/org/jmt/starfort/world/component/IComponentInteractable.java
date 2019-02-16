@@ -1,5 +1,9 @@
 package org.jmt.starfort.world.component;
 
+import org.jmt.starfort.util.Coord;
+import org.jmt.starfort.world.World;
+import org.jmt.starfort.world.entity.IEntity;
+
 /**
  * TODO
  * 
@@ -10,4 +14,5 @@ package org.jmt.starfort.world.component;
  */
 public interface IComponentInteractable extends IComponent {
 
+	public boolean doComponentInteract(World w, Coord c, IEntity ie, Coord ec);
 }

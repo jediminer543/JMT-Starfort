@@ -2,6 +2,9 @@ package org.jmt.starfort.util;
 
 import java.io.Serializable;
 
+import org.joml.Vector3d;
+import org.joml.Vector3f;
+
 /**
  * A three dimensional integer coordinate, meant to represent a blocks location in the world.
  * 
@@ -238,6 +241,17 @@ public class Coord implements Cloneable, Serializable {
 	
 	public Coord get() {
 		return new Coord(x, y, z);
+	}
+	
+	/**
+	 * Gets the vector3d version of this coord
+	 * 
+	 * Usefull for non-integer operations
+	 * 
+	 * @return
+	 */
+	public Vector3d getFloat() {
+		return new Vector3d(x, y, z);
 	}
 	
     @Override

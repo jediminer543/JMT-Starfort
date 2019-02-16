@@ -67,7 +67,7 @@ public class WorldSaver {
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
 			oos.writeObject(si);
-			preFix(w);
+			w = preFix(w);
 			oos.writeObject(w);
 			oos.close();
 		} catch (IOException e) {
@@ -99,8 +99,8 @@ public class WorldSaver {
 		return w;
 	}
 	
-	private static void preFix(World w) {
-		//NADA
+	private static World preFix(World w) {
+		return w;
 	}
 	
 	private static void recursiveFix(Object o, ArrayList<Object> dedupe) throws IllegalArgumentException, IllegalAccessException {

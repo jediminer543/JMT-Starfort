@@ -6,9 +6,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.jmt.starfort.event.EventBus;
+import org.jmt.starfort.event.world.EventComponentAdd;
 import org.jmt.starfort.processor.ComplexRunnable;
 import org.jmt.starfort.util.Direction;
 import org.jmt.starfort.util.NavContext;
@@ -26,7 +29,7 @@ public class Block implements Serializable {
 
 	UUID id = UUID.randomUUID();
 	
-	volatile ArrayList<IComponent> components = new ArrayList<>();
+	volatile List<IComponent> components = new CopyOnWriteArrayList<>();
 	float damageTaken;
 	
 	public synchronized ArrayList<ComplexRunnable> getTicks() {
@@ -53,16 +56,16 @@ public class Block implements Serializable {
 		return components.indexOf(c);
 	}
 	
-	public synchronized void removeComponent(IComponent c) {
+	public synchronized IComponent removeComponent(IComponent c) {
 		//components.remove(c);
-		components.remove(components.indexOf(c));
+		return components.remove(components.indexOf(c));
 	}
 
 	public synchronized IComponent getComponent(int pos) {
 		return components.get(pos);
 	}
 	
-	public synchronized ArrayList<IComponent> getComponents() {
+	public synchronized List<IComponent> getComponents() {
 		return components;
 	}
 	
@@ -72,7 +75,7 @@ public class Block implements Serializable {
 	 * @param context The nav context to search for
 	 * @return Array of blocked directions
 	 */
-	public synchronized ArrayList<Direction> getBlockedDirs(NavContext context) {
+	public synchronized List<Direction> getBlockedDirs(NavContext context) {
 		Set<Direction> blocked = new HashSet<>();
 		for (IComponent c:components) {
 			if (c instanceof IComponentBlocking) {
@@ -108,7 +111,7 @@ public class Block implements Serializable {
 	 * @return an array list of found components
 	 */
 	@SuppressWarnings("unchecked") // clazz.isInstance != checking
-	public synchronized <T extends IComponent> ArrayList<T> getCompInstances(Class<T> clazz) {
+	public synchronized <T extends IComponent> List<T> getCompInstances(Class<T> clazz) {
 		ArrayList<T> found = new ArrayList<T>();
 		for (IComponent c : components) {
 			if (clazz.isInstance(c)) {

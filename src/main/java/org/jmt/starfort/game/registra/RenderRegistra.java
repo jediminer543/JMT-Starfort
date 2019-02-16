@@ -9,13 +9,18 @@ import java.util.Map.Entry;
 import org.jmt.starfort.game.components.ComponentStairs;
 import org.jmt.starfort.game.components.ComponentWall;
 import org.jmt.starfort.game.components.conduit.ComponentConduit;
+import org.jmt.starfort.game.components.debug.ComponentDebugFlag;
 import org.jmt.starfort.game.entity.EntityDrone;
 import org.jmt.starfort.game.renderer.HumanRenderer;
 import org.jmt.starfort.renderer.IRendererRule;
 import org.jmt.starfort.renderer.rules.DirectionBasedRenderer;
 import org.jmt.starfort.renderer.rules.GenericRenderer;
+import org.jmt.starfort.renderer.rules.MaskedRenderer;
 import org.jmt.starfort.util.Direction;
 import org.jmt.starfort.util.InlineFunctions;
+import org.jmt.starfort.world.component.designator.IComponentDesignator;
+import org.jmt.starfort.world.component.designator.impl.DesignatorConstruct;
+import org.jmt.starfort.world.component.designator.impl.DesignatorReplace;
 
 public class RenderRegistra {
 
@@ -121,6 +126,15 @@ public class RenderRegistra {
 		ruleSet.add(new GenericRenderer(InlineFunctions.inlineArray(EntityDrone.class), 
 				"".getClass().getResourceAsStream("/org/jmt/starfort/texture/component/entity/Drone.png"),
 				150));
+		
+		ruleSet.add(new GenericRenderer(InlineFunctions.inlineArray(IComponentDesignator.class, DesignatorConstruct.class, DesignatorReplace.class), 
+				"".getClass().getResourceAsStream("/org/jmt/starfort/texture/component/designator/designator.png"),
+				150));
+		
+		ruleSet.add(new MaskedRenderer(InlineFunctions.inlineArray(ComponentDebugFlag.class), 
+				"".getClass().getResourceAsStream("/org/jmt/starfort/texture/component/debug/flag.png"),
+				"".getClass().getResourceAsStream("/org/jmt/starfort/texture/component/debug/flagmask.png"),
+				120));
 		
 		//Register Wall Renderer
 		//ruleSet.add(new WallRenderer());

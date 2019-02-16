@@ -15,11 +15,13 @@ import static org.lwjgl.opengl.GL32.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.jmt.starfort.renderer.JMTGl.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import org.jmt.starfort.event.EventBus;
 import org.jmt.starfort.event.IEvent;
+import org.jmt.starfort.event.IEventConsumable;
 import org.jmt.starfort.event.ui.EventKey;
 import org.jmt.starfort.game.components.ComponentStairs;
 import org.jmt.starfort.game.components.ComponentWall;
@@ -46,10 +48,12 @@ import org.jmt.starfort.util.InlineFunctions;
 import org.jmt.starfort.util.NativePathModifier;
 import org.jmt.starfort.world.TickRequest;
 import org.jmt.starfort.world.World;
+import org.jmt.starfort.world.component.designator.impl.DesignatorReplace;
 import org.jmt.starfort.world.controller.conduit.ControlerConduit;
 import org.jmt.starfort.world.controller.entity.ControllerEntityAI;
 import org.jmt.starfort.world.material.IMaterial;
 import org.jmt.starfort.world.material.MaterialRegistry;
+import org.jmt.starfort.world.save.WorldSaver;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.nuklear.NkContext;
@@ -155,7 +159,6 @@ public class Starfort {
 		w.getBlock(new Coord(0, 0, -4)).addComponent(new ComponentPipe(InlineFunctions.inlineArray(Direction.XINC, Direction.ZINC), mat));
 		*/
 		
-		
 		w.getBlock(new Coord(-2, 0, -2)).addComponent(new ComponentConduit(mat));
 		w.getBlock(new Coord(-1, 0, -2)).addComponent(new ComponentConduit(mat));
 		w.getBlock(new Coord(0, 0, -2)).addComponent(new ComponentConduit(mat));
@@ -169,7 +172,6 @@ public class Starfort {
 		w.getBlock(new Coord(0, 0, -4)).addComponent(new ComponentConduit(mat));
 		
 		w.getController(ControlerConduit.class);
-		
 		
 		w.getBlock(new Coord(0, 1, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.XDEC, Direction.ZDEC, Direction.ZINC), mat));
 		w.getBlock(new Coord(1, 1, 0)).addComponent(new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.ZDEC, Direction.ZINC), mat));
@@ -198,11 +200,39 @@ public class Starfort {
 		
 		DevUtil.makeRoom(w1, mat, new Coord(0,0,5), new Coord(3,1,8));
 		
+		w.getBlock(new Coord(5, 0, 6))
+			.addComponent(new DesignatorReplace(
+					w.getBlock(new Coord(5, 0, 6)).getCompInstance(ComponentWall.class), 
+					new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.ZINC), mat),
+					10));
+		
+		w.getBlock(new Coord(4, 0, 6))
+			.addComponent(new DesignatorReplace(
+					w.getBlock(new Coord(4, 0, 6)).getCompInstance(ComponentWall.class), 
+					new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC, Direction.ZINC, Direction.ZDEC), mat),
+					10));
+		
+		w.getBlock(new Coord(3, 0, 6))
+			.addComponent(new DesignatorReplace(
+					w.getBlock(new Coord(3, 0, 6)).getCompInstance(ComponentWall.class), 
+					new ComponentWall(InlineFunctions.inlineArray(Direction.YDEC), mat),
+					10));
+			
+		w.getBlock(new Coord(0, 0, 8)).addComponent(new ComponentDebugFlag("2", 0));
+		
+		DevUtil.makeCoridoor(w, mat, new Coord(5, 1, 2), Direction.XINC, 4);
+		
+		DevUtil.makeStaircase(w, mat, new Coord(9, 0, 2), 1);
+		
+		DevUtil.makeCoridoor(w, mat, new Coord(9, 0, 2), Direction.ZINC, 4);
+		
+		DevUtil.makeFlag(w, mat, new Coord(9, 0, 6), "Constructed", 0);
+		
 		
 		
 		// TESTING WORLD SAVING WITH JAVA SERIALSER HERE
-		//File f = new File("saveTest.serial");
-		//f.createNewFile();
+		File f = new File("saveTest1.serial");
+		f.createNewFile();
 		/*
 		//Kryo k = new Kryo();
 		//k.setAsmEnabled(true);
@@ -218,8 +248,8 @@ public class Starfort {
 			w = (World) ois.readObject();
 			ois.close();
 		}*/
-		//WorldSaver.saveWorld(f, w);
-		//w = WorldSaver.loadWorld(f);
+		WorldSaver.saveWorld(f, w);
+		w = WorldSaver.loadWorld(f);
 		
 		IMaterial testmat = w.getBlock(new Coord(0, 0, 0)).getCompInstance(ComponentStairs.class).getComponentMaterial();
 		System.out.println(testmat == mat);
@@ -230,7 +260,7 @@ public class Starfort {
 				
 			@Override
 			public void handleEvent(IEvent ev) {
-				if (!ev.getEventConsumed()) {
+				if (ev instanceof IEventConsumable && !((IEventConsumable) ev).getEventConsumed()) {
 				if (ev instanceof EventKey) {
 					EventKey kev = (EventKey)(ev);
 					if (kev.getEventAction() == GLFW.GLFW_PRESS) {
@@ -365,6 +395,9 @@ public class Starfort {
 			
 			GUI.draw();
 			//NanoVG.nvgEndFrame(worldNvgCtx);
+			
+			//System.out.println(w.getBlock(new Coord(9, 1, 2)).getComponents());
+			//System.out.println(w.getBlock(new Coord(9, 0, 2)).getComponents());
 		}
 		
 		glfwTerminate();

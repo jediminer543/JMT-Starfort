@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.jmt.starfort.util.Direction;
@@ -55,7 +56,7 @@ public class BlockTest {
 	@Test
 	public void test_getBlockedDirs() {
 		Block b = new Block();
-		ArrayList<Direction> response = b.getBlockedDirs(NavContext.Physical);
+		List<Direction> response = b.getBlockedDirs(NavContext.Physical);
 		assertEquals("Check empty with new block", response.size(), 0);
 		IComponent comp = new IComponent() {
 			

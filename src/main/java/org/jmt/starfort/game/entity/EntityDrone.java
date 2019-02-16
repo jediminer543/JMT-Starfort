@@ -15,6 +15,7 @@ import org.jmt.starfort.world.entity.IEntity;
 import org.jmt.starfort.world.entity.IEntityAI;
 import org.jmt.starfort.world.entity.ai.AIUtil;
 import org.jmt.starfort.world.entity.ai.AIUtil.MoveState;
+import org.jmt.starfort.world.entity.ai.CannotPathException;
 import org.jmt.starfort.world.entity.organs.IOrgan;
 import org.jmt.starfort.world.material.IMaterial;
 import org.jmt.starfort.world.material.MaterialRegistry;
@@ -70,7 +71,12 @@ public class EntityDrone implements IEntity {
 				//IDK WHAT HAPPENED HERE
 				throw new IllegalStateException("SOMETHING WENT HORRIBLY WRONG HERE");
 			}
-			if (AIUtil.controledEntityMoveTo(w, c, parent, targets.getFirst(), ms)) {
+			try {
+				if (AIUtil.controledEntityMoveTo(w, c, parent, targets.getFirst(), ms)) {
+					targets.addLast(targets.pop());
+				}
+			} catch (CannotPathException e) {
+				e.printStackTrace();
 				targets.addLast(targets.pop());
 			}	
 			/*

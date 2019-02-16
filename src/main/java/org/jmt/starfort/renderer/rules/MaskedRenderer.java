@@ -2,6 +2,7 @@ package org.jmt.starfort.renderer.rules;
 
 import static org.jmt.starfort.renderer.JMTGl.jglColor4f;
 import static org.jmt.starfort.renderer.JMTGl.jglGetAttribLocation;
+import static org.jmt.starfort.renderer.JMTGl.jglGetUniformLocation;
 import static org.jmt.starfort.renderer.JMTGl.jglPopMatrix;
 import static org.jmt.starfort.renderer.JMTGl.jglPushMatrix;
 import static org.jmt.starfort.renderer.JMTGl.jglTranslatef;
@@ -20,6 +21,7 @@ import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
+import static org.lwjgl.opengl.GL20.glUniform1i;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
@@ -106,6 +108,7 @@ public class MaskedRenderer implements IRendererRule {
 			jglColor4f(1f, 1f, 1f, 1f);
 		}
 		jglUseProgram(r.program);
+		glUniform1i(jglGetUniformLocation("u_flags"), 1<<0 | 1<<1 | 1<<2);
 		if (vaoId == 0) {
         	glEnableClientState(GL_VERTEX_ARRAY);
         	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -139,6 +142,7 @@ public class MaskedRenderer implements IRendererRule {
 		glBindVertexArray(vaoId);
     	glDrawArrays(GL_TRIANGLES, 0, 6);
     	glBindVertexArray(0);
+    	r.resetShaderMode();
     	jglUseProgram(0);
     	jglPopMatrix();
 	}

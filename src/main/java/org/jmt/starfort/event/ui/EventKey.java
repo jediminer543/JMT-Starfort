@@ -1,7 +1,5 @@
 package org.jmt.starfort.event.ui;
 
-import org.jmt.starfort.event.IEventUI;
-
 /**
  * Fired whenever a key is pressed while the screen is selected
  * 

@@ -9,6 +9,7 @@ import java.nio.IntBuffer;
 import org.jmt.starfort.Starfort;
 import org.jmt.starfort.event.EventBus;
 import org.jmt.starfort.event.IEvent;
+import org.jmt.starfort.event.IEventConsumable;
 import org.jmt.starfort.event.ui.EventKey;
 import org.jmt.starfort.event.world.EventWorldClick;
 import org.jmt.starfort.logging.Logger;
@@ -31,7 +32,7 @@ public class WindowInspectDebug implements IWidget {
 			
 			@Override
 			public void handleEvent(IEvent ev) {
-				if (!ev.getEventConsumed()) {
+				if (ev instanceof IEventConsumable && !((IEventConsumable) ev).getEventConsumed()) {
 					if (ev instanceof EventKey) {
 						EventKey kev = (EventKey)(ev);
 						if (kev.getEventAction() == GLFW.GLFW_PRESS) {
@@ -70,8 +71,8 @@ public class WindowInspectDebug implements IWidget {
 	//Initialises all tab states
 	{
 		tabStates[0][0] = BufferUtils.createIntBuffer(1);
-		tabStates[0][0].put(NK_MAXIMIZED);
-		tabStates[0][0].rewind();
+		//tabStates[0][0].put(NK_MAXIMIZED);
+		//tabStates[0][0].rewind();
 		tabStates[0][1] = BufferUtils.createIntBuffer(1);
 		tabStates[0][2] = BufferUtils.createIntBuffer(1);
 		tabStates[1][0] = BufferUtils.createIntBuffer(1);
@@ -95,9 +96,11 @@ public class WindowInspectDebug implements IWidget {
 		NkContext ctx = jctx.ctx;
 		if (show) {
 			if (nk_begin(ctx, "Debug", nk_rect((Starfort.winWidth/2 - winWidth/2)*4/3, Starfort.winHeight/4, winWidth, winHeight, bounds), 
-					NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_MINIMIZABLE)) {
+					NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_SCALABLE)) {
 				//See Rant in WindowPause
 				try {
+					nk_layout_row_dynamic(jctx.ctx, 20, 1);
+					nk_label(ctx, curPos.toString(), NK_TEXT_ALIGN_CENTERED);
 					if (block != null) {
 						if (block.getComponents().size() > 0) {
 							debugComponent(ctx, 0);
@@ -122,6 +125,12 @@ public class WindowInspectDebug implements IWidget {
 			nk_label(ctx, "Material: " + comp.getComponentMaterial().getMaterialName(), NK_TEXT_ALIGN_CENTERED);
 			if (nk_tree_state_push(ctx, NK_TREE_TAB, "Fields", tabStates[index][1])) {
 				for (Field f:comp.getClass().getDeclaredFields()) {
+					try {
+						nk_label(ctx, f.getName()+" "+f.get(comp), NK_TEXT_ALIGN_CENTERED);
+					} catch (IllegalArgumentException | IllegalAccessException e) {
+					}
+				}
+				for (Field f:comp.getClass().getFields()) {
 					try {
 						nk_label(ctx, f.getName()+" "+f.get(comp), NK_TEXT_ALIGN_CENTERED);
 					} catch (IllegalArgumentException | IllegalAccessException e) {

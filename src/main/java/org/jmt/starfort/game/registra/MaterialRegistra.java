@@ -192,5 +192,9 @@ public class MaterialRegistra {
 		IMaterial mat = MaterialRegistry.getMaterial("Debug");
 		int matID = MaterialRegistry.getMaterialID(mat);	
 		r.materialRenderReg.put(matID, new Colour(0.5f, 0.2f, 0.5f, 1f));
+		
+		mat = MaterialRegistry.getMaterial("Debug");
+		matID = MaterialRegistry.getMaterialID(mat);	
+		r.materialRenderReg.put(matID, new Colour(0.5f, 0.2f, 0.5f, 1f));
 	}
 }

@@ -29,8 +29,9 @@ import org.jmt.starfort.event.ui.EventCursorPos;
 import org.jmt.starfort.event.ui.EventKey;
 import org.jmt.starfort.event.ui.EventMouseButton;
 import org.jmt.starfort.event.ui.EventScroll;
+import org.jmt.starfort.event.ui.IEventUI;
 import org.jmt.starfort.event.IEvent;
-import org.jmt.starfort.event.IEventUI;
+import org.jmt.starfort.event.IEventConsumable;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.nuklear.NkAllocator;
 import org.lwjgl.nuklear.NkBuffer;
@@ -466,7 +467,8 @@ public class NuklearUtil {
 			
 			@Override
 			public void handleEvent(IEvent ev) {
-				if (ev instanceof IEventUI && ((IEventUI)ev).getEventWindow() == glfw3ctx.win && !ev.getEventConsumed()) {
+				if (ev instanceof IEventUI && ((IEventUI)ev).getEventWindow() == glfw3ctx.win && 
+						ev instanceof IEventConsumable && !((IEventConsumable) ev).getEventConsumed()) {
 				if (ev instanceof EventScroll) {
 					EventScroll cev = (EventScroll) ev;
 					NkVec2 vec = NkVec2.create();
@@ -566,8 +568,10 @@ public class NuklearUtil {
 				}
 				}
 				if (nk_item_is_any_active(glfw3ctx.ctx)) {
-					//Flag the event as being consumed if inside the windos
-					ev.consumeEvent();
+					//Flag the event as being consumed if inside the windows
+					if (ev instanceof IEventConsumable && !((IEventConsumable) ev).getEventConsumed()) {
+						((IEventConsumable) ev).consumeEvent();
+					}
 				}
 			}
 			

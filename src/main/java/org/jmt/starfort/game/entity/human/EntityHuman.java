@@ -1,5 +1,8 @@
 package org.jmt.starfort.game.entity.human;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.jmt.starfort.game.entity.EntityHumanoid;
@@ -16,6 +19,7 @@ import org.jmt.starfort.world.entity.ai.AIUtil.MoveState;
 import org.jmt.starfort.world.entity.ai.ITask;
 import org.jmt.starfort.world.entity.organs.IOrgan;
 import org.jmt.starfort.world.material.IMaterial;
+import org.jmt.starfort.world.material.MaterialRegistry;
 
 public class EntityHuman extends EntityHumanoid {
 
@@ -39,24 +43,24 @@ public class EntityHuman extends EntityHumanoid {
 		return "Human";
 	}
 
+
+	public void tick(Object... args) {
+			World w = (World) args[0];
+			Coord c = (Coord) args[1];
+			ai.tickEntityAI(w, c, this);
+	}
+	
+	ComplexRunnable tick = this::tick;
+
 	final EntityHuman parent = this;
-	transient ComplexRunnable tick = new ComplexRunnable() {
+
+	private IEntityAI ai = new IEntityAI () {
 
 		/**
 		 * 
 		 */
-		private static final long serialVersionUID = 6525438261145656859L;
-
-		@Override
-		public void run(Object... args) {
-			World w = (World) args[0];
-			Coord c = (Coord) args[1];
-			parent.ai.tickEntityAI(w, c, parent);
-		}
-	};
-
-	private transient IEntityAI ai = new IEntityAI () {
-
+		private static final long serialVersionUID = -953252680971476860L;
+		
 		ITask task = null;
 		MoveState ms = new MoveState();
 		{
@@ -105,7 +109,7 @@ public class EntityHuman extends EntityHumanoid {
 
 	@Override
 	public IMaterial getComponentMaterial() {
-		return null;
+		return MaterialRegistry.getMaterial("Bone");
 	}
 
 	public boolean passageCallback(World w, Coord src, Direction dir) {
@@ -141,5 +145,4 @@ public class EntityHuman extends EntityHumanoid {
 	public IEntityAI getEntityAI() {
 		return ai;
 	}
-
 }
