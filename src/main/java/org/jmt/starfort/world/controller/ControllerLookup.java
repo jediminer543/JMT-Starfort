@@ -12,6 +12,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Predicate;
 
 import org.jmt.starfort.processor.ComplexRunnable;
 import org.jmt.starfort.util.Coord;
@@ -66,53 +67,59 @@ public class ControllerLookup implements IController {
 	
 	private World w;
 	
+	int countdown = 0;
+	int countdownMax = 10;
+	
 	protected void tick(Object... args) {
 		w = (World) args[0];
-		boolean complete = false;
-		while (!complete) {
-			if (stage == -1) {
-				//check integrity
-				//List of classes to purge due to timeout
-				List<Class<? extends IComponent>> toPurge = new ArrayList<>();
-				for (Class<? extends IComponent> c : toLookup) {
-					if (toLookupLastAddTime.containsKey(c)) {
-						if (toLookupLastAddTime.get(c) + cacheTimeout > System.currentTimeMillis()) {
-							if (!toLookupCache.containsKey(c)) {
-								toLookupCache.put(c, new CopyOnWriteArrayList<>());
-							}
-						} else {
-							toPurge.add(c);
-						}
-					} else {
-						toLookupLastAddTime.put(c, System.currentTimeMillis());
+		if (stage == -1) {
+			//check integrity
+			//List of classes to purge due to timeout
+			List<Class<? extends IComponent>> toPurge = new ArrayList<>();
+			for (Class<? extends IComponent> c : toLookup) {
+				if (toLookupLastAddTime.containsKey(c)) {
+					if (toLookupLastAddTime.get(c) + cacheTimeout > System.currentTimeMillis()) {
 						if (!toLookupCache.containsKey(c)) {
 							toLookupCache.put(c, new CopyOnWriteArrayList<>());
 						}
+					} else {
+						toPurge.add(c);
+					}
+				} else {
+					toLookupLastAddTime.put(c, System.currentTimeMillis());
+					if (!toLookupCache.containsKey(c)) {
+						toLookupCache.put(c, new CopyOnWriteArrayList<>());
 					}
 				}
-				//Purge timed out classes
-				for (Class<? extends IComponent> c : toPurge) {
-					toLookup.remove(c);
-					toLookupCache.remove(c);
-					toLookupLastAddTime.remove(c);
-				}
-				stage++;
-			} else if (stage == 0) {
-				for (Block b : w.getBlocks().values()) {
-					for (Class<? extends IComponent> c : toLookup) {
-						if (b.getCompInstance(c) != null) { 
-							Coord coord = w.getBlockLocation(b);
-							if (toLookupCache.get(c) == null) {
-								toLookupCache.put(c, new CopyOnWriteArrayList<>());
-							}
-							toLookupCache.get(c).add(coord);
+			}
+			//Purge timed out classes
+			for (Class<? extends IComponent> c : toPurge) {
+				toLookup.remove(c);
+				toLookupCache.remove(c);
+				toLookupLastAddTime.remove(c);
+			}
+			stage++;
+		} else if (stage == 0) {
+			for (Block b : w.getBlocks().values()) {
+				for (Class<? extends IComponent> c : toLookup) {
+					if (b.getCompInstance(c) != null) { 
+						Coord coord = w.getBlockLocation(b);
+						if (toLookupCache.get(c) == null) {
+							toLookupCache.put(c, new CopyOnWriteArrayList<>());
 						}
+						toLookupCache.get(c).add(coord);
 					}
 				}
-				stage++;
+			}
+			stage++;
+		} else {
+			if (toLookup.stream().filter(((Predicate<Class<? extends IComponent>>)toLookupCache::containsKey).negate()).count() > 0) {
+				stage = 0;
+			}
+			if (!(countdown >= countdownMax)) {
+				countdown++;
 			} else {
 				stage = -1;
-				complete = true;
 			}
 		}
 	}

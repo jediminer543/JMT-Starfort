@@ -1,11 +1,9 @@
-package org.jmt.starfort.world.component.designator.impl;
+package org.jmt.starfort.world.component.designator;
 
-import org.jmt.starfort.processor.ComplexRunnable;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.util.TemporalBlacklist;
 import org.jmt.starfort.world.World;
 import org.jmt.starfort.world.component.IComponent;
-import org.jmt.starfort.world.component.designator.IComponentDesignator;
 import org.jmt.starfort.world.controller.ControllerLookup;
 import org.jmt.starfort.world.entity.IEntity;
 import org.jmt.starfort.world.entity.ai.CannotPathException;
@@ -13,35 +11,31 @@ import org.jmt.starfort.world.entity.ai.ITask;
 import org.jmt.starfort.world.entity.ai.TaskState;
 import org.jmt.starfort.world.material.IMaterial;
 
-public class DesignatorReplace implements IComponentDesignator {
+public class DesignatorConstruct implements IComponentDesignator {
 
-	
-	
+
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 6135493530475246914L;
-
+	private static final long serialVersionUID = -1836565121577992454L;
 	public int work = 0;
 	public int workMax;
 	IComponent source;
-	IComponent replace;
 	
 	TemporalBlacklist<IEntity> pathingBlacklist = new TemporalBlacklist<>();
 	
-	public DesignatorReplace(IComponent source, IComponent replace) {
-		this(source, replace, 0);
+	public DesignatorConstruct(IComponent source) {
+		this(source, 0);
 	}
 	
-	public DesignatorReplace(IComponent source, IComponent replace, int work) {
+	public DesignatorConstruct(IComponent source, int work) {
 		this.source = source;
-		this.replace = replace;
 		this.workMax = work;
 	}
 	
 	@Override
 	public String getComponentName() {
-		return "Replace Designator";
+		return "Construct Designator";
 	}
 
 	@Override
@@ -65,7 +59,7 @@ public class DesignatorReplace implements IComponentDesignator {
 		return 100;
 	}
 
-	private DesignatorReplace thiss = this;
+	private DesignatorConstruct thiss = this;
 	
 	@Override
 	public ITask getTaskGeneratorTask(IEntity entity) {
@@ -124,11 +118,10 @@ public class DesignatorReplace implements IComponentDesignator {
 		work += amount;
 		if (work >= workMax && !done) {
 			done = true;
-			if (w.getBlock(c).removeComponent(source) != null) {
-				w.getBlock(c).addComponent(replace);
-			}
+			w.getBlock(c).addComponent(source);
 		}
 		return done;
 	}
+
 
 }

@@ -3,8 +3,10 @@ package org.jmt.starfort.ui.gui.window.debug;
 import static org.lwjgl.nuklear.Nuklear.*;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.IntBuffer;
+import java.util.Arrays;
 
 import org.jmt.starfort.Starfort;
 import org.jmt.starfort.event.EventBus;
@@ -46,6 +48,7 @@ public class WindowInspectDebug implements IWidget {
 						EventWorldClick wke = (EventWorldClick)(ev);
 						block = wke.getEventWorld().getBlock(wke.getEventCoord());
 						curPos = wke.getEventCoord();
+						offset = 0;
 						//Logger.debug(curPos.toString());
 					} 
 				}	
@@ -101,12 +104,21 @@ public class WindowInspectDebug implements IWidget {
 				try {
 					nk_layout_row_dynamic(jctx.ctx, 20, 1);
 					nk_label(ctx, curPos.toString(), NK_TEXT_ALIGN_CENTERED);
+					nk_layout_row_dynamic(jctx.ctx, 20, 2);
+					boolean left = nk_button_label(jctx.ctx, "<");
+					if (left) {
+						offset = Math.max(offset-1, 0);
+					}
+					boolean right = nk_button_label(jctx.ctx, ">");
+					if (right) {
+						offset++;
+					}
 					if (block != null) {
-						if (block.getComponents().size() > 0) {
+						if (block.getComponents().size() > offset+0) {
 							debugComponent(ctx, 0);
-							if (block.getComponents().size() > 1) {
+							if (block.getComponents().size() > offset+1) {
 								debugComponent(ctx, 1);
-								if (block.getComponents().size() > 2) {
+								if (block.getComponents().size() > offset+2) {
 									debugComponent(ctx, 2);
 								}
 							}
@@ -125,24 +137,39 @@ public class WindowInspectDebug implements IWidget {
 			nk_label(ctx, "Material: " + comp.getComponentMaterial().getMaterialName(), NK_TEXT_ALIGN_CENTERED);
 			if (nk_tree_state_push(ctx, NK_TREE_TAB, "Fields", tabStates[index][1])) {
 				for (Field f:comp.getClass().getDeclaredFields()) {
+					f.setAccessible(true);
 					try {
 						nk_label(ctx, f.getName()+" "+f.get(comp), NK_TEXT_ALIGN_CENTERED);
 					} catch (IllegalArgumentException | IllegalAccessException e) {
+						e.printStackTrace();
 					}
 				}
 				for (Field f:comp.getClass().getFields()) {
+					f.setAccessible(true);
 					try {
 						nk_label(ctx, f.getName()+" "+f.get(comp), NK_TEXT_ALIGN_CENTERED);
 					} catch (IllegalArgumentException | IllegalAccessException e) {
+						e.printStackTrace();
 					}
 				}
 				nk_tree_state_pop(ctx);
 			}
 			if (nk_tree_state_push(ctx, NK_TREE_TAB, "Methods", tabStates[index][2])) {
 				for (Method m:comp.getClass().getDeclaredMethods()) {
-					try {
-						nk_label(ctx, m.getName(), NK_TEXT_ALIGN_CENTERED);
-					} catch (IllegalArgumentException e) {
+					if (m.isAnnotationPresent(DebugInspectable.class)) {
+						try {
+							nk_label(ctx, m.getName() + "() " + m.invoke(comp), NK_TEXT_ALIGN_CENTERED);
+						} catch (IllegalArgumentException e) {
+						} catch (IllegalAccessException e) {
+							e.printStackTrace();
+						} catch (InvocationTargetException e) {
+							e.printStackTrace();
+						}
+					} else {
+						try {
+							nk_label(ctx, m.getName(), NK_TEXT_ALIGN_CENTERED);
+						} catch (IllegalArgumentException e) {
+						}
 					}
 				}
 				nk_tree_state_pop(ctx);

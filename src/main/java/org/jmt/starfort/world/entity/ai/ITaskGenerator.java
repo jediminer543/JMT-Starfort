@@ -1,5 +1,6 @@
 package org.jmt.starfort.world.entity.ai;
 
+import org.jmt.starfort.ui.gui.window.debug.DebugInspectable;
 import org.jmt.starfort.world.entity.IEntity;
 
 /**
@@ -27,6 +28,7 @@ public interface ITaskGenerator {
 	 * 
 	 * @return number of avaliable tasks
 	 */
+	@DebugInspectable
 	public int avaliableTaskGeneratorTasks();
 	
 	/**

@@ -1,5 +1,6 @@
 package org.jmt.starfort.game.components.debug;
 
+import org.jmt.starfort.ui.gui.window.debug.DebugInspectable;
 import org.jmt.starfort.util.Coord;
 import org.jmt.starfort.util.TemporalBlacklist;
 import org.jmt.starfort.world.World;
@@ -50,10 +51,11 @@ public class ComponentDebugFlag implements IComponent, IComponentTasked {
 		return MaterialRegistry.getMaterial("Debug");
 	}
 
-	long sleepTime = 10000;
+	long sleepTime = 20000;
 	long lastTime = System.currentTimeMillis() - sleepTime;
 	
 	
+	@DebugInspectable
 	@Override
 	public int avaliableTaskGeneratorTasks() {
 		//System.out.println(lastTime+sleepTime + " : " + System.currentTimeMillis());

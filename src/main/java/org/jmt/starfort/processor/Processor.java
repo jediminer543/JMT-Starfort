@@ -53,7 +53,7 @@ public class Processor {
 	/**
 	 * Number of threads to run
 	 */
-	static int size = 1;
+	static int size = 3;
 	
 	/**
 	 * Initialises and starts the processor

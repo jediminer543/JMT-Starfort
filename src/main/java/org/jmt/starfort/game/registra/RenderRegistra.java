@@ -18,9 +18,9 @@ import org.jmt.starfort.renderer.rules.GenericRenderer;
 import org.jmt.starfort.renderer.rules.MaskedRenderer;
 import org.jmt.starfort.util.Direction;
 import org.jmt.starfort.util.InlineFunctions;
+import org.jmt.starfort.world.component.designator.DesignatorConstruct;
+import org.jmt.starfort.world.component.designator.DesignatorReplace;
 import org.jmt.starfort.world.component.designator.IComponentDesignator;
-import org.jmt.starfort.world.component.designator.impl.DesignatorConstruct;
-import org.jmt.starfort.world.component.designator.impl.DesignatorReplace;
 
 public class RenderRegistra {
 

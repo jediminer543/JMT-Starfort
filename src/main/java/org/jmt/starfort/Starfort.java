@@ -48,7 +48,7 @@ import org.jmt.starfort.util.InlineFunctions;
 import org.jmt.starfort.util.NativePathModifier;
 import org.jmt.starfort.world.TickRequest;
 import org.jmt.starfort.world.World;
-import org.jmt.starfort.world.component.designator.impl.DesignatorReplace;
+import org.jmt.starfort.world.component.designator.DesignatorReplace;
 import org.jmt.starfort.world.controller.conduit.ControlerConduit;
 import org.jmt.starfort.world.controller.entity.ControllerEntityAI;
 import org.jmt.starfort.world.material.IMaterial;

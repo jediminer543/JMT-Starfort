@@ -26,7 +26,7 @@ public class WindowRateDisplay implements IWidget {
 		this.tickrateSource = tickrateSource;
 	}
 
-	private DecimalFormat df = new DecimalFormat("###.###");
+	private DecimalFormat df = new DecimalFormat("#####.###");
 	
 	@Override
 	public void drawWidget(NkCtxGLFW3 jctx) {

@@ -1,5 +1,10 @@
 package org.jmt.starfort.world;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
@@ -35,7 +40,7 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	/**
 	 * After how many loops should this request reload the tick map?
 	 */
-	int reload = 20;
+	int reload = 50;
 
 	/**
 	 * Reference to world which this tick request is based in
@@ -48,10 +53,15 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 	float targetTickRate = 20;
 	
 	/**
+	 * Multiplier to ensure initial stability
+	 */
+	float itcf = 0.90f;
+	
+	/**
 	 * Time until rerun
 	 * IN NANOS (IS IMPORTANT)
 	 */
-	long sleepTime = (long) (1000000000/targetTickRate);
+	long sleepTime = (long) (1000000000.0*itcf/targetTickRate);
 	//long sleepTime = 0;
 
 	/**
@@ -83,12 +93,18 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 
 	volatile AtomicInteger runningCount = new AtomicInteger(0);
 	
-	public double TPS = 0;
+	public double TPS = targetTickRate;
 
+	public long instantiatedAt;
+	
+	static boolean debug = false;
+	
 	public TickRequest(World w) {
 		this.w = w;
 		w.tickrequest = this;
 		ticksCurr = (ConcurrentHashMap<Coord, ArrayList<ComplexRunnable>>) w.getTicks();
+		instantiatedAt = System.currentTimeMillis();
+		if (debug) setupLogging();
 	}
 
 	{
@@ -253,6 +269,38 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 		//}
 	}
 
+	/**
+	 * Tickrate logging for stabilisation assistance
+	 * 
+	 * Used for helping to tune PID loop
+	 */
+	long sysstart = System.nanoTime();
+	long totalFrameTime = 0;
+	
+	/**
+	 * Epsilon on TPS pid loop
+	 */
+	float tol = 0.001f;
+	/**
+	 * Derivative calc for PD loop
+	 */
+	float lastError = Float.NaN;
+	float intError = 0f;
+	
+	File tpsLog = null;
+	Writer out = null;
+	
+	private void setupLogging() {
+		try {
+			tpsLog = new File(w.id.toString()+"-TPS.csv");
+			tpsLog.createNewFile();
+			out = new BufferedWriter(new FileWriter(tpsLog));
+			out.write("target,val,short,avg,sleep,error,derr,ierr,update"+"\n");
+		} catch (Exception e) {
+			//DONTCARE
+		}
+	}
+	
 	@Override
 	public void reset() {
 		if (!complete()) {
@@ -263,19 +311,64 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 			long endTime = System.nanoTime();
 			long frameTime = endTime - sleepStart;
 			if (!Double.isFinite(TPS)) {
-				TPS=0;
+				System.out.println("TTE");
+				TPS=targetTickRate;
 			}
-			TPS = (TPS*loopCount+(1000000000.0/frameTime))/(loopCount+1);
-			/*
-			if (loopCount % 10 == 0) {
-				System.out.println("TPS: " + TPS);
-			}
-			*/
-			float tol = 0.001f;
-			if (TPS < targetTickRate-tol) {
-				sleepTime -= (long)(100000.0*Math.abs(TPS-targetTickRate));
-			} else if (TPS > targetTickRate+tol) {
-				sleepTime += (long)(100000.0*Math.abs(TPS-targetTickRate));
+			//if(loopCount <= 50) {
+			//	TPS = 20;
+			//}
+			long basis = 2500; //Math.min(loopCount, 1000);
+			TPS = ((TPS*basis)+(1000000000.0/frameTime))/(basis+1); // Damped
+			//TPS = (1000000000.0/frameTime); // Undamped
+			totalFrameTime += frameTime;
+			if(loopCount >= 1 && loopCount % 50 == 0) {
+				float betterTPS = (1000000000.0f*50.0f/((float)totalFrameTime));
+				float error = betterTPS-targetTickRate;
+				if (!Double.isFinite(lastError)) {
+					lastError = error;
+				}
+				intError += error;
+				float deltaError = error-lastError;
+				float kp = targetTickRate * 10000.0f;
+				float kd = targetTickRate * 500.0f;
+				float ki = targetTickRate * -10.0f;
+				//System.out.println(delta);
+				//System.out.println(deltadelta);
+				//System.out.println(kp*delta);
+				//System.out.println(- kd/deltadelta);
+				long update = (long)(kp*error + kd*deltaError + ki*intError);
+				if (debug) System.out.println(update);
+				if (TPS < targetTickRate-tol) {
+					sleepTime += update;
+				} else if (TPS > targetTickRate+tol) {
+					sleepTime += update;
+				} else {
+					intError = 0;
+				}
+				lastError = error;
+				sleepTime = Math.max(sleepTime, 0);
+				sleepTime = Math.min(sleepTime, (long) (2000000000.0/targetTickRate));
+				if (debug) {
+					try {
+						out.write(targetTickRate + "," + TPS + "," 
+								+ (1000000000.0*50.0/((double)totalFrameTime)) + "," 
+								+ ((double)loopCount)*(1000000000.0)/((double)System.nanoTime()-sysstart)+ ","
+								+ sleepTime + "," 
+								+ error + ","
+								+ deltaError + ","
+								+ intError + ","
+								+ update +"\n");
+						if (loopCount % 450 == 0) {
+							out.flush();
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				if (debug) System.out.println("TPS (1/ticktime): " + 1000000000.0*50.0/((double)totalFrameTime));
+				totalFrameTime = 0;
+				if (debug) System.out.println("TPS (Ammotized): " + ((double)loopCount)*(1000000000.0)/((double)System.nanoTime()-sysstart));
+				if (debug) System.out.println("SleepTime: " + sleepTime);
 			}
 			//Occasionally throws Div zero exception
 		} catch (ArithmeticException e) {}
@@ -290,8 +383,9 @@ public class TickRequest implements ReusableProcessingRequest<Entry<Coord, Array
 				ticksCurr = (ConcurrentHashMap<Coord, ArrayList<ComplexRunnable>>) w.getTicks();
 			}
 		}
-		if (lastProc + sleepTime > System.nanoTime())
-			sleepStart = System.nanoTime();
+		sleepStart = System.nanoTime();
+		if (lastProc + sleepTime > System.nanoTime()) {
+		}
 		synchronized (ticksNext) {
 			ticksNext = new ConcurrentHashMap <Coord, ArrayList<ComplexRunnable>>();
 		}

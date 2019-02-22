@@ -44,7 +44,7 @@ public class ComponentStairs implements IComponent, IComponentDirectioned, IComp
 
 	@Override
 	public String getComponentName() {
-		return getComponentMaterial().getMaterialName() +  "Stairs";
+		return "Stairs";
 	}
 
 	@Override

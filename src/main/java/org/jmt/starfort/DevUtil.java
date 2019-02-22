@@ -13,8 +13,8 @@ import org.jmt.starfort.util.CoordRange;
 import org.jmt.starfort.util.Direction;
 import org.jmt.starfort.util.InlineFunctions;
 import org.jmt.starfort.world.World;
-import org.jmt.starfort.world.component.designator.impl.DesignatorConstruct;
-import org.jmt.starfort.world.component.designator.impl.DesignatorReplace;
+import org.jmt.starfort.world.component.designator.DesignatorConstruct;
+import org.jmt.starfort.world.component.designator.DesignatorReplace;
 import org.jmt.starfort.world.material.IMaterial;
 
 /**
